@@ -1,0 +1,11 @@
+body {
+  font: 100% Helvetica, sans-serif;
+  color: #000;
+}
+
+h1 {
+  color: blue;
+}
+h1.head {
+  font-size: 48px;
+}
