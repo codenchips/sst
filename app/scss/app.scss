@@ -1,17 +1,19 @@
 $font-stack: Helvetica, sans-serif;
-$primary-color: #FFF;
+$primary-color: #000;
 
 body {
   font: 100% $font-stack;
   color: $primary-color;
 }
 
-h1 {
-  color: blue;
-
-  &.head {
-    font-size: 48px;
-  }
+#container {
+  max-width: 768px;
+  position: relative;
+  margin: 0 auto;
 }
 
+
+.uk-input, .uk-select, .uk-textarea {
+    border-radius: 5px;
+}
 
