@@ -11,7 +11,7 @@ function return_json($res) {
         exit();
     } else {
         return false;
-    }    
+    }
 }
 
 // Get the types fpr Tamlite
@@ -52,7 +52,7 @@ function ajax_get_types()
     ORDER BY type_name ASC");
 
     $res = $q->fetchAll(PDO::FETCH_OBJ);
-    
+
     return(return_json($res));
 }
 
@@ -65,7 +65,10 @@ function ajax_get_products_for_type()
     $slug = $_POST['type_slug'];
 
     $q = $pdo->query("SELECT
-                        UPPER(REPLACE(product_slug_pk, '-', ' ')) as hrslug,
+                        UPPER(
+                            REPLACE(REPLACE(product_slug_pk, '-', ' '), 'xcite ', '')
+                            )
+                        as hrslug,
                         product_slug_pk, product_name
                         FROM p__products
                         WHERE type_slug_fk = '$slug'
@@ -80,6 +83,7 @@ function ajax_get_products_for_type()
 function ajax_get_skus_for_product()
 {
     global $pdo;
+    //$ands = default_ands();
 
     $slug = $_POST['product_slug'];
 

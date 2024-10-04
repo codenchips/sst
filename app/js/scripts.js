@@ -5,33 +5,36 @@ $(function () {
   $(".select-brand").on("change", function (e) {
     e.preventDefault();
     var brand = $(this).val();
+    console.log('selected brand: '+brand);
     $.ajax("/api/get_types", {
       type: "post",
       data: { brand: brand },
       success: function (data, status, xhr) {
         var jsonData = $.parseJSON(data);
         var template = $("#tmp-select-product-type").html();
-        var rendered = Mustache.render(template, { skus: jsonData });
+        var rendered = Mustache.render(template, { types: jsonData });
         $("#target-select-product-type").html(rendered);
-        bindSelectProduct();
+        bindSelectProductType();
       }
     });
   });
 
 
- bindSelectProductType();
+
   // get products for type
+  bindSelectProductType();  // prebind as brand may not be fired
   function bindSelectProductType() {
   $(".select-product-type").off("change").on("change", function (e) {
     e.preventDefault();
     var slug = $(this).val();
+    console.log('slected type: '+slug);
     $.ajax("/api/get_products_for_type", {
       type: "post",
       data: { type_slug: slug },
       success: function (data, status, xhr) {
         var jsonData = $.parseJSON(data);
         var template = $("#tmp-select-product").html();
-        var rendered = Mustache.render(template, { skus: jsonData });
+        var rendered = Mustache.render(template, { products: jsonData });
         $("#target-select-product").html(rendered);
         bindSelectProduct();
       }

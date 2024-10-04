@@ -7,7 +7,7 @@ $types = get_types();
 <div class="uk-child-width-expand@s uk-text-center" uk-grid>
     <div>
         <div class="uk-card uk-card-small uk-card-default uk-card-body">
-
+            <div uk-grid>
             <div class="uk-width-1-3">
                 <div class="uk-margin">
                     <select class="uk-select select-brand">
@@ -49,13 +49,16 @@ $types = get_types();
                     </div>
                 </div>
             </div>
+
+            <div class="uk-width-1-1">
+                    <button type="submit" class="uk-button uk-button-primary uk-width-1-3 uk-margin-small-bottom">Add</button>
+            </div>
         </div>
+
 
         <div class="uk-width-1-3">
         </div>
-        <div class="uk-width-1-3">
         </div>
-
     </div>
 </div>
 </form>
@@ -63,16 +66,16 @@ $types = get_types();
 <!-- Templates -->
 <script id="tmp-select-product-type" type="x-tmpl-mustache">
 <select class="uk-select select-product-type">
-{{#skus}}
+{{#types}}
     <option value="{{type_slug_pk}}">{{type_name}}</option>
-{{/skus}}
+{{/types}}
 </select>
 </script>
 <script id="tmp-select-product" type="x-tmpl-mustache">
 <select class="uk-select select-product">
-{{#skus}}
+{{#products}}
     <option value="{{product_slug_pk}}">{{hrslug}}</option>
-{{/skus}}
+{{/products}}
 </select>
 </script>
 <script id="tmp-select-sku" type="x-tmpl-mustache">
