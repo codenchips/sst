@@ -11,10 +11,11 @@
 
         if ($pdo) {
             //echo "Connected to the $database database successfully!";
-			$connected = true;
+            $connected = true;
+            $pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
         }
     } catch (PDOException $e) {
-		$connected = false;
+        $connected = false;
         echo $e->getMessage();
     }
 

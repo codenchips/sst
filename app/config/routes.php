@@ -16,7 +16,7 @@ function get_view() {
          case 'about' :
             require('views/about.php');
             break;
-         case 'api' :			
+         case 'api' :
             require('lib/api.php');
             break;
 

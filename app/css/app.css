@@ -1,6 +1,6 @@
 body {
   font: 100% Helvetica, sans-serif;
-  color: #000;
+  color: #192542;
 }
 
 #container {
@@ -11,4 +11,11 @@ body {
 
 .uk-input, .uk-select, .uk-textarea {
   border-radius: 5px;
+}
+
+.tabulator i {
+  font-size: 160%;
+}
+.tabulator i.fa-circle-xmark {
+  color: #C8102E;
 }

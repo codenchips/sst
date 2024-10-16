@@ -1,5 +1,6 @@
 $font-stack: Helvetica, sans-serif;
-$primary-color: #000;
+$primary-color: #192542;
+$xcred: #C8102E;
 
 body {
   font: 100% $font-stack;
@@ -14,6 +15,15 @@ body {
 
 
 .uk-input, .uk-select, .uk-textarea {
-    border-radius: 5px;
+  border-radius: 5px;
 }
 
+.tabulator {
+  i {
+    font-size: 160%;
+    &.fa-circle-xmark {
+      color: $xcred;
+    }
+  }
+
+}

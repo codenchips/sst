@@ -1,5 +1,7 @@
-<div class="uk-child-width-expand@s uk-text-center" uk-grid>
-    <div>
-            <a href="/">Home</a> | <a href="/tables">Tables</a> | <a href="/about">About</a>
+<div class="uk-text-center uk-margin" uk-grid>
+
+    <div class="uk-width-1-1">
+        <a href="/">Home</a> | <a href="/tables">Tables</a> | <a href="/about">About</a>
     </div>
+
 </div>
