@@ -164,6 +164,7 @@ $(function () {
         return '<i class="fa-solid fa-circle-xmark"></i>';
     };
 
+
     var pTable = new Tabulator("#ptable", {
         importFormat: "json",
         layout: "fitColumns",
@@ -172,6 +173,14 @@ $(function () {
             { title: "product_slug", field: "product_slug", visible: false },
             { title: "SKU", field: "sku", width: 150 },
             { title: "Product", field: "product_name", hozAlign: "left" },
+            { title: "Ref", field: "ref", editor: "input", editorParams: {
+                    search: true,
+                    mask: "",
+                    selectContents: true,
+                    elementAttributes:{
+                        maxlength:"5",
+                    }
+                }},
             { title: "Qty", field: "qty", width: 80, hozAlign:"left" },
             { headerSort: false, formatter: iconPlus, width: 30, hozAlign:"center",
                 cellClick:  function(e, cell) { increaseQty(cell.getRow().getData().id); }
@@ -183,6 +192,25 @@ $(function () {
                 cellClick: function(e, cell) { removeByID(cell.getRow().getData().sku); }
                 },
         ],
+    });
+
+    pTable.on("cellEdited", function(cell){
+        //cell - cell component
+        const sku = cell.getRow().getData().sku;
+        const ref = cell.getRow().getData().ref
+        //console.log('sku: '+sku+' ref: '+ref);
+        if (sku != "" && ref != "") {
+            $.ajax("/api/edit_ref", {
+                type: "post",
+                data: {sku: sku, ref: ref},
+                success: function (data, status, xhr) {
+                    var res = $.parseJSON(data);
+                    if (res.updated != 0) {
+                        //updatepTable();
+                    }
+                }
+            });
+        }
     });
 
     function increaseQty(id) {

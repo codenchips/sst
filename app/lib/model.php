@@ -149,7 +149,7 @@ function ajax_get_ptabledata() {
     global $pdo;
 
     $q = $pdo->query("SELECT COUNT(sku) as qty,
-                        id, sku, product_slug, product_name, `position`    
+                        id, sku, ref, product_slug, product_name, `position`    
                         FROM survey_tables
                         GROUP BY sku");
 
@@ -162,12 +162,12 @@ function ajax_increase_qty() {
     global $pdo;
 
     $id = $_POST['id'];
-    $q = $pdo->query("SELECT `brand`, `type`, `range`, product_slug, product_name, sku, custom, building, floor FROM survey_tables WHERE id = $id");
+    $q = $pdo->query("SELECT `brand`, `type`, `range`, product_slug, product_name, sku, ref, custom, building, floor FROM survey_tables WHERE id = $id");
     $data = $q->fetch(PDO::FETCH_ASSOC);
 
     $q  = "INSERT INTO survey_tables
-            (brand, `type`, `range`, product_slug, product_name, sku, custom, building, floor, created_On)
-            VALUES (:brand, :type, :range, :product_slug, :product_name, :sku, :custom, :building, :floor, CURRENT_TIMESTAMP)";
+            (brand, `type`, `range`, product_slug, product_name, sku, ref, custom, building, floor, created_On)
+            VALUES (:brand, :type, :range, :product_slug, :product_name, :sku, :ref, :custom, :building, :floor, CURRENT_TIMESTAMP)";
 
     try {
         $pdo->prepare($q)->execute($data);
@@ -191,6 +191,18 @@ function ajax_decrease_qty() {
         $ret = json_encode(['decreased' => 0]);
     }
     exit($ret);
+}
+
+function ajax_edit_ref() {
+    global $pdo;
+
+    $data = [
+        'sku' => $_POST['sku'],
+        'ref' => $_POST['ref']
+    ];
+
+    $sql = "UPDATE survey_tables SET ref=:ref WHERE sku=:sku";
+    $pdo->prepare($sql)->execute($data);
 }
 
 ?>
