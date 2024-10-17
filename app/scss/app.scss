@@ -25,5 +25,18 @@ body {
       color: $xcred;
     }
   }
+}
 
+.side-menus {
+
+  .uk-nav-primary .uk-nav-sub, .smaller {
+    font-size: 1.25rem;
+    line-height: 1.5;
+  }
+
+
+  .manage-link {
+    padding-top: 10px;
+    font-size: 1.1rem;
+  }
 }

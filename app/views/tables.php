@@ -1,8 +1,17 @@
-
 <?php
+
+$project_slug = 'cov-uni';
+
 $types = get_types();
-//vd($p);
+$location = get_location_for_project($project_slug);
+$buildings = get_buildings_for_location($project_slug, $location);
+
+//vd($buildings, 1);
 ?>
+
+<?php include ('./partials/tables-side.php'); ?>
+
+<button class="uk-button uk-button-default" type="button" uk-toggle="target: #tables-side">Manage Project</button>
 
 <form id="product-select-form">
 

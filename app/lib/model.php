@@ -14,10 +14,45 @@ function return_json($res) {
     }
 }
 
+function get_location_for_project($project_slug) {
+    global $pdo;
+    $q = $pdo->query("SELECT location FROM survey_sites WHERE project_slug = '$project_slug'");
+    return ($q->fetch(PDO::FETCH_COLUMN, 0));
+}
+function get_buildings_for_location($project_slug, $location) {
+    global $pdo;
+    $q = $pdo->query("SELECT building 
+                              FROM survey_sites 
+                              WHERE location = '$location' && project_slug = '$project_slug' 
+                              GROUP BY building");
+    return ($q->fetchAll(PDO::FETCH_COLUMN, 0));
+}
+function get_floors_for_building($project_slug, $location, $building) {
+    global $pdo;
+    $q = $pdo->query("SELECT floor 
+                              FROM survey_sites 
+                              WHERE building = '$building' && 
+                                    location = '$location' && 
+                                    project_slug = '$project_slug' 
+                              GROUP BY floor");
+    return ($q->fetchAll(PDO::FETCH_COLUMN, 0));
+}
+function get_rooms_for_floor($project_slug, $location, $building, $floor) {
+    global $pdo;
+    $q = $pdo->query("SELECT room 
+                              FROM survey_sites 
+                              WHERE building = '$building' && 
+                                    location = '$location' && 
+                                    project_slug = '$project_slug' &&
+                                    floor = '$floor' 
+                              GROUP BY floor");
+    return ($q->fetchAll(PDO::FETCH_COLUMN, 0));
+}
+
+
 // Get the types fpr Tamlite
 // just to pre-populate the products dropdown before a brand is selected.
-function get_types()
-{
+function get_types() {
     global $pdo;
     $q = $pdo->query("SELECT type_slug_pk, type_name
     FROM p__products_types

@@ -19,3 +19,12 @@ body {
 .tabulator i.fa-circle-xmark {
   color: #C8102E;
 }
+
+.side-menus .uk-nav-primary .uk-nav-sub, .side-menus .smaller {
+  font-size: 1.25rem;
+  line-height: 1.5;
+}
+.side-menus .manage-link {
+  padding-top: 10px;
+  font-size: 1.1rem;
+}
