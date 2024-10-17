@@ -110,7 +110,17 @@ $(function () {
   });
 
 
-
+  // add floor modeal open
+  // grab the project, location and building info
+  $("#add-floor").on('show', function (e) {
+      $("input[name='modal_form_project_slug']").val('cov-uni2');
+      $("input[name='modal_form_location']").val('location2');
+      $("input[name='modal_form_building']").val('building2');
+  });
+  // add floor close. re-open the sidebar
+  $("#add-floor").on('hidden', function (e) {
+      setTimeout(function() { UIkit.offcanvas($('#tables-side')).show(); },100);
+  });
 
 
   async function sendData(form, method) {
