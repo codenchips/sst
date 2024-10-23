@@ -21,61 +21,7 @@
             </li>
         </ul>
 
-        <ul class="uk-nav uk-nav-primary side-menus" uk-nav>
-            <li class="uk-parent">
-            <li class="uk-nav-header">Building</li>
-                <ul class="uk-nav-sub">
-                    <li><a href="#"><?php echo $buildings[0]; ?></a></li>
-                </ul>
-            </li>
-        </ul>
-
-        <ul class="uk-nav uk-nav-primary">
-            <li class="uk-parent">
-            <li class="uk-nav-header">Floors and Rooms</li>
-
-            <ul class="uk-nav-sub side-menus floors">
-                <?php foreach ($buildings as $building) {
-                    $floors = get_floors_for_building($project_slug, $location, $building);
-                    foreach ($floors as $floor) { $floor_slug = slugify($floor); ?>
-                        <li class="smaller"><a href="#"><?php echo $floor; ?></a></li>
-                            <ul id="floor-<?php echo $floor_slug; ?>" class="uk-nav-sub <?php echo $floor_slug; ?>">
-
-                                <?php $rooms = get_rooms_for_floor($project_slug, $location, $building, $floor);
-                                foreach ($rooms as $room) { $room_slug = slugify($room); ?>
-                                    <li data-location="<?php echo $location; ?>"
-                                        data-building="<?php echo $buildings[0]; ?>"
-                                        data-floor="<?php echo $floor_slug; ?>"
-                                        class="manage-link add-room room-<?php echo $room_slug; ?>"
-                                        id="floor-<?php echo $floor_slug; ?>-room-<?php echo $room_slug; ?>">
-                                            <a href="#"><?php echo $room; ?></a>
-                                    </li>
-                                <?php } ?>
-                                <!-- placeholder for additional add floor -->
-                                <span id="target-add-room"></span>
-                                <li class="add-room-static">
-                                    <a  data-location="<?php echo $location; ?>"
-                                        data-building="<?php echo $buildings[0]; ?>"
-                                        data-floor="<?php echo $floor_slug; ?>"
-                                        class="manage-link add-room"
-                                        href="#">
-                                            <span uk-icon="icon: plus; ratio: 1"></span> Add Room</a>
-                                </li>
-                            </ul>
-                        </li>
-                    <?php } ?>
-                <?php } ?>
-
-                <!-- placeholder for additional add floor -->
-                <span id="target-add-floor"></span>
-                <!-- add floor button -->
-                <a uk-toggle="target: #add-floor" class="manage-link add-floor" href="#">
-                    <span uk-icon="icon: plus; ratio: 1"></span> Add Floor</a>
-            </ul>
-            <li class="uk-nav-divider"></li>
-        </ul>
-
-
+        
 
     </div>
 </div>
