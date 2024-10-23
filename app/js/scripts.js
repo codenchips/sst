@@ -26,22 +26,22 @@ $(function () {
   bindSelectProductType();  // prebind as brand may not be fired
   function bindSelectProductType() {
     $(".select-sku,.select-product").val("");
-  $(".select-product-type").val("").off("change").on("change", function (e) {
-    e.preventDefault();
-    var slug = $(this).val();
-    console.log('slected type: '+slug);
-    $.ajax("/api/get_products_for_type", {
-      type: "post",
-      data: { type_slug: slug },
-      success: function (data, status, xhr) {
-        var jsonData = $.parseJSON(data);
-        var template = $("#tmp-select-product").html();
-        var rendered = Mustache.render(template, { products: jsonData });
-        $("#target-select-product").html(rendered);
-        bindSelectProduct();
-      }
+    $(".select-product-type").val("").off("change").on("change", function (e) {
+      e.preventDefault();
+      var slug = $(this).val();
+      console.log('slected type: '+slug);
+      $.ajax("/api/get_products_for_type", {
+        type: "post",
+        data: { type_slug: slug },
+        success: function (data, status, xhr) {
+          var jsonData = $.parseJSON(data);
+          var template = $("#tmp-select-product").html();
+          var rendered = Mustache.render(template, { products: jsonData });
+          $("#target-select-product").html(rendered);
+          bindSelectProduct();
+        }
+      });
     });
-  });
   }
   // END products for type
 
@@ -49,22 +49,22 @@ $(function () {
   // get skus for product
   function bindSelectProduct() {
       $(".select-sku").val("");
-  $(".select-product").val("").off("change").on("change", function (e) {
-    e.preventDefault();
-    var slug = $(this).val();
-    console.log('selected product: '+slug);
-    $.ajax("/api/get_skus_for_product", {
-      type: "post",
-      data: { product_slug: slug },
-      success: function (data, status, xhr) {
-        var jsonData = $.parseJSON(data);
-        var template = $("#tmp-select-sku").html();
-        var rendered = Mustache.render(template, { skus: jsonData });
-        $("#target-select-sku").html(rendered);
-        bindSelectSKU();
-      }
+    $(".select-product").val("").off("change").on("change", function (e) {
+      e.preventDefault();
+      var slug = $(this).val();
+      console.log('selected product: '+slug);
+      $.ajax("/api/get_skus_for_product", {
+        type: "post",
+        data: { product_slug: slug },
+        success: function (data, status, xhr) {
+          var jsonData = $.parseJSON(data);
+          var template = $("#tmp-select-sku").html();
+          var rendered = Mustache.render(template, { skus: jsonData });
+          $("#target-select-sku").html(rendered);
+          bindSelectSKU();
+        }
+      });
     });
-  });
   }
   // END get skus for product
 
@@ -109,17 +109,38 @@ $(function () {
       UIkit.modal($('#add-special')).hide();
   });
 
+  $("#form-add-floor").off("submit").on("submit", function (e) {
+      e.preventDefault();
+      console.log('Add floor  form submitted');
+      const location = $("#form-add-floor input[name=modal_form_location]").val();
+      const building = $("#form-add-floor input[name=modal_form_building]").val();
+      const floor = $("#form-add-floor input[name=modal_form_floor]").val();
+      const form = document.querySelector("#form-add-floor");
+      sendData(form, 'add_floor');
+      // update sidebar nav
+      var template = $("#tmp-new-floor").html();
+      var rendered = Mustache.render(template, { floor: floor, location: location, building: building });
+      $("#target-add-floor").append(rendered);
+      //$('.add-room-static').remove();
 
-  // add floor modeal open
-  // grab the project, location and building info
-  $("#add-floor").on('show', function (e) {
-      $("input[name='modal_form_project_slug']").val('cov-uni2');
-      $("input[name='modal_form_location']").val('location2');
-      $("input[name='modal_form_building']").val('building2');
+      UIkit.modal($('#add-floor')).hide();
   });
+
+
   // add floor close. re-open the sidebar
   $("#add-floor").on('hidden', function (e) {
-      setTimeout(function() { UIkit.offcanvas($('#tables-side')).show(); },100);
+      setTimeout(function() {
+          UIkit.offcanvas($('#tables-side')).show();
+        },100);
+  });
+
+
+  $(".manage-link.add-room").on('click', function(e) {
+      const floor = $(this).data('floor');
+
+      $('input[name=modal_form_floor]').val(floor);
+
+      UIkit.modal($('#add-room')).show();
   });
 
 
@@ -145,6 +166,126 @@ $(function () {
     if ($('#ptable').length) {
         updatepTable();
     }
+    if ($('#tables-side').length) {
+        updateTableSideNav();
+    }
+
+    function updateTableSideNav() {
+        if ($('#tables-side').length) {
+            $.ajax("/api/get_project_sidenav", {
+                type: "post",
+                data: { project_slug: 'cov-uni' },
+                success: function (data, status, xhr) {
+                    // Get the div element where the list will be added
+                    const locationsDiv = document.getElementById('locations');
+                    var jsonData = $.parseJSON(data);
+                    console.log('locations: '+jsonData);
+                    // Create the list for the "locations" key in the JSON object
+                    const locationList = createList(jsonData.locations, jsonData.project_slug);
+
+                    // Append the generated list to the DOM
+                    locationsDiv.appendChild(locationList);
+
+                }
+            });
+        }
+    }
+
+
+    function createList(obj, parentSlug, level = 1) {
+        const ul = document.createElement('ul');
+        ul.setAttribute('id', `${parentSlug}-ul`);
+        ul.classList.add('location-list');
+
+        let addedFloorsHeading = false; // Flag to track if the "Floors and Rooms" heading has been added for this building
+
+        for (const key in obj) {
+            if (typeof obj[key] === 'object' && obj[key] !== null) {
+                const li = document.createElement('li');
+                const itemSlug = obj[key].slug || key;
+                li.setAttribute('id', `${itemSlug}-li`);
+                li.classList.add('location-item');
+
+                if (level === 1) {
+                    // Static subheading for "Location"
+                    const locationHeading = document.createElement('h2');
+                    locationHeading.textContent = 'Location:';
+                    li.appendChild(locationHeading);
+
+                    const h2 = document.createElement('span'); // Add location name after static heading
+                    h2.textContent = obj[key].name || key;
+                    li.appendChild(h2);
+
+                    // Add "Add a Building" link with data attributes next to location name
+                    const addBuildingLink = document.createElement('a');
+                    addBuildingLink.href = '#'; // Link can point to a function or page
+                    addBuildingLink.textContent = 'Add a Building';
+                    addBuildingLink.setAttribute('data-location', parentSlug); // Location slug
+                    addBuildingLink.setAttribute('data-project', 'cov-uni'); // Example project slug
+                    li.appendChild(addBuildingLink); // Append link to the location list item
+                } else if (level === 2) {
+                    // Static subheading for "Building"
+                    const buildingHeading = document.createElement('h3');
+                    buildingHeading.textContent = 'Building:';
+                    li.appendChild(buildingHeading);
+
+                    const h3 = document.createElement('span'); // Add building name after static heading
+                    h3.textContent = obj[key].name || key;
+                    li.appendChild(h3);
+
+                    // Add "Add a Floor" link with data attributes
+                    const addFloorLink = document.createElement('a');
+                    addFloorLink.href = '#'; // Link can point to a function or page
+                    addFloorLink.textContent = 'Add a Floor';
+                    addFloorLink.setAttribute('data-location', parentSlug); // Location slug
+                    addFloorLink.setAttribute('data-project', 'cov-uni'); // Example project slug
+                    li.appendChild(addFloorLink); // Append link to the building list item
+
+                    ul.appendChild(li); // Append building list item to the UL
+                    addedFloorsHeading = false; // Reset the flag for each new building
+                } else if (level === 3) {
+                    // Add "Floors and Rooms" subheading only once for the building
+                    if (!addedFloorsHeading) {
+                        const floorsHeading = document.createElement('h4');
+                        floorsHeading.textContent = 'Floors and Rooms:';
+                        ul.appendChild(floorsHeading); // Append heading directly to the UL
+                        addedFloorsHeading = true; // Set the flag after adding the subheading
+                    }
+
+                    // Create a new list item for the floor
+                    const floorLi = document.createElement('li');
+                    floorLi.setAttribute('id', `${itemSlug}-floor-li`);
+                    floorLi.classList.add('floor-item');
+                    floorLi.textContent = obj[key].name || key; // Add floor name
+                    li.appendChild(floorLi); // Append floor to the list item
+
+                    // Add "Add a Room" link with data attributes
+                    const addRoomLink = document.createElement('a');
+                    addRoomLink.href = '#'; // Link can point to a function or page
+                    addRoomLink.textContent = 'Add a Room';
+                    addRoomLink.setAttribute('data-location', parentSlug); // Location slug
+                    addRoomLink.setAttribute('data-building', itemSlug); // Building slug
+                    addRoomLink.setAttribute('data-floor', obj[key].slug); // Floor slug
+                    floorLi.appendChild(addRoomLink); // Append link to the floor list item
+                }
+
+                // Add actual room name for deeper levels (4+)
+                if (obj[key].name && level > 3) {
+                    const roomLi = document.createElement('li');
+                    roomLi.setAttribute('id', `${itemSlug}-room-li`);
+                    roomLi.classList.add('room-item');
+                    roomLi.textContent = obj[key].name; // Add room name
+                    li.appendChild(roomLi); // Append room as a list item
+                }
+
+                // Recursively create sub-lists for nested objects, passing the next level
+                li.appendChild(createList(obj[key], itemSlug, level + 1));
+                ul.appendChild(li);
+            }
+        }
+        return ul;
+    }
+
 
     function updatepTable() {
         if ($('#ptable').length) {

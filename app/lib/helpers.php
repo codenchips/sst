@@ -2,7 +2,7 @@
 
 function vd($v, $exit = false) {
     echo '<pre>';
-        var_dump($v);
+        print_r($v);
     echo '</pre>';
     if ($exit) exit();
 }
@@ -13,5 +13,9 @@ function get_uri_part($part = 1) {
     return($path[$part]);
 }
 
+function slugify($str) {
+    $str = trim(strtolower(str_replace(' ', '-', $str)));
+    return($str);
+}
 
 ?>

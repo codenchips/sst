@@ -14,6 +14,59 @@ function return_json($res) {
     }
 }
 
+function ajax_get_project_sidenav() {
+    global $pdo;
+
+    $project_slug = $_POST['project_slug'];
+
+    $q = $pdo->query("SELECT * FROM survey_sites WHERE project_slug = '$project_slug'");
+    $res = $q->fetchAll(PDO::FETCH_OBJ);
+
+    $nav = array();
+    $nav['project_slug'] = $res[0]->project_slug;
+
+    foreach ($res as $key => $val) {
+        $location = slugify($val->location);
+        $nav['locations'][$location]['name'] = $val->location;
+        $nav['locations'][$location]['slug'] = $location;
+        if ($val->building) {
+            $nav['locations'][$location][slugify($val->building)] = array(
+                'slug' => slugify($val->building),
+                'name' => $val->building
+            );
+        }
+    }
+
+    foreach ($res as $key => $val) {
+        $location = slugify($val->location);
+        $building = slugify($val->building);
+        $floor = slugify($val->floor);
+        if ($floor) {
+            $nav['locations'][$location][$building][$floor] = array(
+                'slug' => $floor,
+                'name' => $val->floor
+            );
+        }
+    }
+
+    foreach ($res as $key => $val) {
+        $location = slugify($val->location);
+        $building = slugify($val->building);
+        $floor = slugify($val->floor);
+        $room = slugify($val->room);
+        if ($room) {
+            $nav['locations'][$location][$building][$floor][$room] = array(
+                'slug' => $room,
+                'name' => $val->room
+            );
+        }
+    }
+
+    //vd($nav,1);
+
+    return(return_json($nav));
+}
+
 function get_location_for_project($project_slug) {
     global $pdo;
     $q = $pdo->query("SELECT location FROM survey_sites WHERE project_slug = '$project_slug'");
@@ -33,8 +86,9 @@ function get_floors_for_building($project_slug, $location, $building) {
                               FROM survey_sites 
                               WHERE building = '$building' && 
                                     location = '$location' && 
-                                    project_slug = '$project_slug' 
-                              GROUP BY floor");
+                                    project_slug = '$project_slug'                               
+                              GROUP BY floor 
+                              ORDER BY created_on ASC ");
     return ($q->fetchAll(PDO::FETCH_COLUMN, 0));
 }
 function get_rooms_for_floor($project_slug, $location, $building, $floor) {
@@ -172,6 +226,22 @@ function ajax_add_special() {
             (brand, `type`, product_name, sku, custom, created_on)
             VALUES
             (:form_custom_brand, 'special', :form_custom_product_name, :form_custom_sku, :form_custom, CURRENT_TIMESTAMP)";
+
+    $pdo->prepare($q)->execute($data);
+    $ret = json_encode(['added' => $pdo->lastInsertId()]);
+
+    exit($ret);
+}
+
+function ajax_add_floor() {
+    global $pdo;
+
+    $data = $_POST;
+
+    $q  = "INSERT INTO survey_sites
+            (project_slug, location, building, floor, created_on)
+            VALUES
+            (:modal_form_project_slug, :modal_form_location, :modal_form_building, :modal_form_floor, CURRENT_TIMESTAMP)";
 
     $pdo->prepare($q)->execute($data);
     $ret = json_encode(['added' => $pdo->lastInsertId()]);

@@ -149,6 +149,19 @@ $buildings = get_buildings_for_location($project_slug, $location);
 
 
 <!-- Templates -->
+<script id="tmp-new-floor" type="x-tmpl-mustache">
+<li class="smaller">
+    <a href="#">{{floor}}</a>
+</li>
+<li><a  data-location="{{location}}"
+        data-building="{{building}}"
+        data-floor="{{floor_slug}}"
+        class="manage-link add-room"
+        href="#">
+            <span uk-icon="icon: plus; ratio: 1"></span> Add Room</a></li>
+
+</script>
+
 <script id="tmp-select-product-type" type="x-tmpl-mustache">
 <select required id="form_type" name="form_type" class="uk-select select-product-type"
 oninvalid="this.setCustomValidity('Please select a product type.')"
