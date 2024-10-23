@@ -128,20 +128,26 @@ $(function () {
 
 
   // add floor close. re-open the sidebar
-  $("#add-floor").on('hidden', function (e) {
+  $("#add-floor, #add-room").on('hidden', function (e) {
       setTimeout(function() {
           UIkit.offcanvas($('#tables-side')).show();
         },100);
   });
 
 
-  $(".manage-link.add-room").on('click', function(e) {
-      const floor = $(this).data('floor');
+    function bindNavClicks() {
+        $(".manage-link.add-room").on('click', function (e) {
+            const floor = $(this).data('floor');
 
-      $('input[name=modal_form_floor]').val(floor);
+            $('input[name=modal_form_floor]').val(floor);
 
-      UIkit.modal($('#add-room')).show();
-  });
+            UIkit.modal($('#add-room')).show();
+        });
+
+        $(".manage-link.add-floor").on('click', function (e) {
+            UIkit.modal($('#add-floor')).show();
+        });
+    }
 
 
   async function sendData(form, method) {
@@ -176,16 +182,11 @@ $(function () {
                 type: "post",
                 data: { project_slug: 'cov-uni' },
                 success: function (data, status, xhr) {
-                    // Get the div element where the list will be added
                     const locationsDiv = document.getElementById('locations');
                     var jsonData = $.parseJSON(data);
-                    console.log('locations: '+jsonData);
-                    // Create the list for the "locations" key in the JSON object
                     const locationList = createList(jsonData.locations, jsonData.project_slug);
-
-                    // Append the generated list to the DOM
                     locationsDiv.appendChild(locationList);
-
+                    bindNavClicks();
                 }
             });
         }
@@ -239,6 +240,8 @@ $(function () {
                     addFloorLink.textContent = 'Add a Floor';
                     addFloorLink.setAttribute('data-location', parentSlug); // Location slug
                     addFloorLink.setAttribute('data-project', 'cov-uni'); // Example project slug
+                    addFloorLink.classList.add('manage-link');
+                    addFloorLink.classList.add('add-floor');
                     li.appendChild(addFloorLink); // Append link to the building list item
 
                     ul.appendChild(li); // Append building list item to the UL
@@ -266,6 +269,8 @@ $(function () {
                     addRoomLink.setAttribute('data-location', parentSlug); // Location slug
                     addRoomLink.setAttribute('data-building', itemSlug); // Building slug
                     addRoomLink.setAttribute('data-floor', obj[key].slug); // Floor slug
+                    addRoomLink.classList.add('manage-link');
+                    addRoomLink.classList.add('add-room');
                     floorLi.appendChild(addRoomLink); // Append link to the floor list item
                 }
 
