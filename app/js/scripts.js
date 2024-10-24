@@ -328,14 +328,6 @@ $(function () {
 
 
 
-
-
-
-
-
-
-
-
     function updatepTable(  uid = false ) {
         if (uid === false) {
             uid = $('#ptable').data('uid');
@@ -376,6 +368,8 @@ $(function () {
     var pTable = new Tabulator("#ptable", {
         importFormat: "json",
         layout: "fitColumns",
+        loader: false,
+        dataLoaderError: "This room has no products yet",
         columns: [
             { title: "id", field: "id", visible: false },
             { title: "uid", field: "site_uid_fk", visible: false },
