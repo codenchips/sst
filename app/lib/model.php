@@ -32,7 +32,8 @@ function ajax_get_project_sidenav() {
         if ($val->building) {
             $nav['locations'][$location][slugify($val->building)] = array(
                 'slug' => slugify($val->building),
-                'name' => $val->building
+                'name' => $val->building,
+                'uid' => $val->site_uid_pk
             );
         }
     }
@@ -44,7 +45,8 @@ function ajax_get_project_sidenav() {
         if ($floor) {
             $nav['locations'][$location][$building][$floor] = array(
                 'slug' => $floor,
-                'name' => $val->floor
+                'name' => $val->floor,
+                'uid' => $val->site_uid_pk
             );
         }
     }
@@ -57,7 +59,8 @@ function ajax_get_project_sidenav() {
         if ($room) {
             $nav['locations'][$location][$building][$floor][$room] = array(
                 'slug' => $room,
-                'name' => $val->room
+                'name' => $val->room,
+                'uid' => $val->site_uid_pk
             );
         }
     }

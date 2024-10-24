@@ -198,98 +198,108 @@ $(function () {
         ul.setAttribute('id', `${parentSlug}-ul`);
         ul.classList.add('location-list');
 
-        let addedFloorsHeading = false; // Flag to track if the "Floors and Rooms" heading has been added for this building
+        let addedFloorsHeading = false;
 
         for (const key in obj) {
             if (typeof obj[key] === 'object' && obj[key] !== null) {
                 const li = document.createElement('li');
                 const itemSlug = obj[key].slug || key;
+                const itemUid = obj[key].uid || '';  // Get the UID or fallback to an empty string
                 li.setAttribute('id', `${itemSlug}-li`);
                 li.classList.add('location-item');
 
                 if (level === 1) {
-                    // Static subheading for "Location"
                     const locationHeading = document.createElement('h2');
                     locationHeading.textContent = 'Location:';
                     li.appendChild(locationHeading);
 
-                    const h2 = document.createElement('span'); // Add location name after static heading
-                    h2.textContent = obj[key].name || key;
-                    li.appendChild(h2);
+                    const locationLink = document.createElement('a');
+                    locationLink.href = '#';
+                    locationLink.textContent = obj[key].name || key;
+                    locationLink.setAttribute('data-slug', itemSlug);
+                    locationLink.setAttribute('data-uid', itemUid);  // Add data-uid attribute
+                    li.appendChild(locationLink);
 
-                    // Add "Add a Building" link with data attributes next to location name
                     const addBuildingLink = document.createElement('a');
-                    addBuildingLink.href = '#'; // Link can point to a function or page
+                    addBuildingLink.href = '#';
                     addBuildingLink.textContent = 'Add a Building';
-                    addBuildingLink.setAttribute('data-location', parentSlug); // Location slug
-                    addBuildingLink.setAttribute('data-project', 'cov-uni'); // Example project slug
-                    li.appendChild(addBuildingLink); // Append link to the location list item
+                    addBuildingLink.setAttribute('data-location', parentSlug);
+                    addBuildingLink.setAttribute('data-project', 'cov-uni');
+                    li.appendChild(addBuildingLink);
                 } else if (level === 2) {
-                    // Static subheading for "Building"
                     const buildingHeading = document.createElement('h3');
                     buildingHeading.textContent = 'Building:';
                     li.appendChild(buildingHeading);
 
-                    const h3 = document.createElement('span'); // Add building name after static heading
-                    h3.textContent = obj[key].name || key;
-                    li.appendChild(h3);
+                    const buildingLink = document.createElement('a');
+                    buildingLink.href = '#';
+                    buildingLink.textContent = obj[key].name || key;
+                    buildingLink.setAttribute('data-slug', itemSlug);
+                    buildingLink.setAttribute('data-uid', itemUid);  // Add data-uid attribute
+                    li.appendChild(buildingLink);
 
-                    // Add "Add a Floor" link with data attributes
                     const addFloorLink = document.createElement('a');
-                    addFloorLink.href = '#'; // Link can point to a function or page
+                    addFloorLink.href = '#';
                     addFloorLink.textContent = 'Add a Floor';
-                    addFloorLink.setAttribute('data-location', parentSlug); // Location slug
-                    addFloorLink.setAttribute('data-project', 'cov-uni'); // Example project slug
-                    addFloorLink.classList.add('manage-link');
-                    addFloorLink.classList.add('add-floor');
-                    li.appendChild(addFloorLink); // Append link to the building list item
+                    addFloorLink.setAttribute('data-location', parentSlug);
+                    addFloorLink.setAttribute('data-project', 'cov-uni');
+                    addFloorLink.classList.add('manage-link', 'add-floor');
+                    li.appendChild(addFloorLink);
 
-                    ul.appendChild(li); // Append building list item to the UL
-                    addedFloorsHeading = false; // Reset the flag for each new building
+                    ul.appendChild(li);
+                    addedFloorsHeading = false;
                 } else if (level === 3) {
-                    // Add "Floors and Rooms" subheading only once for the building
                     if (!addedFloorsHeading) {
                         const floorsHeading = document.createElement('h4');
                         floorsHeading.textContent = 'Floors and Rooms:';
-                        ul.appendChild(floorsHeading); // Append heading directly to the UL
-                        addedFloorsHeading = true; // Set the flag after adding the subheading
+                        ul.appendChild(floorsHeading);
+                        addedFloorsHeading = true;
                     }
 
-                    // Create a new list item for the floor
+                    const floorLink = document.createElement('a');
+                    floorLink.href = '#';
+                    floorLink.textContent = obj[key].name || key;
+                    floorLink.setAttribute('data-slug', itemSlug);
+                    floorLink.setAttribute('data-uid', itemUid);  // Add data-uid attribute
+
                     const floorLi = document.createElement('li');
                     floorLi.setAttribute('id', `${itemSlug}-floor-li`);
                     floorLi.classList.add('floor-item');
-                    floorLi.textContent = obj[key].name || key; // Add floor name
-                    li.appendChild(floorLi); // Append floor to the list item
+                    floorLi.appendChild(floorLink);
+                    li.appendChild(floorLi);
 
-                    // Add "Add a Room" link with data attributes
                     const addRoomLink = document.createElement('a');
-                    addRoomLink.href = '#'; // Link can point to a function or page
+                    addRoomLink.href = '#';
                     addRoomLink.textContent = 'Add a Room';
-                    addRoomLink.setAttribute('data-location', parentSlug); // Location slug
-                    addRoomLink.setAttribute('data-building', itemSlug); // Building slug
-                    addRoomLink.setAttribute('data-floor', obj[key].slug); // Floor slug
-                    addRoomLink.classList.add('manage-link');
-                    addRoomLink.classList.add('add-room');
-                    floorLi.appendChild(addRoomLink); // Append link to the floor list item
+                    addRoomLink.setAttribute('data-location', parentSlug);
+                    addRoomLink.setAttribute('data-building', itemSlug);
+                    addRoomLink.setAttribute('data-floor', obj[key].slug);
+                    addRoomLink.classList.add('manage-link', 'add-room');
+                    floorLi.appendChild(addRoomLink);
                 }
 
-                // Add actual room name for deeper levels (4+)
                 if (obj[key].name && level > 3) {
+                    const roomLink = document.createElement('a');
+                    roomLink.href = '#';
+                    roomLink.textContent = obj[key].name;
+                    roomLink.setAttribute('data-slug', itemSlug);
+                    roomLink.setAttribute('data-uid', itemUid);  // Add data-uid attribute
+
                     const roomLi = document.createElement('li');
                     roomLi.setAttribute('id', `${itemSlug}-room-li`);
                     roomLi.classList.add('room-item');
-                    roomLi.textContent = obj[key].name; // Add room name
-                    li.appendChild(roomLi); // Append room as a list item
+                    roomLi.appendChild(roomLink);
+                    li.appendChild(roomLi);
                 }
 
-                // Recursively create sub-lists for nested objects, passing the next level
                 li.appendChild(createList(obj[key], itemSlug, level + 1));
                 ul.appendChild(li);
             }
         }
         return ul;
     }
+
+
 
 
     function updatepTable() {
