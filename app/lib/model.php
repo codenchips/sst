@@ -256,6 +256,26 @@ function ajax_add_floor() {
     exit($ret);
 }
 
+function ajax_add_room() {
+    global $pdo;
+
+    $uid = $_POST['modal_form_uid'];
+    $room = $_POST['modal_form_room'];
+
+    $q = $pdo->query("SELECT `project_slug`, `location`, `building`, `floor`
+                                    FROM survey_sites WHERE site_uid_pk = $uid LIMIT 1");
+    $data = $q->fetch(PDO::FETCH_ASSOC);
+
+    $q  = "INSERT INTO survey_sites
+            ( `project_slug`, `location`, `building`, `floor`, `room`, `created_on`)
+            VALUES ( :project_slug, :location, :building, :floor, '$room', CURRENT_TIMESTAMP)";
+
+    $pdo->prepare($q)->execute($data);
+    $ret = json_encode(['added' => $pdo->lastInsertId()]);
+
+    exit($ret);
+}
+
 
 function ajax_get_ptabledata() {
     global $pdo;

@@ -114,13 +114,22 @@ $(function () {
       console.log('Add floor  form submitted');
       const form = document.querySelector("#form-add-floor");
       sendData(form, 'add_floor');
-
       // update sidebar nav
       updateTableSideNav();
 
-
       UIkit.modal($('#add-floor')).hide();
   });
+
+    $("#form-add-room").off("submit").on("submit", function (e) {
+        e.preventDefault();
+        console.log('Add room submitted');
+        const form = document.querySelector("#form-add-room");
+        sendData(form, 'add_room');
+        // update sidebar nav
+        updateTableSideNav();
+
+        UIkit.modal($('#add-room')).hide();
+    });
 
 
   // add floor close. re-open the sidebar
