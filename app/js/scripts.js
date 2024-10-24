@@ -112,16 +112,12 @@ $(function () {
   $("#form-add-floor").off("submit").on("submit", function (e) {
       e.preventDefault();
       console.log('Add floor  form submitted');
-      const location = $("#form-add-floor input[name=modal_form_location]").val();
-      const building = $("#form-add-floor input[name=modal_form_building]").val();
-      const floor = $("#form-add-floor input[name=modal_form_floor]").val();
       const form = document.querySelector("#form-add-floor");
       sendData(form, 'add_floor');
+
       // update sidebar nav
-      var template = $("#tmp-new-floor").html();
-      var rendered = Mustache.render(template, { floor: floor, location: location, building: building });
-      $("#target-add-floor").append(rendered);
-      //$('.add-room-static').remove();
+      updateTableSideNav();
+
 
       UIkit.modal($('#add-floor')).hide();
   });
@@ -150,14 +146,14 @@ $(function () {
 
 
         $(".manage-link.add-room").on('click', function (e) {
-            const floor = $(this).data('floor');
-
-            $('input[name=modal_form_floor]').val(floor);
-
+            const uid = $(this).data('uid');
+            $('input[name=modal_form_uid]').val(uid);
             UIkit.modal($('#add-room')).show();
         });
 
         $(".manage-link.add-floor").on('click', function (e) {
+            const uid = $(this).data('uid');
+            $('input[name=modal_form_uid]').val(uid);
             UIkit.modal($('#add-floor')).show();
         });
     }
@@ -195,6 +191,7 @@ $(function () {
                 type: "post",
                 data: { project_slug: 'cov-uni' },
                 success: function (data, status, xhr) {
+                    $('#locations').empty();
                     const locationsDiv = document.getElementById('locations');
                     var jsonData = $.parseJSON(data);
                     const locationList = createList(jsonData.locations, jsonData.project_slug);
@@ -206,7 +203,7 @@ $(function () {
     }
 
 
-    function createList(obj, parentSlug, level = 1) {
+    function createList(obj, parentSlug, locationSlug = parentSlug, level = 1) {
         const ul = document.createElement('ul');
         ul.setAttribute('id', `${parentSlug}-ul`);
         ul.classList.add('location-list');
@@ -221,6 +218,7 @@ $(function () {
                 li.setAttribute('id', `${itemSlug}-li`);
                 li.classList.add('location-item');
 
+                // Level 1: Top-level locations (e.g., 'coventry-uni')
                 if (level === 1) {
                     const locationHeading = document.createElement('h2');
                     locationHeading.textContent = 'Location:';
@@ -236,9 +234,11 @@ $(function () {
                     const addBuildingLink = document.createElement('a');
                     addBuildingLink.href = '#';
                     addBuildingLink.textContent = 'Add a Building';
-                    addBuildingLink.setAttribute('data-location', parentSlug);
-                    addBuildingLink.setAttribute('data-project', 'cov-uni');
+                    addBuildingLink.setAttribute('data-location', itemSlug);  // Correct locationSlug now being used
+                    addBuildingLink.setAttribute('data-project', 'cov-uni');  // Project remains the same
                     li.appendChild(addBuildingLink);
+
+                    // Level 2: Buildings (e.g., 'science-block')
                 } else if (level === 2) {
                     const buildingHeading = document.createElement('h3');
                     buildingHeading.textContent = 'Building:';
@@ -254,13 +254,16 @@ $(function () {
                     const addFloorLink = document.createElement('a');
                     addFloorLink.href = '#';
                     addFloorLink.textContent = 'Add a Floor';
-                    addFloorLink.setAttribute('data-location', parentSlug);
-                    addFloorLink.setAttribute('data-project', 'cov-uni');
+                    addFloorLink.setAttribute('data-location', locationSlug);  // Correct locationSlug now being used (e.g., 'coventry-uni')
+                    addFloorLink.setAttribute('data-building', itemSlug);  // Correct buildingSlug (e.g., science-block)
+                    addFloorLink.setAttribute('data-uid', itemUid);  // Add data-uid for building
                     addFloorLink.classList.add('manage-link', 'add-floor');
                     li.appendChild(addFloorLink);
 
                     ul.appendChild(li);
                     addedFloorsHeading = false;
+
+                    // Level 3: Floors (e.g., 'ground-floor')
                 } else if (level === 3) {
                     if (!addedFloorsHeading) {
                         const floorsHeading = document.createElement('h4');
@@ -284,14 +287,15 @@ $(function () {
                     const addRoomLink = document.createElement('a');
                     addRoomLink.href = '#';
                     addRoomLink.textContent = 'Add a Room';
-                    addRoomLink.setAttribute('data-location', parentSlug);
-                    addRoomLink.setAttribute('data-building', itemSlug);
-                    addRoomLink.setAttribute('data-floor', obj[key].slug);
+                    addRoomLink.setAttribute('data-location', locationSlug);  // Correct locationSlug now being used (e.g., 'coventry-uni')
+                    addRoomLink.setAttribute('data-building', parentSlug);  // Correct buildingSlug now being used (e.g., 'science-block')
+                    addRoomLink.setAttribute('data-floor', obj[key].slug);  // Correct floor slug
+                    addRoomLink.setAttribute('data-uid', itemUid);  // Add data-uid for floor
                     addRoomLink.classList.add('manage-link', 'add-room');
                     floorLi.appendChild(addRoomLink);
-                }
 
-                if (obj[key].name && level > 3) {
+                    // Level 4+: Rooms (e.g., 'reception')
+                } else if (obj[key].name && level > 3) {
                     const roomLink = document.createElement('a');
                     roomLink.href = '#';
                     roomLink.textContent = obj[key].name;
@@ -305,12 +309,17 @@ $(function () {
                     li.appendChild(roomLi);
                 }
 
-                li.appendChild(createList(obj[key], itemSlug, level + 1));
+                li.appendChild(createList(obj[key], itemSlug, locationSlug, level + 1));  // Correct locationSlug passed
                 ul.appendChild(li);
             }
         }
         return ul;
     }
+
+
+
+
+
 
 
 

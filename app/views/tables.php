@@ -3,8 +3,8 @@
 $project_slug = 'cov-uni';
 
 $types = get_types();
-$location = get_location_for_project($project_slug);
-$buildings = get_buildings_for_location($project_slug, $location);
+//$location = get_location_for_project($project_slug);
+//$buildings = get_buildings_for_location($project_slug, $location);
 
 //vd($buildings, 1);
 ?>

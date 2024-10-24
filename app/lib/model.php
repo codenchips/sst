@@ -239,12 +239,16 @@ function ajax_add_special() {
 function ajax_add_floor() {
     global $pdo;
 
-    $data = $_POST;
+        $uid = $_POST['modal_form_uid'];
+        $floor = $_POST['modal_form_floor'];
 
-    $q  = "INSERT INTO survey_sites
-            (project_slug, location, building, floor, created_on)
-            VALUES
-            (:modal_form_project_slug, :modal_form_location, :modal_form_building, :modal_form_floor, CURRENT_TIMESTAMP)";
+        $q = $pdo->query("SELECT `project_slug`, `location`, `building`
+                                    FROM survey_sites WHERE site_uid_pk = $uid LIMIT 1");
+        $data = $q->fetch(PDO::FETCH_ASSOC);
+
+        $q  = "INSERT INTO survey_sites
+            ( `project_slug`, `location`, `building`, `floor`, `created_on`)
+            VALUES ( :project_slug, :location, :building, '$floor', CURRENT_TIMESTAMP)";
 
     $pdo->prepare($q)->execute($data);
     $ret = json_encode(['added' => $pdo->lastInsertId()]);

@@ -9,14 +9,12 @@
 
         <div id="locations"></div>
 
-
-
         <ul class="uk-nav uk-nav-primary side-menus" uk-nav>
             <li class="uk-nav-divider"></li>
             <li class="uk-parent">
                 <li class="uk-nav-header">Location</li>
                 <ul class="uk-nav-sub">
-                    <li><a href="#"><?php echo $location; ?></a></li>
+                    <li><a href="#">location name</a></li>
                 </ul>
             </li>
         </ul>
@@ -53,9 +51,7 @@
 
                 <div class="uk-width-1-1">
                     <input type="hidden" name="modal_form_project_slug" value="<?php echo $project_slug; ?>" />
-                    <input type="hidden" name="modal_form_location" value="<?php echo $location; ?>" />
-                    <input type="hidden" name="modal_form_building" value="<?php echo $buildings[0]; ?>" />
-                    <input type="hidden" name="modal_form_floor" value="" />
+                    <input type="hidden" name="modal_form_uid" value="" />
                     <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
                     <button id="form-submit-room" type="submit" class="uk-button uk-button-primary">Add Room</button>
                 </div>
@@ -97,8 +93,7 @@
 
                 <div class="uk-width-1-1">
                     <input type="hidden" name="modal_form_project_slug" value="<?php echo $project_slug; ?>" />
-                    <input type="hidden" name="modal_form_location" value="<?php echo $location; ?>" />
-                    <input type="hidden" name="modal_form_building" value="<?php echo $buildings[0]; ?>" />
+                    <input type="hidden" name="modal_form_uid" value="" />
                     <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
                     <button id="form-submit-floor" type="submit" class="uk-button uk-button-primary">Add Floor</button>
                 </div>
