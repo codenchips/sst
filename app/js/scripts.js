@@ -136,6 +136,19 @@ $(function () {
 
 
     function bindNavClicks() {
+
+        $('#locations .room-item a').off('click').on('click', function(e) {
+
+            uid = $(this).data('uid');
+            // update the uid on the ptable for ref
+            $('input#uid').val(uid);
+            // also add in the room name above the ptable somewhere
+
+            console.log('show table for id: ' + uid );
+            updatepTable( uid );
+        });
+
+
         $(".manage-link.add-room").on('click', function (e) {
             const floor = $(this).data('floor');
 
@@ -161,7 +174,7 @@ $(function () {
           throw new Error(`Response status: ${response.status}`);
       }
       console.log(await response.json());
-      updatepTable();
+      updatepTable($('input#uid').val());
     } catch (e) {
       console.error(e);
     }
@@ -302,13 +315,24 @@ $(function () {
 
 
 
-    function updatepTable() {
-        if ($('#ptable').length) {
+
+
+
+    function updatepTable(  uid = false ) {
+        if (uid === false) {
+            uid = $('#ptable').data('uid');
+        }
+        if ($('#ptable').length && uid) {
             $.ajax("/api/get_ptabledata", {
                 type: "post",
+                data: { uid: uid },
                 success: function (data, status, xhr) {
                     //$("#debug").html(data);
-                    pTable.setData(data);
+                    if (data) {
+                        pTable.setData(data);
+                        // set the uid for ref by others
+                        $('input#uid').val(uid);
+                    }
                 }
             });
         }
@@ -336,6 +360,7 @@ $(function () {
         layout: "fitColumns",
         columns: [
             { title: "id", field: "id", visible: false },
+            { title: "uid", field: "site_uid_fk", visible: false },
             { title: "product_slug", field: "product_slug", visible: false },
             { title: "SKU", field: "sku", width: 150 },
             { title: "Product", field: "product_name", hozAlign: "left" },
@@ -352,7 +377,7 @@ $(function () {
                 cellClick:  function(e, cell) { increaseQty(cell.getRow().getData().id); }
                 },
             { headerSort: false, formatter: iconMinus, width: 30, hozAlign:"center",
-                cellClick: function(e, cell) { decreaseQty(cell.getRow().getData().sku); }
+                cellClick: function(e, cell) { decreaseQty(cell.getRow().getData().sku, cell.getRow().getData().site_uid_fk); }
                 },
             { visible: false, headerSort: false, formatter: iconX, width: 30, hozAlign:"center",
                 cellClick: function(e, cell) { removeByID(cell.getRow().getData().sku); }
@@ -363,12 +388,13 @@ $(function () {
     pTable.on("cellEdited", function(cell){
         //cell - cell component
         const sku = cell.getRow().getData().sku;
+        const uid = cell.getRow().getData().site_uid_fk;
         const ref = cell.getRow().getData().ref
         //console.log('sku: '+sku+' ref: '+ref);
         if (sku != "" && ref != "") {
             $.ajax("/api/edit_ref", {
                 type: "post",
-                data: {sku: sku, ref: ref},
+                data: {sku: sku, ref: ref, uid: uid},
                 success: function (data, status, xhr) {
                     var res = $.parseJSON(data);
                     if (res.updated != 0) {
@@ -386,19 +412,20 @@ $(function () {
             success: function (data, status, xhr) {
                 var res = $.parseJSON(data);
                 if (res.added != 0) {
-                    updatepTable();
+                    updatepTable($('input#uid').val());
                 }
             }
         });
     }
-    function decreaseQty(sku) {
+    function decreaseQty(sku, uid) {
+        console.log('dec: '+uid);
         $.ajax("/api/decrease_qty", {
             type: "post",
-            data: {sku: sku},
+            data: {sku: sku, uid: uid},
             success: function (data, status, xhr) {
                 var res = $.parseJSON(data);
                 if (res.descreased != 0) {
-                    updatepTable();
+                    updatepTable(uid);
                 }
             }
         });

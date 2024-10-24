@@ -210,9 +210,9 @@ function ajax_add_product() {
     $data['product_name'] = get_product_name_by_slug($_POST['form_product']);
 
     $q  = "INSERT INTO survey_tables
-            (brand, `type`, product_slug, product_name, sku, custom, created_on)
+            (site_uid_fk, brand, `type`, product_slug, product_name, sku, custom, created_on)
             VALUES
-            (:form_brand, :form_type, :form_product, :product_name, :form_sku, :form_custom, CURRENT_TIMESTAMP)";
+            (:uid, :form_brand, :form_type, :form_product, :product_name, :form_sku, :form_custom, CURRENT_TIMESTAMP)";
 
     $pdo->prepare($q)->execute($data);
     $ret = json_encode(['added' => $pdo->lastInsertId()]);
@@ -226,9 +226,9 @@ function ajax_add_special() {
     $data = $_POST;
 
     $q  = "INSERT INTO survey_tables
-            (brand, `type`, product_name, sku, custom, created_on)
+            (site_uid_fk, brand, `type`, product_name, sku, custom, created_on)
             VALUES
-            (:form_custom_brand, 'special', :form_custom_product_name, :form_custom_sku, :form_custom, CURRENT_TIMESTAMP)";
+            (:uid, :form_custom_brand, 'special', :form_custom_product_name, :form_custom_sku, :form_custom, CURRENT_TIMESTAMP)";
 
     $pdo->prepare($q)->execute($data);
     $ret = json_encode(['added' => $pdo->lastInsertId()]);
@@ -255,10 +255,12 @@ function ajax_add_floor() {
 
 function ajax_get_ptabledata() {
     global $pdo;
+    $uid = $_POST['uid'];
 
     $q = $pdo->query("SELECT COUNT(sku) as qty,
-                        id, sku, ref, product_slug, product_name, `position`    
+                        id, site_uid_fk, sku, ref, product_slug, product_name, `position`    
                         FROM survey_tables
+                        WHERE site_uid_fk = $uid 
                         GROUP BY sku");
 
     $res = $q->fetchAll();
@@ -270,12 +272,12 @@ function ajax_increase_qty() {
     global $pdo;
 
     $id = $_POST['id'];
-    $q = $pdo->query("SELECT `brand`, `type`, `range`, product_slug, product_name, sku, ref, custom, building, floor FROM survey_tables WHERE id = $id");
+    $q = $pdo->query("SELECT `site_uid_fk`, `brand`, `type`, `range`, product_slug, product_name, sku, ref, custom, building, floor FROM survey_tables WHERE id = $id");
     $data = $q->fetch(PDO::FETCH_ASSOC);
 
     $q  = "INSERT INTO survey_tables
-            (brand, `type`, `range`, product_slug, product_name, sku, ref, custom, building, floor, created_On)
-            VALUES (:brand, :type, :range, :product_slug, :product_name, :sku, :ref, :custom, :building, :floor, CURRENT_TIMESTAMP)";
+            (site_uid_fk, brand, `type`, `range`, product_slug, product_name, sku, ref, custom, building, floor, created_On)
+            VALUES (:site_uid_fk, :brand, :type, :range, :product_slug, :product_name, :sku, :ref, :custom, :building, :floor, CURRENT_TIMESTAMP)";
 
     try {
         $pdo->prepare($q)->execute($data);
@@ -290,7 +292,13 @@ function ajax_decrease_qty() {
     global $pdo;
 
     $sku = $_POST['sku'];
-    $q = $pdo->query("SELECT id FROM survey_tables WHERE sku = '$sku' ORDER BY created_on DESC LIMIT 1");
+    $uid = $_POST['uid'];
+
+    $q = $pdo->query("SELECT id FROM survey_tables 
+                              WHERE sku = '$sku'  
+                              AND site_uid_fk = $uid 
+                              ORDER BY created_on DESC 
+                              LIMIT 1");
     $delete_id = $q->fetch(PDO::FETCH_COLUMN, 0);
     if ($delete_id) {
         $pdo->prepare("DELETE FROM survey_tables WHERE id=?")->execute([$delete_id]);
@@ -306,10 +314,11 @@ function ajax_edit_ref() {
 
     $data = [
         'sku' => $_POST['sku'],
-        'ref' => $_POST['ref']
+        'ref' => $_POST['ref'],
+        'uid' => $_POST['uid']
     ];
 
-    $sql = "UPDATE survey_tables SET ref=:ref WHERE sku=:sku";
+    $sql = "UPDATE survey_tables SET ref=:ref WHERE sku=:sku AND site_uid_fk=:uid";
     $pdo->prepare($sql)->execute($data);
 }
 

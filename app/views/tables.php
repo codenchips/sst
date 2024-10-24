@@ -71,6 +71,7 @@ $buildings = get_buildings_for_location($project_slug, $location);
             <button id="form-submit" type="submit" class="uk-button uk-button-primary uk-width-1-3">Add</button>
 
             <button type="button" uk-toggle="target: #add-special" class="uk-button uk-button-primary uk-width-1-3">Add Special</button>
+            <input name="uid" id="uid" value="" />
         </div>
     </div>
 
@@ -138,6 +139,7 @@ $buildings = get_buildings_for_location($project_slug, $location);
 
             <div class="uk-width-1-1">
                 <input type="hidden" name="form_custom" value="1" />
+                <input type="hidden" name="uid" id="uid" value="" />
                 <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
                 <button id="form-submit-special" type="submit" class="uk-button uk-button-primary">Add</button>
             </div>
@@ -149,19 +151,6 @@ $buildings = get_buildings_for_location($project_slug, $location);
 
 
 <!-- Templates -->
-<script id="tmp-new-floor" type="x-tmpl-mustache">
-<li class="smaller">
-    <a href="#">{{floor}}</a>
-</li>
-<li><a  data-location="{{location}}"
-        data-building="{{building}}"
-        data-floor="{{floor_slug}}"
-        class="manage-link add-room"
-        href="#">
-            <span uk-icon="icon: plus; ratio: 1"></span> Add Room</a></li>
-
-</script>
-
 <script id="tmp-select-product-type" type="x-tmpl-mustache">
 <select required id="form_type" name="form_type" class="uk-select select-product-type"
 oninvalid="this.setCustomValidity('Please select a product type.')"
