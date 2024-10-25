@@ -28,3 +28,8 @@ body {
   padding-top: 10px;
   font-size: 1.1rem;
 }
+
+.form-actions {
+  display: flex;
+  flex-direction: row-reverse; /* Reverse the elements inside */
+}

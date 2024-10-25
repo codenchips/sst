@@ -263,7 +263,7 @@ function ajax_add_room() {
     $room = $_POST['modal_form_room'];
 
     $q = $pdo->query("SELECT `project_slug`, `location`, `building`, `floor`
-                                    FROM survey_sites WHERE site_uid_pk = $uid LIMIT 1");
+                                    FROM survey_sites WHERE site_uid_pk = '$uid' LIMIT 1");
     $data = $q->fetch(PDO::FETCH_ASSOC);
 
     $q  = "INSERT INTO survey_sites

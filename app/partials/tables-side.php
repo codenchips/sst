@@ -2,7 +2,7 @@
 
 
 <!-- rooms nav -->
-<div id="tables-side" uk-offcanvas="mode: reveal; overlay: true">
+<div id="tables-side" uk-offcanvas="mode: slide; overlay: true">
     <div class="uk-offcanvas-bar uk-flex uk-flex-column">
 
         <h4>Manage Project</h4>
@@ -105,8 +105,11 @@
                 <div class="uk-width-1-1">
                     <input type="hidden" name="modal_form_project_slug" value="<?php echo $project_slug; ?>" />
                     <input type="hidden" name="modal_form_uid" value="" />
-                    <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
-                    <button id="form-submit-room" type="submit" class="uk-button uk-button-primary">Add Room</button>
+                    <div class="form-actions">
+                        <button id="form-submit-room" type="submit" class="uk-button uk-button-primary">Add Room</button>
+                        <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
+
+                    </div>
                 </div>
             </div>
         </form>
