@@ -265,7 +265,6 @@ $(function () {
                     addFloorLink.textContent = 'Add a Floor';
                     addFloorLink.setAttribute('data-location', locationSlug);  // Correct locationSlug now being used (e.g., 'coventry-uni')
                     addFloorLink.setAttribute('data-building', itemSlug);  // Correct buildingSlug (e.g., science-block)
-                    addFloorLink.setAttribute('data-uid', itemUid);  // Add data-uid for building
                     addFloorLink.classList.add('manage-link', 'add-floor');
                     li.appendChild(addFloorLink);
 
@@ -291,6 +290,15 @@ $(function () {
                     floorLi.setAttribute('id', `${itemSlug}-floor-li`);
                     floorLi.classList.add('floor-item');
                     floorLi.appendChild(floorLink);
+
+                    // Add "Remove" link for the floor
+                    const removeFloorLink = document.createElement('a');
+                    removeFloorLink.href = '#';
+                    removeFloorLink.textContent = 'Remove';
+                    removeFloorLink.setAttribute('data-uid', itemUid);  // Add data-uid attribute for removal
+                    removeFloorLink.classList.add('remove-link');
+                    floorLi.appendChild(removeFloorLink);
+
                     li.appendChild(floorLi);
 
                     const addRoomLink = document.createElement('a');
@@ -299,7 +307,6 @@ $(function () {
                     addRoomLink.setAttribute('data-location', locationSlug);  // Correct locationSlug now being used (e.g., 'coventry-uni')
                     addRoomLink.setAttribute('data-building', parentSlug);  // Correct buildingSlug now being used (e.g., 'science-block')
                     addRoomLink.setAttribute('data-floor', obj[key].slug);  // Correct floor slug
-                    addRoomLink.setAttribute('data-uid', itemUid);  // Add data-uid for floor
                     addRoomLink.classList.add('manage-link', 'add-room');
                     floorLi.appendChild(addRoomLink);
 
@@ -315,6 +322,15 @@ $(function () {
                     roomLi.setAttribute('id', `${itemSlug}-room-li`);
                     roomLi.classList.add('room-item');
                     roomLi.appendChild(roomLink);
+
+                    // Add "Remove" link for the room
+                    const removeRoomLink = document.createElement('a');
+                    removeRoomLink.href = '#';
+                    removeRoomLink.textContent = 'Remove';
+                    removeRoomLink.setAttribute('data-uid', itemUid);  // Add data-uid attribute for removal
+                    removeRoomLink.classList.add('remove-link');
+                    roomLi.appendChild(removeRoomLink);
+
                     li.appendChild(roomLi);
                 }
 
@@ -324,6 +340,7 @@ $(function () {
         }
         return ul;
     }
+
 
 
 
@@ -338,11 +355,15 @@ $(function () {
                 data: { uid: uid },
                 success: function (data, status, xhr) {
                     //$("#debug").html(data);
+                    console.log(data);
                     if (data) {
                         pTable.setData(data);
                         // set the uid for ref by others
                         $('input#uid').val(uid);
+                    } else {
+                        pTable.setData([]);
                     }
+
                 }
             });
         }
@@ -369,7 +390,7 @@ $(function () {
         importFormat: "json",
         layout: "fitColumns",
         loader: false,
-        dataLoaderError: "This room has no products yet",
+        dataLoaderError: "There was an error loading the data",
         columns: [
             { title: "id", field: "id", visible: false },
             { title: "uid", field: "site_uid_fk", visible: false },

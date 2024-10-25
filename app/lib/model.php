@@ -288,6 +288,12 @@ function ajax_get_ptabledata() {
                         GROUP BY sku");
 
     $res = $q->fetchAll();
+    if (count($res) < 1) {
+        $res[0] = array();
+    }
+
+    //vd($res, 1);
+
 
     return(return_json($res));
 }
