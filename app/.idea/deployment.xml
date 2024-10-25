@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData">
+  <component name="PublishConfigData" autoUpload="On explicit save action" serverName="sst">
     <serverData>
       <paths name="Starlite">
         <serverdata>
@@ -65,6 +65,13 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="sst">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="vue-wauth">
         <serverdata>
           <mappings>
@@ -87,5 +94,6 @@
         </serverdata>
       </paths>
     </serverData>
+    <option name="myAutoUpload" value="ON_EXPLICIT_SAVE" />
   </component>
 </project>

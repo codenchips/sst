@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 
 <?php require('config/database.php'); ?>
-<?php require('lib/model.php');
-
-
-?>
+<?php require('lib/model.php'); ?>
 <?php require('lib/helpers.php'); ?>
-<?php require('config/routes.php'); ?>
+<?php require('config/routes.php');
+?>
 
 
 <html lang="en">

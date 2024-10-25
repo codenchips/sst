@@ -9,18 +9,6 @@
 
         <div id="locations"></div>
 
-        <ul class="uk-nav uk-nav-primary side-menus" uk-nav>
-            <li class="uk-nav-divider"></li>
-            <li class="uk-parent">
-                <li class="uk-nav-header">Location</li>
-                <ul class="uk-nav-sub">
-                    <li><a href="#">location name</a></li>
-                </ul>
-            </li>
-        </ul>
-
-
-
     </div>
 </div>
 <!-- end rooms nav -->

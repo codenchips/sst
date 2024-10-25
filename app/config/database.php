@@ -1,8 +1,19 @@
 <?php
+
+    $host = $_SERVER['HTTP_HOST'];
+
     $servername = "localhost";
-    $username = "dev";
-    $password = "";
-    $database = 'tamlite_local';
+
+    if (stristr($host, '.test')) {
+        $username = "dev";
+        $password = "";
+        $database = 'tamlite_local';
+
+    } else {
+        $username = 'tamli342_admin';
+        $password = 'zd5w4tstibk8';
+        $database = 'tamli342_tamlite_test';
+    }
 
     $dsn = "mysql:host=$servername;dbname=$database;charset=UTF8";
 

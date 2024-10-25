@@ -1,5 +1,4 @@
 <?php
-
 $project_slug = 'cov-uni';
 
 $types = get_types();
@@ -11,7 +10,10 @@ $types = get_types();
 
 <?php include ('./partials/tables-side.php'); ?>
 
+<div class="uk-width-1-1 uk-margin">
 <button class="uk-button uk-button-default" type="button" uk-toggle="target: #tables-side">Manage Project</button>
+
+<div class="uk-width-1-1 uk-margin">
 
 <form id="product-select-form">
 
@@ -65,13 +67,17 @@ $types = get_types();
             </div>
         </div>
 
+        <div class="uk-width-1-3">
+            <button id="form-submit" type="submit" class="uk-button uk-button-primary uk-width-1-1">Add</button>
+        </div>
+
+        <div class="uk-width-1-3">
+            <button type="button" uk-toggle="target: #add-special" class="uk-button uk-button-primary uk-width-1-1">Add Special</button>
+        </div>
 
         <div class="uk-width-1-1 uk-margin">
             <input type="hidden" name="form_custom" value="0" />
-            <button id="form-submit" type="submit" class="uk-button uk-button-primary uk-width-1-3">Add</button>
-
-            <button type="button" uk-toggle="target: #add-special" class="uk-button uk-button-primary uk-width-1-3">Add Special</button>
-            <input name="uid" id="uid" value="" />
+            <input type="hidden" name="uid" id="uid" value="" />
         </div>
     </div>
 

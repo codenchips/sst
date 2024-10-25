@@ -235,7 +235,10 @@ $(function () {
         if ($('#tables-side').length) {
             $.ajax("/api/get_project_sidenav", {
                 type: "post",
-                data: { project_slug: 'cov-uni' },
+                data: {
+                    project_slug: 'cov-uni',
+                    method: 'get_project_sidenav'
+                },
                 success: function (data, status, xhr) {
                     $('#locations').empty();
                     const locationsDiv = document.getElementById('locations');
