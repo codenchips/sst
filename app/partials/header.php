@@ -1,7 +1,7 @@
-<div class="uk-text-center uk-margin" uk-grid>
+<div id="header-bar" class="uk-text-center uk-margin" uk-grid>
 
-    <div class="uk-width-1-1">
-        <a href="/">Home</a> | <a href="/tables">Tables</a> | <a href="/about">About</a>
+    <div id="header-links" class="uk-width-1-1">
+        <a href="/tables">Table Mode</a>
     </div>
 
 </div>

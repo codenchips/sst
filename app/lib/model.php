@@ -277,6 +277,56 @@ function ajax_add_room() {
 }
 
 
+function ajax_remove_floor() {
+    global $pdo;
+
+    $uid = $_POST['modal_form_uid'];
+
+    $q = $pdo->query("SELECT `project_slug`, `location`, `building`, `floor`
+                                    FROM survey_sites WHERE site_uid_pk = $uid LIMIT 1");
+    $data = $q->fetch(PDO::FETCH_OBJ);
+
+    // get all uids from sites to be deleted from both sites and tables
+    // that match this project, location and building
+    $q = $pdo->query("SELECT `site_uid_pk` FROM survey_sites WHERE 
+                      `project_slug` = '$data->project_slug' AND 
+                      `location` = '$data->location' AND
+                      `building` = '$data->building' AND 
+                      `floor` = '$data->floor'");
+    $data = $q->fetchAll(PDO::FETCH_ASSOC);
+    $idsStr = "(";
+    foreach ($data as $row) {
+        $idsStr .= $row['site_uid_pk'].',';
+    }
+    $idsStr = trim($idsStr, ',');
+    $idsStr .= ")";
+
+    if ($uid) {
+        $pdo->query("DELETE FROM survey_tables WHERE site_uid_fk IN $idsStr")->execute();
+        $pdo->query("DELETE FROM survey_sites WHERE site_uid_pk IN $idsStr")->execute();
+        $ret = json_encode(['deleted' => 1]);
+    } else {
+        $ret = json_encode(['deleted' => 0]);
+    }
+    exit($ret);
+}
+
+function ajax_remove_room() {
+    global $pdo;
+
+    $uid = $_POST['modal_form_uid'];
+
+    if ($uid) {
+        $pdo->prepare("DELETE FROM survey_tables WHERE site_uid_fk=?")->execute([$uid]);
+        $pdo->prepare("DELETE FROM survey_sites WHERE site_uid_pk=?")->execute([$uid]);
+        $ret = json_encode(['deleted' => 1]);
+    } else {
+        $ret = json_encode(['deleted' => 0]);
+    }
+    exit($ret);
+}
+
+
 function ajax_get_ptabledata() {
     global $pdo;
     $uid = $_POST['uid'];

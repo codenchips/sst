@@ -23,8 +23,61 @@
 
     </div>
 </div>
-
 <!-- end rooms nav -->
+
+
+
+<!-- remove floor/ room modal -->
+<div id="remove-floor" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical uk-modal-body">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <form id="form-remove-floor">
+            <div class="uk-text-center" uk-grid>
+                <div class="uk-width-1-1">
+                    <h3>Remove Floor</h3>
+                </div>
+
+                <div class="uk-width-1-1">
+                    <h4>This will delete this floor.</h4>
+                    <p>This will remove all rooms on this floor and all products assigned to those rooms.</p>
+                </div>
+
+                <div class="uk-width-1-1">
+                    <input type="hidden" name="modal_form_project_slug" value="<?php echo $project_slug; ?>" />
+                    <input type="hidden" name="modal_form_uid" value="" />
+                    <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
+                    <button id="form-submit-room" type="submit" class="uk-button uk-button-primary">Remove</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- remove floor/ room modal -->
+<div id="remove-room" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical uk-modal-body">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <form id="form-remove-room">
+            <div class="uk-text-center" uk-grid>
+                <div class="uk-width-1-1">
+                    <h3>Remove Room</h3>
+                </div>
+
+                <div class="uk-width-1-1">
+                    <h4>This will delete this room.</h4>
+                    <p>This will remove all rooms and all products assigned to this room.</p>
+                </div>
+
+                <div class="uk-width-1-1">
+                    <input type="hidden" name="modal_form_project_slug" value="<?php echo $project_slug; ?>" />
+                    <input type="hidden" name="modal_form_uid" value="" />
+                    <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
+                    <button id="form-submit-room" type="submit" class="uk-button uk-button-primary">Remove</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 
 <!-- add room modal -->

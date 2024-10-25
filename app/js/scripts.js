@@ -131,13 +131,37 @@ $(function () {
         UIkit.modal($('#add-room')).hide();
     });
 
+    $("#form-remove-floor").off("submit").on("submit", function (e) {
+        e.preventDefault();
+        console.log('Remove floor submitted');
+        const form = document.querySelector("#form-remove-floor");
+        sendData(form, 'remove_floor');
+        // update sidebar nav
+        updateTableSideNav();
 
-  // add floor close. re-open the sidebar
-  $("#add-floor, #add-room").on('hidden', function (e) {
-      setTimeout(function() {
-          UIkit.offcanvas($('#tables-side')).show();
-        },100);
-  });
+        UIkit.modal($('#remove-floor')).hide();
+        UIkit.offcanvas($('#tables-side')).show();
+    });
+    $("#form-remove-room").off("submit").on("submit", function (e) {
+        e.preventDefault();
+        console.log('Remove room submitted');
+        const form = document.querySelector("#form-remove-room");
+        sendData(form, 'remove_room');
+        // update sidebar nav
+        updateTableSideNav();
+
+        UIkit.modal($('#remove-room')).hide();
+        UIkit.offcanvas($('#tables-side')).show();
+    });
+
+
+
+    // add floor close. re-open the sidebar
+    $("#add-floor,#add-room,#form-remove-room,#form-remove-floor").on('hidden',function(e) {
+        setTimeout(function() {
+            UIkit.offcanvas($('#tables-side')).show();
+        },200);
+    });
 
 
     function bindNavClicks() {
@@ -165,6 +189,19 @@ $(function () {
             $('input[name=modal_form_uid]').val(uid);
             UIkit.modal($('#add-floor')).show();
         });
+
+        $("#locations .remove-link.remove-floor").on('click', function (e) {
+            const uid = $(this).data('uid');
+            $('input[name=modal_form_uid]').val(uid);
+            UIkit.modal($('#remove-floor')).show();
+        });
+
+        $("#locations .remove-link.remove-room").on('click', function (e) {
+            const uid = $(this).data('uid');
+            $('input[name=modal_form_uid]').val(uid);
+            UIkit.modal($('#remove-room')).show();
+        });
+
     }
 
 
@@ -296,7 +333,7 @@ $(function () {
                     removeFloorLink.href = '#';
                     removeFloorLink.textContent = 'Remove';
                     removeFloorLink.setAttribute('data-uid', itemUid);  // Add data-uid attribute for removal
-                    removeFloorLink.classList.add('remove-link');
+                    removeFloorLink.classList.add('remove-link', 'remove-floor');
                     floorLi.appendChild(removeFloorLink);
 
                     li.appendChild(floorLi);
@@ -328,7 +365,7 @@ $(function () {
                     removeRoomLink.href = '#';
                     removeRoomLink.textContent = 'Remove';
                     removeRoomLink.setAttribute('data-uid', itemUid);  // Add data-uid attribute for removal
-                    removeRoomLink.classList.add('remove-link');
+                    removeRoomLink.classList.add('remove-link', 'remove-room');
                     roomLi.appendChild(removeRoomLink);
 
                     li.appendChild(roomLi);
