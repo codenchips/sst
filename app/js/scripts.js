@@ -266,7 +266,7 @@ $(function () {
 
                 if (level === 1) {
                     const locationHeading = document.createElement('h2');
-                    locationHeading.textContent = 'Location:';
+                    locationHeading.textContent = 'Location';
                     li.appendChild(locationHeading);
 
                     const locationLink = document.createElement('a');
@@ -278,14 +278,14 @@ $(function () {
 
                     const addBuildingLink = document.createElement('a');
                     addBuildingLink.href = '#';
-                    addBuildingLink.textContent = 'Add a Building';
+                    addBuildingLink.innerHTML = '<i class="fa-solid fa-circle-plus"></i>';
                     addBuildingLink.setAttribute('data-location', itemSlug);
                     addBuildingLink.setAttribute('data-project', 'cov-uni');
-                    li.appendChild(addBuildingLink);
+                    //li.appendChild(addBuildingLink);
 
                 } else if (level === 2) {
                     const buildingHeading = document.createElement('h3');
-                    buildingHeading.textContent = 'Building:';
+                    buildingHeading.textContent = 'Building';
                     li.appendChild(buildingHeading);
 
                     const buildingLink = document.createElement('a');
@@ -295,23 +295,24 @@ $(function () {
                     buildingLink.setAttribute('data-uid', itemUid);
                     li.appendChild(buildingLink);
 
-                    const addFloorLink = document.createElement('a');
-                    addFloorLink.href = '#';
-                    addFloorLink.textContent = 'Add a Floor';
-                    addFloorLink.setAttribute('data-location', locationSlug);
-                    addFloorLink.setAttribute('data-building', itemSlug);
-                    addFloorLink.setAttribute('data-uid', itemUid);  // Added data-uid for parent building
-                    addFloorLink.classList.add('manage-link', 'add-floor');
-                    li.appendChild(addFloorLink);
-
                     ul.appendChild(li);
                     addedFloorsHeading = false;
 
                 } else if (level === 3) {
                     if (!addedFloorsHeading) {
                         const floorsHeading = document.createElement('h4');
-                        floorsHeading.textContent = 'Floors and Rooms:';
+                        floorsHeading.textContent = 'Floors and Rooms';
                         ul.appendChild(floorsHeading);
+
+                        const addFloorLink = document.createElement('a');
+                        addFloorLink.href = '#';
+                        addFloorLink.innerHTML = '<i class="fa-solid fa-circle-plus"></i>';
+                        addFloorLink.setAttribute('data-location', locationSlug);
+                        addFloorLink.setAttribute('data-building', itemSlug);
+                        addFloorLink.setAttribute('data-uid', itemUid);  // Added data-uid for parent building
+                        addFloorLink.classList.add('manage-link', 'add-floor');
+                        floorsHeading.appendChild(addFloorLink);
+
                         addedFloorsHeading = true;
                     }
 
@@ -328,7 +329,7 @@ $(function () {
 
                     const removeFloorLink = document.createElement('a');
                     removeFloorLink.href = '#';
-                    removeFloorLink.textContent = 'Remove';
+                    removeFloorLink.innerHTML = '<i class="fa-solid fa-circle-minus"></i>';
                     removeFloorLink.setAttribute('data-uid', itemUid);
                     removeFloorLink.classList.add('remove-link', 'remove-floor');
                     floorLi.appendChild(removeFloorLink);
@@ -337,7 +338,7 @@ $(function () {
 
                     const addRoomLink = document.createElement('a');
                     addRoomLink.href = '#';
-                    addRoomLink.textContent = 'Add a Room';
+                    addRoomLink.innerHTML = '<i class="fa-solid fa-circle-plus"></i>';
                     addRoomLink.setAttribute('data-location', locationSlug);
                     addRoomLink.setAttribute('data-building', parentSlug);
                     addRoomLink.setAttribute('data-floor', obj[key].slug);
@@ -359,7 +360,8 @@ $(function () {
 
                     const removeRoomLink = document.createElement('a');
                     removeRoomLink.href = '#';
-                    removeRoomLink.textContent = 'Remove';
+                    //removeRoomLink.textContent = ' [-] &copy;';
+                    removeRoomLink.innerHTML = '<i class="fa-solid fa-circle-minus"></i>';
                     removeRoomLink.setAttribute('data-uid', itemUid);
                     removeRoomLink.classList.add('remove-link', 'remove-room');
                     roomLi.appendChild(removeRoomLink);

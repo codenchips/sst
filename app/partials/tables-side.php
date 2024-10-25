@@ -141,7 +141,7 @@
 
                 <div class="uk-width-1-1 uk-text-left">
                     <label>Add a Floorplan</label>
-                    <input id="modal_form_floorplan"
+                    <input disabled id="modal_form_floorplan"
                            name="modal_form_floorplan"
                            type="file"
                            class="uk-input" />

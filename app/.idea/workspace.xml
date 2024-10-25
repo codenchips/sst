@@ -24,23 +24,23 @@
     <select />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.3880597">
+    <splitter split-orientation="horizontal" split-proportion="0.50852877">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="tables.php" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/views/tables.php">
               <provider selected="true" editor-type-id="text-editor">
-                <state>
-                  <caret line="6" column="2" selection-start-line="6" selection-start-column="2" selection-end-line="6" selection-end-column="2" />
+                <state relative-caret-position="281">
+                  <caret line="115" column="48" selection-start-line="115" selection-start-column="48" selection-end-line="115" selection-end-column="48" />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="tables-side.php" pinned="false" current-in-tab="false">
+          <file leaf-file-name="tables-side.php" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/partials/tables-side.php">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="594">
-                  <caret line="108" column="121" selection-start-line="108" selection-start-column="121" selection-end-line="108" selection-end-column="121" />
+                <state relative-caret-position="282">
+                  <caret line="143" column="36" selection-start-line="143" selection-start-column="36" selection-end-line="143" selection-end-column="36" />
                 </state>
               </provider>
             </entry>
@@ -54,7 +54,7 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="model.php" pinned="false" current-in-tab="true">
+          <file leaf-file-name="model.php" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/lib/model.php">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="480">
@@ -67,20 +67,20 @@
       </split-first>
       <split-second>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="scripts.js" pinned="false" current-in-tab="true">
+          <file leaf-file-name="scripts.js" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/js/scripts.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="502">
-                  <caret line="367" column="17" selection-start-line="367" selection-start-column="17" selection-end-line="367" selection-end-column="17" />
+                <state relative-caret-position="154">
+                  <caret line="268" column="59" selection-start-line="268" selection-start-column="59" selection-end-line="268" selection-end-column="59" />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="app.scss" pinned="false" current-in-tab="false">
+          <file leaf-file-name="app.scss" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/scss/app.scss">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="695">
-                  <caret line="46" column="18" lean-forward="true" selection-start-line="46" selection-start-column="18" selection-end-line="46" selection-end-column="18" />
+                <state relative-caret-position="200">
+                  <caret line="35" lean-forward="true" selection-start-line="35" selection-end-line="35" />
                 </state>
               </provider>
             </entry>
@@ -108,6 +108,9 @@
       <find>add-ro</find>
       <find>add_floo</find>
       <find>ptab</find>
+      <find>&amp;copy</find>
+      <find>&amp;</find>
+      <find>floorpl</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -118,10 +121,10 @@
         <option value="$PROJECT_DIR$/lib/helpers.php" />
         <option value="$PROJECT_DIR$/views/tables.php" />
         <option value="$PROJECT_DIR$/partials/header.php" />
-        <option value="$PROJECT_DIR$/scss/app.scss" />
-        <option value="$PROJECT_DIR$/partials/tables-side.php" />
         <option value="$PROJECT_DIR$/lib/model.php" />
         <option value="$PROJECT_DIR$/js/scripts.js" />
+        <option value="$PROJECT_DIR$/partials/tables-side.php" />
+        <option value="$PROJECT_DIR$/scss/app.scss" />
       </list>
     </option>
   </component>
@@ -221,12 +224,12 @@
       <option name="presentableId" value="Default" />
       <updated>1728978621572</updated>
       <workItem from="1728978623245" duration="117499000" />
-      <workItem from="1729686840319" duration="48036000" />
+      <workItem from="1729686840319" duration="55567000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="165535000" />
+    <option name="totallyTimeSpent" value="173066000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -237,9 +240,9 @@
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="11" show_stripe_button="false" sideWeight="0.6765016" weight="0.10566449" />
       <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4968017" weight="0.09586056" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="10" sideWeight="0.49789253" visible="true" weight="0.089324616" />
+      <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.49789253" visible="true" weight="0.089324616" />
       <window_info anchor="right" id="Remote Host" order="4" />
-      <window_info content_ui="combo" x="-332" y="7" width="329" height="1022" id="Project" order="0" sideWeight="0.6579521" type="FLOATING" visible="true" weight="0.13059701" />
+      <window_info active="true" content_ui="combo" x="-332" y="7" width="329" height="1022" id="Project" order="0" sideWeight="0.6579521" type="FLOATING" visible="true" weight="0.13059701" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" x="1328" y="10" width="285" height="1013" id="Database" order="3" weight="0.16204691" />
       <window_info x="-631" y="5" width="296" height="549" id="Structure" order="1" sideWeight="0.34204793" side_tool="true" type="FLOATING" visible="true" weight="0.13006397" />
@@ -347,31 +350,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/tables.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="6" column="2" selection-start-line="6" selection-start-column="2" selection-end-line="6" selection-end-column="2" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/partials/header.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="154">
           <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scss/app.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="695">
-          <caret line="46" column="18" lean-forward="true" selection-start-line="46" selection-start-column="18" selection-end-line="46" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/partials/tables-side.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="594">
-          <caret line="108" column="121" selection-start-line="108" selection-start-column="121" selection-end-line="108" selection-end-column="121" />
         </state>
       </provider>
     </entry>
@@ -384,8 +366,29 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/scripts.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="502">
-          <caret line="367" column="17" selection-start-line="367" selection-start-column="17" selection-end-line="367" selection-end-column="17" />
+        <state relative-caret-position="154">
+          <caret line="268" column="59" selection-start-line="268" selection-start-column="59" selection-end-line="268" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/tables.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="281">
+          <caret line="115" column="48" selection-start-line="115" selection-start-column="48" selection-end-line="115" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/partials/tables-side.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="282">
+          <caret line="143" column="36" selection-start-line="143" selection-start-column="36" selection-end-line="143" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scss/app.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="35" lean-forward="true" selection-start-line="35" selection-end-line="35" />
         </state>
       </provider>
     </entry>

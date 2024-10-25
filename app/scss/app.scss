@@ -27,22 +27,90 @@ body {
   }
 }
 
-.side-menus {
-
-  .uk-nav-primary .uk-nav-sub, .smaller {
-    font-size: 1.25rem;
-    line-height: 1.5;
-  }
-
-
-  .manage-link {
-    padding-top: 10px;
-    font-size: 1.1rem;
-  }
-}
-
-
 .form-actions {
   display: flex;
   flex-direction: row-reverse; /* Reverse the elements inside */
 }
+
+
+
+#locations {
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .manage-link.add-floor i {
+    float:right;
+  }
+
+  // Heading styles
+  h2, h3, h4 {
+    text-transform: uppercase;
+    font-size: 0.825rem;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+  }
+
+  // First level: Building names
+  .location-item > h2 + a,
+  .location-item > h3 + a,
+  .location-item > h4 + a {
+    font-size: 1rem;
+    display: block;
+    margin: 1rem 0;
+    padding-left: 15px;    // Indentation for building names
+  }
+
+  // Second level: Floor names with icons inline
+  .floor-item {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    margin: 1rem 0;
+    padding-left: 15px;    // Indentation for floor names (15px + additional 15px)
+
+    a:first-child {
+      flex-grow: 1;
+      text-align: left;
+    }
+  }
+
+  // Third level: Room names with further indentation
+  .room-item {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    margin: 1rem 0;
+    padding-left: 30px;    // Further indentation for room names (30px + additional 15px)
+
+    a:first-child {
+      flex-grow: 1;
+      text-align: left;
+    }
+  }
+
+  // Consistent vertical spacing for items
+  .location-item,
+  .floor-item,
+  .room-item {
+    margin: 1rem 0;
+  }
+
+  // Icons styling
+  .manage-link,
+  .remove-link {
+    font-size: 1rem;
+    margin-left: 0.5rem;
+    color: #555;
+    text-decoration: none;
+
+    &:hover {
+      color: #333;
+    }
+  }
+}
+
+
