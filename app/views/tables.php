@@ -86,6 +86,10 @@ $types = get_types();
 
 
 <div uk-grid>
+    <div class="uk-width-1-1 room-heading">
+        <span style="display:none" class="floor_name"></span>
+        <span style="display:none" class="room_name"></span>
+    </div>
     <div class="uk-width-1-1">
         <div id="ptable"></div>
     </div>

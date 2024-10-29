@@ -166,7 +166,6 @@ $(function () {
 
     function bindNavClicks() {
 
-        // select a room
         $('#locations .room-item a').off('click').on('click', function(e) {
 
             uid = $(this).data('uid');
@@ -177,6 +176,7 @@ $(function () {
             console.log('show table for id: ' + uid );
             updatepTable( uid );
         });
+
 
 
         $(".manage-link.add-room").on('click', function (e) {
@@ -232,6 +232,10 @@ $(function () {
         updateTableSideNav();
     }
 
+
+    // not ogetting uploaded?
+
+    // maybe refactor ajax calls to api to POSt method instead of route part 2?
 
     function updateTableSideNav() {
         if ($('#tables-side').length) {
@@ -395,12 +399,17 @@ $(function () {
                 type: "post",
                 data: { uid: uid },
                 success: function (data, status, xhr) {
-                    //$("#debug").html(data);
-                    console.log(data);
+                    var jsonData = $.parseJSON(data);
+                    //console.log(jsonData[0].room_name);
+
                     if (data) {
                         pTable.setData(data);
                         // set the uid for ref by others
                         $('input#uid').val(uid);
+                        $('.room-heading .floor_name').html(jsonData[0].floor_name).show();
+                        $('.room-heading .room_name').html(jsonData[0].room_name).show();
+
+
                     } else {
                         pTable.setData([]);
                     }

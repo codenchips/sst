@@ -1,5 +1,6 @@
 $font-stack: Helvetica, sans-serif;
 $primary-color: #192542;
+$ltblue: #0f7ae5;
 $xcred: #C8102E;
 
 body {
@@ -32,7 +33,22 @@ body {
   flex-direction: row-reverse; /* Reverse the elements inside */
 }
 
+.room-heading {
+  span {
+    display: inline-block;
+    font-weight: bold;
+    color: $primary-color;
+  }
+  span:first-child {
+    padding: 0 15px 0 10px;
+  }
 
+  span:first-child::after {
+    content: '\00BB';
+    padding-left: 20px;
+    font-size: 20px;
+  }
+}
 
 #locations {
   ul {
@@ -70,11 +86,19 @@ body {
     display: flex;
     align-items: center;
     margin: 1rem 0;
+    padding-top: 10px;
     padding-left: 15px;    // Indentation for floor names (15px + additional 15px)
 
     a:first-child {
       flex-grow: 1;
       text-align: left;
+    }
+    a:hover {
+      text-decoration: none;
+      cursor: default;
+    }
+    a {
+      font-weight: bold;
     }
   }
 

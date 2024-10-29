@@ -1,3 +1,4 @@
+@charset "UTF-8";
 body {
   font: 100% Helvetica, sans-serif;
   color: #192542;
@@ -23,6 +24,20 @@ body {
 .form-actions {
   display: flex;
   flex-direction: row-reverse; /* Reverse the elements inside */
+}
+
+.room-heading span {
+  display: inline-block;
+  font-weight: bold;
+  color: #192542;
+}
+.room-heading span:first-child {
+  padding: 0 15px 0 10px;
+}
+.room-heading span:first-child::after {
+  content: "»";
+  padding-left: 20px;
+  font-size: 20px;
 }
 
 #locations ul {
@@ -53,11 +68,19 @@ body {
   display: flex;
   align-items: center;
   margin: 1rem 0;
+  padding-top: 10px;
   padding-left: 15px;
 }
 #locations .floor-item a:first-child {
   flex-grow: 1;
   text-align: left;
+}
+#locations .floor-item a:hover {
+  text-decoration: none;
+  cursor: default;
+}
+#locations .floor-item a {
+  font-weight: bold;
 }
 #locations .room-item {
   font-size: 1rem;

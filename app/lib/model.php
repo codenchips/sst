@@ -331,9 +331,14 @@ function ajax_get_ptabledata() {
     global $pdo;
     $uid = $_POST['uid'];
 
-    $q = $pdo->query("SELECT COUNT(sku) as qty,
-                        id, site_uid_fk, sku, ref, product_slug, product_name, `position`    
-                        FROM survey_tables
+    $q = $pdo->query("SELECT 
+                        s.room as room_name,
+                        s.floor as floor_name,
+                        COUNT(t.sku) as qty,
+                        t.id, t.site_uid_fk, t.sku, t.ref, t.product_slug, t.product_name, t.`position`    
+                        FROM survey_tables t
+                        LEFT JOIN survey_sites s 
+                          ON  t.site_uid_fk = s.site_uid_pk 
                         WHERE site_uid_fk = $uid 
                         GROUP BY sku");
 
