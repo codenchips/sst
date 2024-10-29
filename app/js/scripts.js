@@ -166,6 +166,7 @@ $(function () {
 
     function bindNavClicks() {
 
+        // select a room
         $('#locations .room-item a').off('click').on('click', function(e) {
 
             uid = $(this).data('uid');
@@ -230,6 +231,7 @@ $(function () {
     if ($('#tables-side').length) {
         updateTableSideNav();
     }
+
 
     function updateTableSideNav() {
         if ($('#tables-side').length) {

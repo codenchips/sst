@@ -1,4 +1,5 @@
 <?php
+
     require('config/database.php');
     require('lib/model.php');
     require('lib/helpers.php');
