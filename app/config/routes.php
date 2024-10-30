@@ -8,7 +8,7 @@ function get_view() {
     switch ($path) {
         case '' :
         case 'home' :
-            require('views/home.php');
+            require('views/dashboard.php');
             break;
          case 'tables' :
             require('views/tables.php');

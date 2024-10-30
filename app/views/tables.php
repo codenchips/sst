@@ -1,5 +1,8 @@
 <?php
-$project_slug = 'cov-uni';
+
+$project_slug = get_uri_part(2);
+
+//$project_slug = 'cov-uni';
 
 $types = get_types();
 //$location = get_location_for_project($project_slug);

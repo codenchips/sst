@@ -17,10 +17,12 @@ function return_json($res) {
 function ajax_get_project_sidenav() {
     global $pdo;
 
-    $project_slug = $_POST['project_slug'];
+    $site_uid = $_POST['site_uid'];
+    $q = $pdo->query("SELECT project_slug, location FROM survey_sites WHERE site_uid_pk = '$site_uid'");
+    $site_res = $q->fetch(PDO::FETCH_OBJ);
 
-    $q = $pdo->query("SELECT * FROM survey_sites WHERE project_slug = '$project_slug'");
-    $res = $q->fetchAll(PDO::FETCH_OBJ);
+    $q = $pdo->query("SELECT * FROM survey_sites WHERE project_slug = '$site_res->project_slug' AND location = '$site_res->location'");
+    $res = $q->fetchAll(PDO::FETCH_OBJ);  // id!
 
     $nav = array();
     $nav['project_slug'] = $res[0]->project_slug;
@@ -77,31 +79,31 @@ function get_location_for_project($project_slug) {
 }
 function get_buildings_for_location($project_slug, $location) {
     global $pdo;
-    $q = $pdo->query("SELECT building 
-                              FROM survey_sites 
-                              WHERE location = '$location' && project_slug = '$project_slug' 
+    $q = $pdo->query("SELECT building
+                              FROM survey_sites
+                              WHERE location = '$location' && project_slug = '$project_slug'
                               GROUP BY building");
     return ($q->fetchAll(PDO::FETCH_COLUMN, 0));
 }
 function get_floors_for_building($project_slug, $location, $building) {
     global $pdo;
-    $q = $pdo->query("SELECT floor 
-                              FROM survey_sites 
-                              WHERE building = '$building' && 
-                                    location = '$location' && 
-                                    project_slug = '$project_slug'                               
-                              GROUP BY floor 
+    $q = $pdo->query("SELECT floor
+                              FROM survey_sites
+                              WHERE building = '$building' &&
+                                    location = '$location' &&
+                                    project_slug = '$project_slug'
+                              GROUP BY floor
                               ORDER BY created_on ASC ");
     return ($q->fetchAll(PDO::FETCH_COLUMN, 0));
 }
 function get_rooms_for_floor($project_slug, $location, $building, $floor) {
     global $pdo;
-    $q = $pdo->query("SELECT room 
-                              FROM survey_sites 
-                              WHERE building = '$building' && 
-                                    location = '$location' && 
+    $q = $pdo->query("SELECT room
+                              FROM survey_sites
+                              WHERE building = '$building' &&
+                                    location = '$location' &&
                                     project_slug = '$project_slug' &&
-                                    floor = '$floor' 
+                                    floor = '$floor'
                               GROUP BY floor");
     return ($q->fetchAll(PDO::FETCH_COLUMN, 0));
 }
@@ -114,7 +116,7 @@ function get_types() {
     $q = $pdo->query("SELECT type_slug_pk, type_name
     FROM p__products_types
     WHERE site = 1
-    AND type_slug_pk NOT IN ('addons', 'accessories')     
+    AND type_slug_pk NOT IN ('addons', 'accessories')
     ORDER BY type_name ASC");
     $res = $q->fetchAll(PDO::FETCH_OBJ);
     return ((count($res)) ? $res : false);
@@ -153,7 +155,7 @@ function ajax_get_types()
     $q = $pdo->query("SELECT type_slug_pk, type_name
     FROM p__products_types
     WHERE site = $brand
-    AND type_slug_pk NOT IN ('addons', 'accessories') 
+    AND type_slug_pk NOT IN ('addons', 'accessories')
     ORDER BY type_name ASC");
 
     $res = $q->fetchAll(PDO::FETCH_OBJ);
@@ -288,10 +290,10 @@ function ajax_remove_floor() {
 
     // get all uids from sites to be deleted from both sites and tables
     // that match this project, location and building
-    $q = $pdo->query("SELECT `site_uid_pk` FROM survey_sites WHERE 
-                      `project_slug` = '$data->project_slug' AND 
+    $q = $pdo->query("SELECT `site_uid_pk` FROM survey_sites WHERE
+                      `project_slug` = '$data->project_slug' AND
                       `location` = '$data->location' AND
-                      `building` = '$data->building' AND 
+                      `building` = '$data->building' AND
                       `floor` = '$data->floor'");
     $data = $q->fetchAll(PDO::FETCH_ASSOC);
     $idsStr = "(";
@@ -331,15 +333,15 @@ function ajax_get_ptabledata() {
     global $pdo;
     $uid = $_POST['uid'];
 
-    $q = $pdo->query("SELECT 
+    $q = $pdo->query("SELECT
                         s.room as room_name,
                         s.floor as floor_name,
                         COUNT(t.sku) as qty,
-                        t.id, t.site_uid_fk, t.sku, t.ref, t.product_slug, t.product_name, t.`position`    
+                        t.id, t.site_uid_fk, t.sku, t.ref, t.product_slug, t.product_name, t.`position`
                         FROM survey_tables t
-                        LEFT JOIN survey_sites s 
-                          ON  t.site_uid_fk = s.site_uid_pk 
-                        WHERE site_uid_fk = $uid 
+                        LEFT JOIN survey_sites s
+                          ON  t.site_uid_fk = s.site_uid_pk
+                        WHERE site_uid_fk = $uid
                         GROUP BY sku");
 
     $res = $q->fetchAll();
@@ -352,6 +354,43 @@ function ajax_get_ptabledata() {
 
     return(return_json($res));
 }
+
+function ajax_get_dashtabledata() {
+    global $pdo;
+    $uid = $_POST['uid'];
+
+    $q = $pdo->query("SELECT
+                p.id,
+                DATE_FORMAT(p.created_on, '%d/%c/%y') as created,
+                p.project_name,
+                p.project_slug,
+                s.project_slug,
+                s.location,
+                COUNT( t.sku ) AS num_products,
+                COUNT(DISTINCT(s.floor)) AS num_floors,
+                COUNT(DISTINCT(s.room)) AS num_rooms,
+                t.site_uid_fk as site_uid
+            FROM
+                survey_tables t
+                LEFT JOIN survey_sites s ON t.site_uid_fk = s.site_uid_pk
+                LEFT JOIN survey_projects p on p.project_slug = s.project_slug
+            WHERE
+                s.owner_id_pk = $uid
+            GROUP BY
+                s.location");
+
+    $res = $q->fetchAll();
+    if (count($res) < 1) {
+        $res[0] = array();
+    }
+
+    //vd($res, 1);
+
+
+    return(return_json($res));
+}
+
+
 
 function ajax_increase_qty() {
     global $pdo;
@@ -379,10 +418,10 @@ function ajax_decrease_qty() {
     $sku = $_POST['sku'];
     $uid = $_POST['uid'];
 
-    $q = $pdo->query("SELECT id FROM survey_tables 
-                              WHERE sku = '$sku'  
-                              AND site_uid_fk = $uid 
-                              ORDER BY created_on DESC 
+    $q = $pdo->query("SELECT id FROM survey_tables
+                              WHERE sku = '$sku'
+                              AND site_uid_fk = $uid
+                              ORDER BY created_on DESC
                               LIMIT 1");
     $delete_id = $q->fetch(PDO::FETCH_COLUMN, 0);
     if ($delete_id) {

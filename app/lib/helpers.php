@@ -10,7 +10,11 @@ function vd($v, $exit = false) {
 function get_uri_part($part = 1) {
     $parts = parse_url($_SERVER['REQUEST_URI']);
     $path = explode('/', $parts['path']);
-    return($path[$part]);
+    if (isset($path[$part])) {
+        return ($path[$part]);
+    } else {
+        return (false);
+    }
 }
 
 function slugify($str) {
