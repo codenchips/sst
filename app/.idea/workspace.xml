@@ -58,8 +58,8 @@
           <file leaf-file-name="header.php" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/partials/header.php">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="704">
-                  <caret line="32" column="19" selection-start-line="32" selection-start-column="19" selection-end-line="32" selection-end-column="19" />
+                <state relative-caret-position="440">
+                  <caret line="20" column="28" lean-forward="true" selection-start-line="20" selection-start-column="28" selection-end-line="20" selection-end-column="28" />
                 </state>
               </provider>
             </entry>
@@ -90,7 +90,7 @@
             <entry file="file://$PROJECT_DIR$/js/scripts.js">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="216">
-                  <caret line="357" column="44" lean-forward="true" selection-start-line="357" selection-start-column="44" selection-end-line="357" selection-end-column="44" />
+                  <caret line="357" column="24" lean-forward="true" selection-start-line="357" selection-start-column="24" selection-end-line="357" selection-end-column="24" />
                   <folding>
                     <element signature="e#8983#15234#0" />
                     <element signature="e#16716#18974#0" />
@@ -268,12 +268,12 @@
       <option name="presentableId" value="Default" />
       <updated>1728978621572</updated>
       <workItem from="1728978623245" duration="117499000" />
-      <workItem from="1729686840319" duration="106095000" />
+      <workItem from="1729686840319" duration="106585000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="223594000" />
+    <option name="totallyTimeSpent" value="224084000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -512,15 +512,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/partials/header.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="704">
-          <caret line="32" column="19" selection-start-line="32" selection-start-column="19" selection-end-line="32" selection-end-column="19" />
+        <state relative-caret-position="440">
+          <caret line="20" column="28" lean-forward="true" selection-start-line="20" selection-start-column="28" selection-end-line="20" selection-end-column="28" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/scripts.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="216">
-          <caret line="357" column="44" lean-forward="true" selection-start-line="357" selection-start-column="44" selection-end-line="357" selection-end-column="44" />
+          <caret line="357" column="24" lean-forward="true" selection-start-line="357" selection-start-column="24" selection-end-line="357" selection-end-column="24" />
           <folding>
             <element signature="e#8983#15234#0" />
             <element signature="e#16716#18974#0" />
