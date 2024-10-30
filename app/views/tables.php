@@ -16,6 +16,13 @@ $types = get_types();
 <div class="uk-width-1-1 uk-margin">
 <button class="uk-button uk-button-default" type="button" uk-toggle="target: #tables-side">Manage Project</button>
 
+    <div class="uk-width-1-1 location-heading">
+        <span style="display:none" class="project_name"></span>
+        <span style="display:none" class="location_name"></span>
+        <span style="display:none" class="building_name"></span>
+    </div>
+</div>
+
 <div class="uk-width-1-1 uk-margin">
 
 <form id="product-select-form">

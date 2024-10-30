@@ -336,11 +336,14 @@ function ajax_get_ptabledata() {
     $q = $pdo->query("SELECT
                         s.room as room_name,
                         s.floor as floor_name,
+                        s.location as location_name,
+                        s.building as building_name,
+                        p.project_name, 
                         COUNT(t.sku) as qty,
                         t.id, t.site_uid_fk, t.sku, t.ref, t.product_slug, t.product_name, t.`position`
                         FROM survey_tables t
-                        LEFT JOIN survey_sites s
-                          ON  t.site_uid_fk = s.site_uid_pk
+                        LEFT JOIN survey_sites s ON  t.site_uid_fk = s.site_uid_pk
+                        LEFT JOIN survey_projects p on p.project_slug = s.project_slug                           
                         WHERE site_uid_fk = $uid
                         GROUP BY sku");
 

@@ -355,7 +355,7 @@ $(function() {
 
     function updatepTable(uid = false) {
         if (uid === false) {
-            uid = $('#ptable').data('uid');
+            uid = $('input#site_uid').val();
         }
         if ($('#ptable').length && uid) {
             $.ajax("/api/get_ptabledata", {
@@ -371,6 +371,10 @@ $(function() {
                         $('input#uid').val(uid);
                         $('.room-heading .floor_name').html(jsonData[0].floor_name).show();
                         $('.room-heading .room_name').html(jsonData[0].room_name).show();
+                        $('.location-heading .project_name').html(jsonData[0].project_name).show();
+                        $('.location-heading .location_name').html(jsonData[0].location_name).show();
+                        $('.location-heading .building_name').html(jsonData[0].building_name).show();
+
                     } else {
                         pTable.setData([]);
                     }
