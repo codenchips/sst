@@ -1,4 +1,3 @@
-@charset "UTF-8";
 body {
   font: 100% Helvetica, sans-serif;
   color: #192542;
@@ -26,18 +25,33 @@ body {
   flex-direction: row-reverse; /* Reverse the elements inside */
 }
 
-.room-heading span {
+.room-heading span, .location-heading span {
   display: inline-block;
-  font-weight: bold;
   color: #192542;
+  margin-right: 30px;
 }
-.room-heading span:first-child {
-  padding: 0 15px 0 10px;
+.room-heading span:last-child, .location-heading span:last-child {
+  margin-right: 0;
 }
-.room-heading span:first-child::after {
-  content: "»";
-  padding-left: 20px;
-  font-size: 20px;
+.room-heading .project_name:before, .location-heading .project_name:before {
+  content: "Project: ";
+  font-weight: bold;
+}
+.room-heading .location_name:before, .location-heading .location_name:before {
+  content: "Location: ";
+  font-weight: bold;
+}
+.room-heading .building_name:before, .location-heading .building_name:before {
+  content: "Building: ";
+  font-weight: bold;
+}
+.room-heading .floor_name:before, .location-heading .floor_name:before {
+  content: "Floor: ";
+  font-weight: bold;
+}
+.room-heading .room_name:before, .location-heading .room_name:before {
+  content: "Room: ";
+  font-weight: bold;
 }
 
 #locations ul {

@@ -3,9 +3,9 @@
 
 <!-- rooms nav -->
 <div id="tables-side" uk-offcanvas="mode: slide; overlay: true">
-    <div class="uk-offcanvas-bar uk-flex uk-flex-column">
+    <div class="uk-visible@m uk-offcanvas-bar uk-flex uk-flex-column">
 
-        <h4>Manage Project</h4>
+        <h4>Manage Building</h4>
 
         <div id="locations"></div>
 

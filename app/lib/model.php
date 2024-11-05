@@ -72,6 +72,8 @@ function ajax_get_project_sidenav() {
     return(return_json($nav));
 }
 
+
+
 function get_location_for_project($project_slug) {
     global $pdo;
     $q = $pdo->query("SELECT location FROM survey_sites WHERE project_slug = '$project_slug'");
@@ -134,6 +136,19 @@ function get_products()
     $res = $q->fetchAll(PDO::FETCH_OBJ);
     return ((count($res)) ? $res : false);
 }
+
+function get_projects() {
+    global $pdo;
+
+    $q = $pdo->query( "select *, s.site_uid_pk as site_uid from 
+            survey_projects p left join survey_sites s
+            on p.project_slug = s.project_slug
+            group by s.project_slug");
+    $res = $q->fetchAll(PDO::FETCH_OBJ);
+
+    return ((count($res)) ? $res : false);
+}
+
 
 function get_product_name_by_slug($slug) {
     global $pdo;
@@ -212,15 +227,66 @@ function ajax_add_product() {
     $data['product_name'] = get_product_name_by_slug($_POST['form_product']);
 
     $q  = "INSERT INTO survey_tables
-            (site_uid_fk, brand, `type`, product_slug, product_name, sku, custom, created_on)
+            (site_uid_fk, brand, `type`, product_slug, product_name, sku, custom, owner_id, version, created_on)
             VALUES
-            (:uid, :form_brand, :form_type, :form_product, :product_name, :form_sku, :form_custom, CURRENT_TIMESTAMP)";
+            (:uid, :form_brand, :form_type, :form_product, :product_name, :form_sku, :form_custom, 1, 1, CURRENT_TIMESTAMP)";
 
     $pdo->prepare($q)->execute($data);
     $ret = json_encode(['added' => $pdo->lastInsertId()]);
 
+    $q = "DELETE FROM survey_tables 
+                  WHERE site_uid_fk = :uid AND `type` = 'placeholder'";
+    $pdo->prepare($q)->execute(array('uid' => $data['uid']));
+
+
     exit($ret);
 }
+
+
+
+function ajax_add_project() {
+    global $pdo;
+
+    $data = (object) $_POST;
+    $project_slug = slugify($data->form_project_name);
+
+
+    $sql = "INSERT INTO survey_projects 
+                  SET 
+                  project_slug = '$project_slug', 
+                  project_name = '$data->form_project_name',
+                  owner_id = '$data->uid',
+                  version = '1',
+                  created_on = CURRENT_TIMESTAMP";
+    $res = $pdo->exec($sql);
+    if ($res) {
+        $sql = "INSERT INTO survey_sites 
+                  SET 
+                  project_slug = '$project_slug',
+                  location = '$data->form_location', 
+                  building = '$data->form_building',                
+                  owner_id = '$data->uid',
+                  version = '1',
+                  created_on = CURRENT_TIMESTAMP";
+        $res = $pdo->exec($sql);
+        if ($res) {
+            $lastId  = $pdo->query("SELECT LAST_INSERT_ID()")->fetchColumn();
+            $sql = "INSERT INTO survey_tables 
+                  SET 
+                  site_uid_fk = $lastId,
+                  `type` = 'placeholder', 
+                  created_on = CURRENT_TIMESTAMP";
+            $res = $pdo->exec($sql);
+        }
+    }
+    if ($res) {
+        $ret = json_encode(['added' => $pdo->lastInsertId()]);
+    } else {
+        $ret = json_encode(['failed' => $pdo->lastInsertId()]);
+    }
+    exit($ret);
+}
+
 
 function ajax_add_special() {
     global $pdo;
@@ -228,9 +294,9 @@ function ajax_add_special() {
     $data = $_POST;
 
     $q  = "INSERT INTO survey_tables
-            (site_uid_fk, brand, `type`, product_name, sku, custom, created_on)
+            (site_uid_fk, brand, `type`, product_name, sku, custom, ownerId, version, created_on)
             VALUES
-            (:uid, :form_custom_brand, 'special', :form_custom_product_name, :form_custom_sku, :form_custom, CURRENT_TIMESTAMP)";
+            (:uid, :form_custom_brand, 'special', :form_custom_product_name, :form_custom_sku, :form_custom, 1, 1, CURRENT_TIMESTAMP)";
 
     $pdo->prepare($q)->execute($data);
     $ret = json_encode(['added' => $pdo->lastInsertId()]);
@@ -243,14 +309,17 @@ function ajax_add_floor() {
 
         $uid = $_POST['modal_form_uid'];
         $floor = $_POST['modal_form_floor'];
+        if (!$uid) {
+            $uid= $_POST['modal_form_project_slug'];
+        }
 
         $q = $pdo->query("SELECT `project_slug`, `location`, `building`
                                     FROM survey_sites WHERE site_uid_pk = $uid LIMIT 1");
         $data = $q->fetch(PDO::FETCH_ASSOC);
 
         $q  = "INSERT INTO survey_sites
-            ( `project_slug`, `location`, `building`, `floor`, `created_on`)
-            VALUES ( :project_slug, :location, :building, '$floor', CURRENT_TIMESTAMP)";
+            ( `project_slug`, `location`, `building`, `floor`, owner_id, version, `created_on`)
+            VALUES ( :project_slug, :location, :building, '$floor', 1, 1, CURRENT_TIMESTAMP)";
 
     $pdo->prepare($q)->execute($data);
     $ret = json_encode(['added' => $pdo->lastInsertId()]);
@@ -269,8 +338,8 @@ function ajax_add_room() {
     $data = $q->fetch(PDO::FETCH_ASSOC);
 
     $q  = "INSERT INTO survey_sites
-            ( `project_slug`, `location`, `building`, `floor`, `room`, `created_on`)
-            VALUES ( :project_slug, :location, :building, :floor, '$room', CURRENT_TIMESTAMP)";
+            ( `project_slug`, `location`, `building`, `floor`, `room`, owner_id, version, `created_on`)
+            VALUES ( :project_slug, :location, :building, :floor, '$room', 1, 1, CURRENT_TIMESTAMP)";
 
     $pdo->prepare($q)->execute($data);
     $ret = json_encode(['added' => $pdo->lastInsertId()]);
@@ -338,12 +407,12 @@ function ajax_get_ptabledata() {
                         s.floor as floor_name,
                         s.location as location_name,
                         s.building as building_name,
-                        p.project_name, 
+                        p.project_name,
                         COUNT(t.sku) as qty,
                         t.id, t.site_uid_fk, t.sku, t.ref, t.product_slug, t.product_name, t.`position`
                         FROM survey_tables t
                         LEFT JOIN survey_sites s ON  t.site_uid_fk = s.site_uid_pk
-                        LEFT JOIN survey_projects p on p.project_slug = s.project_slug                           
+                        LEFT JOIN survey_projects p on p.project_slug = s.project_slug
                         WHERE site_uid_fk = $uid
                         GROUP BY sku");
 
@@ -366,6 +435,7 @@ function ajax_get_dashtabledata() {
                 p.id,
                 DATE_FORMAT(p.created_on, '%d/%c/%y') as created,
                 p.project_name,
+                p.version,
                 p.project_slug,
                 s.project_slug,
                 s.location,
@@ -378,7 +448,7 @@ function ajax_get_dashtabledata() {
                 LEFT JOIN survey_sites s ON t.site_uid_fk = s.site_uid_pk
                 LEFT JOIN survey_projects p on p.project_slug = s.project_slug
             WHERE
-                s.owner_id_pk = $uid
+                s.owner_id = $uid
             GROUP BY
                 s.location");
 
@@ -387,12 +457,30 @@ function ajax_get_dashtabledata() {
         $res[0] = array();
     }
 
-    //vd($res, 1);
-
-
     return(return_json($res));
 }
 
+function ajax_get_locations_for_project() {
+    global $pdo;
+
+    $project_name = $_POST['project_name'];
+    $slug = slugify($project_name);
+
+    $q = $pdo->query("SELECT location FROM survey_sites 
+                              WHERE project_slug = '$slug'
+                              GROUP BY location");
+    $res = $q->fetchAll(PDO::FETCH_OBJ);
+
+    if (count($res)) {
+        $html = "";
+        foreach ($res as $l) {
+            $html .= "<option value='$l->location'></option>";
+        }
+    }
+    exit($html);
+
+
+}
 
 
 function ajax_increase_qty() {
@@ -403,8 +491,8 @@ function ajax_increase_qty() {
     $data = $q->fetch(PDO::FETCH_ASSOC);
 
     $q  = "INSERT INTO survey_tables
-            (site_uid_fk, brand, `type`, `range`, product_slug, product_name, sku, ref, custom, building, floor, created_On)
-            VALUES (:site_uid_fk, :brand, :type, :range, :product_slug, :product_name, :sku, :ref, :custom, :building, :floor, CURRENT_TIMESTAMP)";
+            (site_uid_fk, brand, `type`, `range`, product_slug, product_name, sku, ref, custom, building, floor, version, owner_id, created_On)
+            VALUES (:site_uid_fk, :brand, :type, :range, :product_slug, :product_name, :sku, :ref, :custom, :building, :floor, 1, 1, CURRENT_TIMESTAMP)";
 
     try {
         $pdo->prepare($q)->execute($data);

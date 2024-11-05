@@ -1,16 +1,29 @@
 <?php
 $project_slug = 'cov-uni';
-
 $types = get_types();
 //$location = get_location_for_project($project_slug);
 //$buildings = get_buildings_for_location($project_slug, $location);
 
-//vd($buildings, 1);
+//vd($projects, 1);
+
+function project_select_options() {
+    $projects = get_projects();
+    $html = "";
+    foreach ($projects as $p) {
+        $html .= "<option value='$p->project_name'></option>";
+    }
+    return($html);
+}
 ?>
-
-
 <div class="uk-width-1-1 uk-margin">
 
+<div uk-grid>
+
+    <div class="uk-width-1-1 uk-text-right">
+        <button class="uk-button uk-button-primary" type="button" uk-toggle="target: #create-project">New </button>
+    </div>
+
+</div>
 
 <div uk-grid>
     <div class="uk-width-1-1">
@@ -20,61 +33,72 @@ $types = get_types();
 
 
 
-<!-- add special modal -->
-<div id="add-special" uk-modal>
+<!-- add project modal -->
+<div id="create-project" uk-modal>
     <div class="uk-modal-dialog uk-margin-auto-vertical uk-modal-body">
         <button class="uk-modal-close-default" type="button" uk-close></button>
-        <form id="form-submit-special">
-        <div class="uk-text-center" uk-grid>
-            <div class="uk-width-1-1">
-                <h3>Add Special</h3>
+        <form id="form-create-project">
+            <div class="uk-text-center" uk-grid>
+
+                <div class="uk-width-1-1">
+                    <h3>New Location</h3>
+                </div>
+
+                <div class="uk-width-1-1 uk-text-left">
+                    <label>Select an existing project or create a new project</label>
+                    <input id="form_project_name"
+                           name="form_project_name"
+                           class="uk-input free-type"
+                           placeholder="My Project"
+                           autocomplete="off"
+                           required
+                           value=""
+                           list="project_names"
+                           oninvalid="this.setCustomValidity('You must name this project')"
+                           oninput="this.setCustomValidity('')" />
+                            <datalist id="project_names">
+                                <?php echo project_select_options(); ?>
+                            </datalist>
+                </div>
+
+                <div class="uk-width-1-1 uk-text-left">
+                    <label>Location</label>
+                    <input id="form_location"
+                           name="form_location"
+                           class="uk-input free-type"
+                           placeholder="The town, city or area"
+                           autocomplete="off"
+                           required
+                           disabled
+                           value=""
+                           list="form_location_select"
+                           oninvalid="this.setCustomValidity('You enter a location')"
+                           oninput="this.setCustomValidity('')" />
+                    <datalist id="form_location_select"></datalist>
+                </div>
+
+                <div class="uk-width-1-1 uk-text-left">
+                    <label>Building</label>
+                    <input id="form_building"
+                           name="form_building"
+                           class="uk-input free-type"
+                           placeholder="Main warehouse"
+                           autocomplete="off"
+                           required
+                           disabled
+                           value=""
+                           oninvalid="this.setCustomValidity('Enter a building name')"
+                           oninput="this.setCustomValidity('')" />
+                </div>
+
             </div>
 
-            <div class="uk-width-1-1 uk-text-left">
-                <label>Brand</label>
-                <select required id="form_brand"
-                        name="form_custom_brand"
-                        class="uk-select"
-                        oninvalid="this.setCustomValidity('You must select a brand')"
-                        oninput="this.setCustomValidity('')">
-                    <option selected value="">Select Brand</option>
-                    <option value="1">Tamlite</option>
-                    <option value="2">xcite</option>
-                    <option value="3">Other</option>
-                </select>
-            </div>
-
-            <div class="uk-width-1-1 uk-text-left">
-                <label>Product Code or SKU</label>
-                <input id="form_custom"
-                       name="form_custom_sku"
-                       class="uk-input free-type"
-                       placeholder="A product code or identifier is required"
-                       required
-                       value=""
-                       oninvalid="this.setCustomValidity('You must enter a product code or unique identifier')"
-                       oninput="this.setCustomValidity('')" />
-            </div>
-
-            <div class="uk-width-1-1 uk-text-left">
-                <label>Product Name</label>
-                <input id="form_custom"
-                       name="form_custom_product_name"
-                       class="uk-input free-type"
-                       placeholder="Free type a product name"
-                       required
-                       value=""
-                       oninvalid="this.setCustomValidity('Enter the full name of this product')"
-                       oninput="this.setCustomValidity('')" />
-            </div>
-
-            <div class="uk-width-1-1">
-                <input type="hidden" name="form_custom" value="1" />
-                <input type="hidden" name="uid" id="uid" value="" />
+            <div class="uk-width-1-1 uk-margin uk-text-right">
+                <input type="hidden" name="uid" id="uid" value="1" />
                 <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
-                <button id="form-submit-special" type="submit" class="uk-button uk-button-primary">Add</button>
+                <button id="form-submit-createproject" type="submit" class="uk-button uk-button-primary">Create</button>
             </div>
-        </div>
+
         </form>
     </div>
 </div>

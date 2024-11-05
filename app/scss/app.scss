@@ -33,21 +33,47 @@ body {
   flex-direction: row-reverse; /* Reverse the elements inside */
 }
 
-.room-heading {
+.room-heading, .location-heading {
   span {
     display: inline-block;
-    font-weight: bold;
     color: $primary-color;
+    margin-right: 30px;
   }
   span:first-child {
-    padding: 0 15px 0 10px;
+    //padding-left: 10px;
   }
+  span:last-child {
+    margin-right: 0;
+  };
 
   span:first-child::after {
-    content: '\00BB';
-    padding-left: 20px;
-    font-size: 20px;
+    //content: '\00BB';
+    //padding-left: 20px;
+    //font-size: 20px;
   }
+  .project_name:before {
+    content: "Project: ";
+    font-weight: bold;
+  }
+  .location_name:before {
+    content: "Location: ";
+    font-weight: bold;
+  }
+  .building_name:before {
+    content: "Building: ";
+    font-weight: bold;
+  }
+  .floor_name:before {
+    content: "Floor: ";
+    font-weight: bold;
+  }
+  .room_name:before {
+    content: "Room: ";
+    font-weight: bold;
+  }
+
+
+
 }
 
 #locations {

@@ -13,15 +13,19 @@ $types = get_types();
 
 <?php include ('./partials/tables-side.php'); ?>
 
-<div class="uk-width-1-1 uk-margin">
-<button class="uk-button uk-button-default" type="button" uk-toggle="target: #tables-side">Manage Project</button>
-
-    <div class="uk-width-1-1 location-heading">
+<div class="manage-bar uk-margin" uk-grid>
+    <div class="uk-width-1-1 location-heading uk-text-left" >
         <span style="display:none" class="project_name"></span>
         <span style="display:none" class="location_name"></span>
         <span style="display:none" class="building_name"></span>
     </div>
+
+    <div class="uk-width-1-3 uk-margin">
+        <button class="uk-button uk-button-primary" type="button" uk-toggle="target: #tables-side">Manage Building</button>
+    </div>
+
 </div>
+
 
 <div class="uk-width-1-1 uk-margin">
 
@@ -60,7 +64,7 @@ $types = get_types();
                         class="uk-select select-product"
                         oninvalid="this.setCustomValidity('Please select a product.')"
                         oninput="this.setCustomValidity('')">
-                    <option value="">>Select a Product</option>
+                    <option value="">Select a Product</option>
                 </select>
             </div>
         </div>

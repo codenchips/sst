@@ -1,5 +1,5 @@
 <nav class="uk-navbar-container">
-    <div class="uk-container">
+    <div class="uk-container uk-padding-remove">
         <div uk-navbar>
 
             <div class="uk-navbar-left">

@@ -220,7 +220,7 @@ $(function() {
         }
     }
     if ($('#ptable').length) {
-        updatepTable();
+        updatepTable(false);
     }
     if ($('#tables-side').length) {
         updateTableSideNav();
@@ -247,11 +247,16 @@ $(function() {
         }
     }
 
+
+
     function createList(obj, parentSlug, locationSlug = parentSlug, level = 1) {
         const ul = document.createElement('ul');
         ul.setAttribute('id', `${parentSlug}-ul`);
         ul.classList.add('location-list');
+
         let addedFloorsHeading = false;
+        let initRoom = false;
+
         for (const key in obj) {
             if (typeof obj[key] === 'object' && obj[key] !== null) {
                 const li = document.createElement('li');
@@ -259,128 +264,168 @@ $(function() {
                 const itemUid = obj[key].uid || '';
                 li.setAttribute('id', `${itemSlug}-li`);
                 li.classList.add('location-item');
+
                 if (level === 1) {
                     const locationHeading = document.createElement('h2');
                     locationHeading.textContent = 'Location';
                     li.appendChild(locationHeading);
+
                     const locationLink = document.createElement('a');
                     locationLink.href = '#';
                     locationLink.textContent = obj[key].name || key;
                     locationLink.setAttribute('data-slug', itemSlug);
                     locationLink.setAttribute('data-uid', itemUid);
                     li.appendChild(locationLink);
-                    const addBuildingLink = document.createElement('a');
-                    addBuildingLink.href = '#';
-                    addBuildingLink.innerHTML = '<i class="fa-solid fa-circle-plus"></i>';
-                    addBuildingLink.setAttribute('data-location', itemSlug);
-                    addBuildingLink.setAttribute('data-project', 'cov-uni');
-                    //li.appendChild(addBuildingLink);
+
                 } else if (level === 2) {
                     const buildingHeading = document.createElement('h3');
                     buildingHeading.textContent = 'Building';
                     li.appendChild(buildingHeading);
+
                     const buildingLink = document.createElement('a');
                     buildingLink.href = '#';
                     buildingLink.textContent = obj[key].name || key;
                     buildingLink.setAttribute('data-slug', itemSlug);
                     buildingLink.setAttribute('data-uid', itemUid);
                     li.appendChild(buildingLink);
+
                     ul.appendChild(li);
                     addedFloorsHeading = false;
+
                 } else if (level === 3) {
+                    // Add Floors and Rooms heading and Add Floor link, even if no floors exist
                     if (!addedFloorsHeading) {
                         const floorsHeading = document.createElement('h4');
                         floorsHeading.textContent = 'Floors and Rooms';
                         ul.appendChild(floorsHeading);
+
                         const addFloorLink = document.createElement('a');
                         addFloorLink.href = '#';
                         addFloorLink.innerHTML = '<i class="fa-solid fa-circle-plus"></i>';
                         addFloorLink.setAttribute('data-location', locationSlug);
                         addFloorLink.setAttribute('data-building', itemSlug);
-                        addFloorLink.setAttribute('data-uid', itemUid); // Added data-uid for parent building
+                        addFloorLink.setAttribute('data-uid', itemUid);  // Added data-uid for parent building
                         addFloorLink.classList.add('manage-link', 'add-floor');
                         floorsHeading.appendChild(addFloorLink);
+
                         addedFloorsHeading = true;
                     }
+
+                    // Add each floor item if floors exist
                     const floorLink = document.createElement('a');
                     floorLink.href = '#';
                     floorLink.textContent = obj[key].name || key;
                     floorLink.setAttribute('data-slug', itemSlug);
                     floorLink.setAttribute('data-uid', itemUid);
+
                     const floorLi = document.createElement('li');
                     floorLi.setAttribute('id', `${itemSlug}-floor-li`);
                     floorLi.classList.add('floor-item');
                     floorLi.appendChild(floorLink);
+
                     const removeFloorLink = document.createElement('a');
                     removeFloorLink.href = '#';
                     removeFloorLink.innerHTML = '<i class="fa-solid fa-circle-minus"></i>';
                     removeFloorLink.setAttribute('data-uid', itemUid);
                     removeFloorLink.classList.add('remove-link', 'remove-floor');
                     floorLi.appendChild(removeFloorLink);
+
                     li.appendChild(floorLi);
+
                     const addRoomLink = document.createElement('a');
                     addRoomLink.href = '#';
                     addRoomLink.innerHTML = '<i class="fa-solid fa-circle-plus"></i>';
                     addRoomLink.setAttribute('data-location', locationSlug);
                     addRoomLink.setAttribute('data-building', parentSlug);
                     addRoomLink.setAttribute('data-floor', obj[key].slug);
-                    addRoomLink.setAttribute('data-uid', itemUid); // Added data-uid for parent floor
+                    addRoomLink.setAttribute('data-uid', itemUid);  // Added data-uid for parent floor
                     addRoomLink.classList.add('manage-link', 'add-room');
                     floorLi.appendChild(addRoomLink);
+
                 } else if (obj[key].name && level > 3) {
                     const roomLink = document.createElement('a');
                     roomLink.href = '#';
                     roomLink.textContent = obj[key].name;
                     roomLink.setAttribute('data-slug', itemSlug);
                     roomLink.setAttribute('data-uid', itemUid);
+                    roomLink.setAttribute('data-room-name', obj[key].name || key); // Adding room name
+                    roomLink.setAttribute('data-floor-name', obj?.[key]?.floor || ''); // Adding floor name
+
                     const roomLi = document.createElement('li');
                     roomLi.setAttribute('id', `${itemSlug}-room-li`);
                     roomLi.classList.add('room-item');
                     roomLi.appendChild(roomLink);
+
                     const removeRoomLink = document.createElement('a');
                     removeRoomLink.href = '#';
-                    //removeRoomLink.textContent = ' [-] &copy;';
                     removeRoomLink.innerHTML = '<i class="fa-solid fa-circle-minus"></i>';
                     removeRoomLink.setAttribute('data-uid', itemUid);
                     removeRoomLink.classList.add('remove-link', 'remove-room');
                     roomLi.appendChild(removeRoomLink);
+
+                    if (!initRoom) {
+                        $('input#site_uid').val(itemUid);
+                        initRoom = true;
+                    }
                     li.appendChild(roomLi);
                 }
+
                 li.appendChild(createList(obj[key], itemSlug, locationSlug, level + 1));
                 ul.appendChild(li);
             }
         }
+
+        // If there are no floors or rooms, add the heading and add-floor link anyway
+        if (level === 3 && !addedFloorsHeading) {
+            const floorsHeading = document.createElement('h4');
+            floorsHeading.textContent = 'Floors and Rooms';
+            ul.appendChild(floorsHeading);
+
+            const addFloorLink = document.createElement('a');
+            addFloorLink.href = '#';
+            addFloorLink.innerHTML = '<i class="fa-solid fa-circle-plus"></i>';
+            addFloorLink.setAttribute('data-location', locationSlug);
+            addFloorLink.setAttribute('data-building', parentSlug);
+            addFloorLink.setAttribute('data-uid', '');
+            addFloorLink.classList.add('manage-link', 'add-floor');
+            floorsHeading.appendChild(addFloorLink);
+        }
+
         return ul;
     }
 
-    function updatepTable(uid = false) {
-        if (uid === false) {
-            uid = $('input#site_uid').val();
-        }
-        if ($('#ptable').length && uid) {
-            $.ajax("/api/get_ptabledata", {
-                type: "post",
-                data: {
-                    uid: uid
-                },
-                success: function(data, status, xhr) {
-                    var jsonData = $.parseJSON(data);
-                    if (data) {
-                        pTable.setData(data);
-                        // set the uid for ref by others
-                        $('input#uid').val(uid);
-                        $('.room-heading .floor_name').html(jsonData[0].floor_name).show();
-                        $('.room-heading .room_name').html(jsonData[0].room_name).show();
-                        $('.location-heading .project_name').html(jsonData[0].project_name).show();
-                        $('.location-heading .location_name').html(jsonData[0].location_name).show();
-                        $('.location-heading .building_name').html(jsonData[0].building_name).show();
 
-                    } else {
-                        pTable.setData([]);
+
+
+
+
+    function updatepTable(uid = false) {
+        setTimeout(function() {
+            if (uid == false) {
+                uid = $('input#site_uid').val();
+            }
+            if ($('#ptable').length && uid) {
+                $.ajax("/api/get_ptabledata", {
+                    type: "post",
+                    data: { uid: uid },
+                    success: function(data, status, xhr) {
+                        var jsonData = $.parseJSON(data);
+                        if (data) {
+                            pTable.setData(data);
+                            // set the uid for ref by others
+                            $('input#uid').val(uid);
+                            $('.room-heading .floor_name').html(jsonData[0].floor_name).show();
+                            $('.room-heading .room_name').html(jsonData[0].room_name).show();
+                            $('.location-heading .project_name').html(jsonData[0].project_name).show();
+                            $('.location-heading .location_name').html(jsonData[0].location_name).show();
+                            $('.location-heading .building_name').html(jsonData[0].building_name).show();
+                        } else {
+                            pTable.setData([]);
+                        }
                     }
-                }
-            });
-        }
+                });
+            }
+        },100);
     }
     // pTable.on("rowClick", function(e, row){
     //     alert("Row " + row.getData().id + " Clicked");
@@ -521,6 +566,11 @@ $(function() {
             }
         });
     }
+
+    UIkit.util.on('#tables-side', 'show', function () {
+       //console.log('show nav');
+    });
+
     /*
     * // END TABLE MODE
     */
@@ -563,6 +613,18 @@ $(function() {
             layout: "fitColumns",
             loader: false,
             dataLoaderError: "There was an error loading the data",
+            initialSort:[
+                {column:"project_name", dir:"asc"}, //sort by this first
+            ],
+            // groupBy: "project_name",
+            // groupHeader:function(value, count, data, group){
+            //     //value - the value all members of this group share
+            //     //count - the number of rows in this group
+            //     //data - an array of all the row data objects in this group
+            //     //group - the group component for the group
+            //
+            //     return "Project Name: <span style='color:#0f7ae5; margin-left: 10px;'>" + value + "</span><span style='float:right;'><a href='#'>Add Location</a></span>";
+            // },
             columns: [{
                     title: "project_id",
                     field: "id",
@@ -574,8 +636,17 @@ $(function() {
                     visible: false
                 },
                 {
+                    title: "project_slug",
+                    field: "project_slug",
+                    visible: false
+                },
+                {
                     title: "Project Name",
+                    field: "project_name",
                     formatter: "link",
+                    sorter:"string",
+                    visible: true,
+                    headerSortStartingDir:"desc",
                     formatterParams:{
                         labelField: "project_name",
                         target: "_self",
@@ -587,8 +658,10 @@ $(function() {
                 },
 
                 {
-                    title: "Location",
+                    title: "Site",
+                    field: "location",
                     formatter: "link",
+                    sorter:"string",
                     formatterParams:{
                         labelField: "location",
                         target: "_self",
@@ -599,10 +672,15 @@ $(function() {
                     }
                 },
                 {
+                    title: "Rev",
+                    field: "version",
+                    width: 100
+                },
+                {
                     title: "Created On",
                     field: "created",
+                    width: 150
                 },
-
                 {
                     visible: true,
                     headerSort: false,
@@ -610,13 +688,67 @@ $(function() {
                     width: 30,
                     hozAlign: "center",
                     cellClick: function (e, cell) {
-                        removeByID(cell.getRow().getData().sku);
+                        deleteProject(cell.getRow().getData().site_uid);
                     }
                 },
             ],
         });
-
     }
+
+    function deleteProject(slug) {
+        alert ('DELETE: '+slug);
+    }
+
+
+    $("#form-create-project").off("submit").on("submit", function(e) {
+        e.preventDefault();
+        console.log('Add project submitted');
+        const form = document.querySelector("#form-create-project");
+        sendData(form, 'add_project');
+        // update sidebar nav
+        //updateTableSideNav();
+        UIkit.modal($('#create-project')).hide();
+    });
+
+    $('#form_project_name').off('focus').on('focus', function(e) {
+        $('#form_location').attr({'disabled':'disabled'});
+        $('#form_building').attr({'disabled':'disabled'});
+    });
+    $('#form_project_name').off('blur').on('blur', function(e) {
+        if ($(this).val() != "") {
+            $('#form_location').removeAttr('disabled');
+        }
+    });
+
+
+    $('#form_location').off('focus').on('focus', function(e) {
+        if ($('#form_project_name').val() != "") {
+            $.ajax("/api/get_locations_for_project", {
+                type: "post",
+                data: {
+                    project_name: $('#form_project_name').val()
+                },
+                success: function (data, status, xhr) {
+                    var html = data;
+                    if (html) {
+                        $("#form_location_select").html(html);
+                    }
+                    $('#form_location').off('focus').on('focus', function(e) {
+                        $('#form_building').attr({'disabled':'disabled'});
+                    });
+                    $('#form_location').off('blur').on('blur', function(e) {
+                        if ($(this).val() != "") {
+                            $('#form_building').removeAttr('disabled');
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+
+
+
     /*
     *  DASHBOARD
     */
