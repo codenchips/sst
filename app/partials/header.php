@@ -28,6 +28,10 @@
         </div>
     </div>
 </nav>
-<input type="hidden" id="user_id" name="user_id" value="" />
-<input type="hidden" id="project_id" name="project_id" value="1" />
 <input type="hidden" id="site_uid" name="site_uid" value="<?php echo get_uri_part(2); ?>" />
+<input type="hidden" id="m_user_id" name="m_user_id" value="" />
+<input type="hidden" id="m_room_id" name="m_room_id" value="" />
+<input type="hidden" id="m_floor_id" name="m_floor_id" value="" />
+<input type="hidden" id="m_building_id" name="m_building_id" value="" />
+<input type="hidden" id="m_location_id" name="m_location_id" value="" />
+<input type="hidden" id="m_project_id" name="m_project_id" value="<?php echo get_uri_part(2); ?>" />

@@ -92,6 +92,7 @@ $types = get_types();
         <div class="uk-width-1-1 uk-margin">
             <input type="hidden" name="form_custom" value="0" />
             <input type="hidden" name="uid" id="uid" value="" />
+            <input type="hidden" name="add_product_room_id" id="add_product_room_id" value="" />
         </div>
     </div>
 
@@ -163,9 +164,9 @@ $types = get_types();
 
             <div class="uk-width-1-1">
                 <input type="hidden" name="form_custom" value="1" />
-                <input type="hidden" name="uid" id="uid" value="" />
-                <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
-                <button id="form-submit-special" type="submit" class="uk-button uk-button-primary">Add</button>
+                <input type="hidden" name="add_product_room_id" id="add_product_room_id" value="" />
+                <button  id="form-submit-special" type="submit" class="uk-button uk-button-primary">Add</button>
+                <button  class="uk-modal-close uk-button uk-button-default">Cancel</button>
             </div>
         </div>
         </form>

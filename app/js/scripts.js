@@ -139,6 +139,24 @@ $(function() {
         updateTableSideNav();
         UIkit.modal($('#add-floor')).hide();
     });
+    $("#form-add-building").off("submit").on("submit", function(e) {
+        e.preventDefault();
+        console.log('Add building  form submitted');
+        const form = document.querySelector("#form-add-building");
+        sendData(form, 'add_building');
+        // update sidebar nav
+        updateTableSideNav();
+        UIkit.modal($('#add-building')).hide();
+    });
+    $("#form-add-location").off("submit").on("submit", function(e) {
+        e.preventDefault();
+        console.log('Add location  form submitted');
+        const form = document.querySelector("#form-add-location");
+        sendData(form, 'add_location');
+        // update sidebar nav
+        updateTableSideNav();
+        UIkit.modal($('#add-location')).hide();
+    });
     $("#form-add-room").off("submit").on("submit", function(e) {
         e.preventDefault();
         console.log('Add room submitted');
@@ -175,30 +193,70 @@ $(function() {
         }, 200);
     });
 
+
+
     function bindNavClicks() {
-        $('#locations .room-item a').off('click').on('click', function(e) {
-            uid = $(this).data('uid');
-            // update the uid on the ptable for ref
-            $('input#uid').val(uid);
-            updatepTable(uid);
+        $(".room-list .room-item a").off('click').on('click', function(e) {
+            e.preventDefault();
+            const uid = $(this).data('id');
+            const action = $(this).data('action');
+
+            if (action == 'add') {
+                $('input[name=modal_form_uid]').val(uid);
+                UIkit.modal($('#add-room')).show();
+            } else {
+                $('input#uid,input#m_room_id,input#add_product_room_id').val(uid);
+                updatepTable();
+            }
         });
-        $(".manage-link.add-room").on('click', function(e) {
-            const uid = $(this).data('uid');
-            $('input[name=modal_form_uid]').val(uid);
-            UIkit.modal($('#add-room')).show();
+
+        $(".floor-list p a").off('click').on('click', function(e) {
+            e.preventDefault();
+            const uid = $(this).data('id');
+            const action = $(this).data('action');
+
+            if (action == 'add') {
+                $('input[name=modal_form_uid]').val(uid);
+                UIkit.modal($('#add-floor')).show();
+            } else {
+                // $('input#uid,input#m_room_id,input#add_product_room_id').val(uid);
+                // updatepTable();
+            }
         });
-        $(".manage-link.add-floor").on('click', function(e) {
-            const uid = $(this).data('uid');
-            $('input[name=modal_form_uid]').val(uid);
-            UIkit.modal($('#add-floor')).show();
+
+        $(".building-list p a").off('click').on('click', function(e) {
+            e.preventDefault();
+            const uid = $(this).data('id');
+            const action = $(this).data('action');
+
+            if (action == 'add') {
+                $('input[name=modal_form_uid]').val(uid);
+                UIkit.modal($('#add-building')).show();
+            } else {
+                // $('input#uid,input#m_room_id,input#add_product_room_id').val(uid);
+                // updatepTable();
+            }
         });
-        $("#locations .remove-link.remove-floor").on('click', function(e) {
-            const uid = $(this).data('uid');
-            $('input[name=modal_form_uid]').val(uid);
-            UIkit.modal($('#remove-floor')).show();
+
+
+        $("#locations .add-location").off('click').on('click', function(e) {
+            e.preventDefault();
+            const uid = $(this).data('id');
+            const action = $(this).data('action');
+
+            if (action == 'add') {
+                $('input[name=modal_form_uid]').val(uid);
+                UIkit.modal($('#add-location')).show();
+            } else {
+                // $('input#uid,input#m_room_id,input#add_product_room_id').val(uid);
+                // updatepTable();
+            }
         });
-        $("#locations .remove-link.remove-room").on('click', function(e) {
-            const uid = $(this).data('uid');
+
+
+        $("#locations li.room-item i").on('click', function(e) {
+            e.preventDefault();
+            const uid = $(this).data('id');
             $('input[name=modal_form_uid]').val(uid);
             UIkit.modal($('#remove-room')).show();
         });
@@ -214,7 +272,7 @@ $(function() {
                 throw new Error(`Response status: ${response.status}`);
             }
             console.log(await response.json());
-            updatepTable($('input#uid').val());
+            updatepTable();
         } catch (e) {
             console.error(e);
         }
@@ -228,197 +286,154 @@ $(function() {
 
     function updateTableSideNav() {
         if ($('#tables-side').length) {
-            $.ajax("/api/get_project_sidenav", {
+
+            $.ajax("/api/get_all_by_project", {
                 type: "post",
                 data: {
-                    project_slug: 'cov-uni',
-                    site_uid: $('input#site_uid').val(),
-                    method: 'get_project_sidenav'
+                    pid: 1,
                 },
                 success: function(data, status, xhr) {
+                    console.log(data);
                     $('#locations').empty();
-                    const locationsDiv = document.getElementById('locations');
                     var jsonData = $.parseJSON(data);
-                    const locationList = createList(jsonData.locations, jsonData.project_slug);
-                    locationsDiv.appendChild(locationList);
+                    const locationList = generateNavMenu(jsonData);
+                    $('#locations').html(locationList);
                     bindNavClicks();
+
+
                 }
             });
+
+            // $.ajax("/api/get_project_sidenav", {
+            //     type: "post",
+            //     data: {
+            //         project_slug: 'cov-uni',
+            //         site_uid: $('input#site_uid').val(),
+            //         method: 'get_project_sidenav'
+            //     },
+            //     success: function(data, status, xhr) {
+            //         $('#locations').empty();
+            //         const locationsDiv = document.getElementById('locations');
+            //         var jsonData = $.parseJSON(data);
+            //         const locationList = createList(jsonData.locations, jsonData.project_slug);
+            //         locationsDiv.appendChild(locationList);
+            //         bindNavClicks();
+            //     }
+            // });
         }
     }
 
 
 
-    function createList(obj, parentSlug, locationSlug = parentSlug, level = 1) {
-        const ul = document.createElement('ul');
-        ul.setAttribute('id', `${parentSlug}-ul`);
-        ul.classList.add('location-list');
 
-        let addedFloorsHeading = false;
-        let initRoom = false;
 
-        for (const key in obj) {
-            if (typeof obj[key] === 'object' && obj[key] !== null) {
-                const li = document.createElement('li');
-                const itemSlug = obj[key].slug || key;
-                const itemUid = obj[key].uid || '';
-                li.setAttribute('id', `${itemSlug}-li`);
-                li.classList.add('location-item');
+    function generateNavMenu(data) {
+        const $menu = $('<ul class="nav-menu"></ul>');
 
-                if (level === 1) {
-                    const locationHeading = document.createElement('h2');
-                    locationHeading.textContent = 'Location';
-                    li.appendChild(locationHeading);
+        $.each(data, function(projectKey, projectData) {
+            $.each(projectData, function(locationKey, locationData) {
+                if (locationKey === 'project_name' || locationKey === 'project_slug' || locationKey === 'project_id') return;
 
-                    const locationLink = document.createElement('a');
-                    locationLink.href = '#';
-                    locationLink.textContent = obj[key].name || key;
-                    locationLink.setAttribute('data-slug', itemSlug);
-                    locationLink.setAttribute('data-uid', itemUid);
-                    li.appendChild(locationLink);
+                const locationName = locationData.location_name || "Add location";
+                const $locationItem = $('<li class="location-item"></li>');
+                $locationItem.append(`
+                        <div class="location-header">
+                          <span class="location-name">${locationName}</span>
+                          <div class="action-icons">            
+                            <i class="fa-solid fa-circle-minus" data-id="${locationData.location_id}" data-action="remove"></i>
+                          </div>
+                        </div>`);
 
-                } else if (level === 2) {
-                    const buildingHeading = document.createElement('h3');
-                    buildingHeading.textContent = 'Building';
-                    li.appendChild(buildingHeading);
+                const $buildingList = $('<ul class="building-list"></ul>');
 
-                    const buildingLink = document.createElement('a');
-                    buildingLink.href = '#';
-                    buildingLink.textContent = obj[key].name || key;
-                    buildingLink.setAttribute('data-slug', itemSlug);
-                    buildingLink.setAttribute('data-uid', itemUid);
-                    li.appendChild(buildingLink);
+                $.each(locationData, function(buildingKey, buildingData) {
+                    if (buildingKey === 'location_name' || buildingKey === 'location_slug' || buildingKey === 'location_id') return;
 
-                    ul.appendChild(li);
-                    addedFloorsHeading = false;
+                    const buildingName = buildingData.floor_name || "Add building";
+                    const $buildingItem = $('<li class="building-item"></li>');
+                    $buildingItem.append(`
+                          <h4 class="building-header">
+                            <span class="building-name">${buildingName}</span>
+                            <div class="action-icons">              
+                              <i class="fa-solid fa-circle-minus" data-id="${buildingData.floor_id}" data-action="remove"></i>
+                            </div>
+                          </h4>`);
 
-                } else if (level === 3) {
-                    // Add Floors and Rooms heading and Add Floor link, even if no floors exist
-                    if (!addedFloorsHeading) {
-                        const floorsHeading = document.createElement('h4');
-                        floorsHeading.textContent = 'Floors and Rooms';
-                        ul.appendChild(floorsHeading);
+                    const $floorList = $('<ul class="floor-list"></ul>');
+                    // buildingData.floor_id is actually the id of the building here
+                    $floorList.append('<h5 style="display:none">Floors and rooms</h5>' +
+                        `<p><a data-id="${buildingData.floor_id}" data-action="add" hef="#">Add floor</a></p>`);
 
-                        const addFloorLink = document.createElement('a');
-                        addFloorLink.href = '#';
-                        addFloorLink.innerHTML = '<i class="fa-solid fa-circle-plus"></i>';
-                        addFloorLink.setAttribute('data-location', locationSlug);
-                        addFloorLink.setAttribute('data-building', itemSlug);
-                        addFloorLink.setAttribute('data-uid', itemUid);  // Added data-uid for parent building
-                        addFloorLink.classList.add('manage-link', 'add-floor');
-                        floorsHeading.appendChild(addFloorLink);
+                    $.each(buildingData, function(floorKey, floorData) {
+                        if (floorKey === 'floor_name' || floorKey === 'floor_slug' || floorKey === 'floor_id') return;
 
-                        addedFloorsHeading = true;
-                    }
+                        const floorName = floorData.floor_name || "Add floor";
+                        const $floorItem = $('<li class="floor-item"></li>');
+                        $floorItem.append(`
+                                <div class="floor-header">
+                                  <span class="floor-name">${floorName}</span>
+                                  <div class="action-icons">                
+                                    <i class="fa-solid fa-circle-minus" data-id="${floorData.floor_id}" data-action="remove"></i>
+                                  </div>
+                                </div>`);
 
-                    // Add each floor item if floors exist
-                    const floorLink = document.createElement('a');
-                    floorLink.href = '#';
-                    floorLink.textContent = obj[key].name || key;
-                    floorLink.setAttribute('data-slug', itemSlug);
-                    floorLink.setAttribute('data-uid', itemUid);
+                        const $roomList = $('<ul class="room-list"></ul>');
 
-                    const floorLi = document.createElement('li');
-                    floorLi.setAttribute('id', `${itemSlug}-floor-li`);
-                    floorLi.classList.add('floor-item');
-                    floorLi.appendChild(floorLink);
+                        $.each(floorData, function(roomKey, roomData) {
+                            if (roomKey === 'floor_name' || roomKey === 'floor_slug' || roomKey === 'floor_id') return;
 
-                    const removeFloorLink = document.createElement('a');
-                    removeFloorLink.href = '#';
-                    removeFloorLink.innerHTML = '<i class="fa-solid fa-circle-minus"></i>';
-                    removeFloorLink.setAttribute('data-uid', itemUid);
-                    removeFloorLink.classList.add('remove-link', 'remove-floor');
-                    floorLi.appendChild(removeFloorLink);
+                            const roomName = roomData.room_name || "Add room";
+                            const $roomItem = $('<li class="room-item"></li>');
+                            $roomItem.append(`<span class="room-name"><a href="#" data-id="${roomData.room_id}">${roomName}</a></span>`);
+                            if (roomData.room_name) {
+                                $roomItem.append(`<i class="fa-solid fa-circle-minus action-icon" data-id="${roomData.room_id}" data-action="remove"></i>`);
+                            }
+                            $roomList.append($roomItem);
 
-                    li.appendChild(floorLi);
+                        });
+                        $roomList.append(`<li class="room-item"><span class="room-name"><a href="#" data-action="add" data-id="${floorData.floor_id}">Add room</a></span></li>`);
+                        $floorItem.append($roomList);
+                        $floorList.append($floorItem);
 
-                    const addRoomLink = document.createElement('a');
-                    addRoomLink.href = '#';
-                    addRoomLink.innerHTML = '<i class="fa-solid fa-circle-plus"></i>';
-                    addRoomLink.setAttribute('data-location', locationSlug);
-                    addRoomLink.setAttribute('data-building', parentSlug);
-                    addRoomLink.setAttribute('data-floor', obj[key].slug);
-                    addRoomLink.setAttribute('data-uid', itemUid);  // Added data-uid for parent floor
-                    addRoomLink.classList.add('manage-link', 'add-room');
-                    floorLi.appendChild(addRoomLink);
+                    });
+                    $buildingItem.append($floorList);
+                    $buildingList.append($buildingItem);
+                    $buildingList.append(`<li class="room-item"><p><a data-id="${locationData.location_id}" data-action="add" href="#">Add Building</a></p></li>`);
+                    $locationItem.append($buildingList);
 
-                } else if (obj[key].name && level > 3) {
-                    const roomLink = document.createElement('a');
-                    roomLink.href = '#';
-                    roomLink.textContent = obj[key].name;
-                    roomLink.setAttribute('data-slug', itemSlug);
-                    roomLink.setAttribute('data-uid', itemUid);
-                    roomLink.setAttribute('data-room-name', obj[key].name || key); // Adding room name
-                    roomLink.setAttribute('data-floor-name', obj?.[key]?.floor || ''); // Adding floor name
+                    $menu.append($locationItem);
+                });
+            });
+        });
 
-                    const roomLi = document.createElement('li');
-                    roomLi.setAttribute('id', `${itemSlug}-room-li`);
-                    roomLi.classList.add('room-item');
-                    roomLi.appendChild(roomLink);
+        const project_id = $('input#m_project_id').val();
+        $menu.append(`<ul class="building-list"><li class="room-item"><p><a class="add-location"  data-id="${project_id}" data-action="add" href="#">Add Location</a></p></li></ul>`);
 
-                    const removeRoomLink = document.createElement('a');
-                    removeRoomLink.href = '#';
-                    removeRoomLink.innerHTML = '<i class="fa-solid fa-circle-minus"></i>';
-                    removeRoomLink.setAttribute('data-uid', itemUid);
-                    removeRoomLink.classList.add('remove-link', 'remove-room');
-                    roomLi.appendChild(removeRoomLink);
-
-                    if (!initRoom) {
-                        $('input#site_uid').val(itemUid);
-                        initRoom = true;
-                    }
-                    li.appendChild(roomLi);
-                }
-
-                li.appendChild(createList(obj[key], itemSlug, locationSlug, level + 1));
-                ul.appendChild(li);
-            }
-        }
-
-        // If there are no floors or rooms, add the heading and add-floor link anyway
-        if (level === 3 && !addedFloorsHeading) {
-            const floorsHeading = document.createElement('h4');
-            floorsHeading.textContent = 'Floors and Rooms';
-            ul.appendChild(floorsHeading);
-
-            const addFloorLink = document.createElement('a');
-            addFloorLink.href = '#';
-            addFloorLink.innerHTML = '<i class="fa-solid fa-circle-plus"></i>';
-            addFloorLink.setAttribute('data-location', locationSlug);
-            addFloorLink.setAttribute('data-building', parentSlug);
-            addFloorLink.setAttribute('data-uid', '');
-            addFloorLink.classList.add('manage-link', 'add-floor');
-            floorsHeading.appendChild(addFloorLink);
-        }
-
-        return ul;
+        return $menu;
     }
 
 
 
-
-
-
-    function updatepTable(uid = false) {
+    function updatepTable(room_id = false) {
         setTimeout(function() {
-            if (uid == false) {
-                uid = $('input#site_uid').val();
+            if (room_id == false) {
+                room_id = $('input#m_room_id').val();
             }
-            if ($('#ptable').length && uid) {
-                $.ajax("/api/get_ptabledata", {
+            if ($('#ptable').length && room_id) {
+                $.ajax("/api/get_products_in_room", {
                     type: "post",
-                    data: { uid: uid },
+                    data: { room_id: room_id },
                     success: function(data, status, xhr) {
                         var jsonData = $.parseJSON(data);
                         if (data) {
                             pTable.setData(data);
                             // set the uid for ref by others
-                            $('input#uid').val(uid);
-                            $('.room-heading .floor_name').html(jsonData[0].floor_name).show();
-                            $('.room-heading .room_name').html(jsonData[0].room_name).show();
-                            $('.location-heading .project_name').html(jsonData[0].project_name).show();
-                            $('.location-heading .location_name').html(jsonData[0].location_name).show();
-                            $('.location-heading .building_name').html(jsonData[0].building_name).show();
+                            $('input#uid').val(room_id);
+                            // $('.room-heading .floor_name').html(jsonData[0].floor_name).show();
+                            // $('.room-heading .room_name').html(jsonData[0].room_name).show();
+                            // $('.location-heading .project_name').html(jsonData[0].project_name).show();
+                            // $('.location-heading .location_name').html(jsonData[0].location_name).show();
+                            // $('.location-heading .building_name').html(jsonData[0].building_name).show();
                         } else {
                             pTable.setData([]);
                         }
@@ -442,8 +457,8 @@ $(function() {
                 visible: false
             },
                 {
-                    title: "uid",
-                    field: "site_uid_fk",
+                    title: "room_id",
+                    field: "room_id_fk",
                     visible: false
                 },
                 {
@@ -495,7 +510,7 @@ $(function() {
                     width: 30,
                     hozAlign: "center",
                     cellClick: function (e, cell) {
-                        decreaseQty(cell.getRow().getData().sku, cell.getRow().getData().site_uid_fk);
+                        decreaseQty(cell.getRow().getData().sku, cell.getRow().getData().room_id_fk);
                     }
                 },
                 {
@@ -513,7 +528,7 @@ $(function() {
         pTable.on("cellEdited", function (cell) {
             //cell - cell component
             const sku = cell.getRow().getData().sku;
-            const uid = cell.getRow().getData().site_uid_fk;
+            const uid = cell.getRow().getData().room_id;
             const ref = cell.getRow().getData().ref
             //console.log('sku: '+sku+' ref: '+ref);
             if (sku != "" && ref != "") {
@@ -716,7 +731,8 @@ $(function() {
     });
     $('#form_project_name').off('blur').on('blur', function(e) {
         if ($(this).val() != "") {
-            $('#form_location').removeAttr('disabled');
+            $('#form_location').removeAttr('disabled').focus();
+
         }
     });
 
@@ -738,7 +754,7 @@ $(function() {
                     });
                     $('#form_location').off('blur').on('blur', function(e) {
                         if ($(this).val() != "") {
-                            $('#form_building').removeAttr('disabled');
+                            $('#form_building').removeAttr('disabled').focus();
                         }
                     });
                 }

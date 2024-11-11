@@ -2,10 +2,25 @@
 
 
 <!-- rooms nav -->
+<div id="tables-side-desktop" >
+    <div class="uk-visible@m uk-flex uk-flex-column">
+
+        <h4>Manage Project</h4>
+
+        <div id="locations"></div>
+
+    </div>
+</div>
+<!-- end rooms nav -->
+
+
+
+
+<!-- rooms nav -->
 <div id="tables-side" uk-offcanvas="mode: slide; overlay: true">
     <div class="uk-visible@m uk-offcanvas-bar uk-flex uk-flex-column">
 
-        <h4>Manage Building</h4>
+        <h4>Manage Project</h4>
 
         <div id="locations"></div>
 
@@ -33,8 +48,9 @@
                 <div class="uk-width-1-1">
                     <input type="hidden" name="modal_form_project_slug" value="<?php echo $project_slug; ?>" />
                     <input type="hidden" name="modal_form_uid" value="" />
-                    <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
+
                     <button id="form-submit-room" type="submit" class="uk-button uk-button-primary">Remove</button>
+                    <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
                 </div>
             </div>
         </form>
@@ -58,8 +74,8 @@
                 <div class="uk-width-1-1">
                     <input type="hidden" name="modal_form_project_slug" value="<?php echo $project_slug; ?>" />
                     <input type="hidden" name="modal_form_uid" value="" />
-                    <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
                     <button id="form-submit-room" type="submit" class="uk-button uk-button-primary">Remove</button>
+                    <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
                 </div>
             </div>
         </form>
@@ -91,7 +107,9 @@
                 </div>
 
                 <div class="uk-width-1-1">
-                    <input type="hidden" name="modal_form_project_slug" value="<?php echo $project_slug; ?>" />
+                    <input type="hidden" name="modal_form_project_id" value="<?php echo $project_slug; ?>" />
+                    <input type="hidden" name="modal_form_project_name" value="" />
+
                     <input type="hidden" name="modal_form_uid" value="" />
                     <div class="form-actions">
                         <button id="form-submit-room" type="submit" class="uk-button uk-button-primary">Add Room</button>
@@ -136,10 +154,77 @@
                 </div>
 
                 <div class="uk-width-1-1">
-                    <input type="hidden" name="modal_form_project_slug" value="<?php echo $project_slug; ?>" />
                     <input type="hidden" name="modal_form_uid" value="" />
-                    <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
+
                     <button id="form-submit-floor" type="submit" class="uk-button uk-button-primary">Add Floor</button>
+                    <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- add building modal -->
+<div id="add-building" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical uk-modal-body">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <form id="form-add-building">
+            <div class="uk-text-center" uk-grid>
+                <div class="uk-width-1-1">
+                    <h3>Add Building</h3>
+                </div>
+
+                <div class="uk-width-1-1 uk-text-left">
+                    <label>Name The Building</label>
+                    <input id="modal_form_building"
+                           name="modal_form_building"
+                           class="uk-input free-type"
+                           placeholder="Building Name"
+                           required
+                           value=""
+                           oninvalid="this.setCustomValidity('You must enter a name for this building')"
+                           oninput="this.setCustomValidity('')" />
+                </div>
+
+                <div class="uk-width-1-1">
+                    <input type="hidden" name="modal_form_uid" value="" />
+
+                    <button id="form-submit-building" type="submit" class="uk-button uk-button-primary">Add Floor</button>
+                    <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- add location modal -->
+<div id="add-location" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical uk-modal-body">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <form id="form-add-location">
+            <div class="uk-text-center" uk-grid>
+                <div class="uk-width-1-1">
+                    <h3>Add Location</h3>
+                </div>
+
+                <div class="uk-width-1-1 uk-text-left">
+                    <label>Name The Location</label>
+                    <input id="modal_form_location"
+                           name="modal_form_location"
+                           class="uk-input free-type"
+                           placeholder="Location Name"
+                           required
+                           value=""
+                           oninvalid="this.setCustomValidity('You must enter a name for this ocation')"
+                           oninput="this.setCustomValidity('')" />
+                </div>
+
+                <div class="uk-width-1-1">
+                    <input type="hidden" name="modal_form_uid" value="" />
+
+                    <button id="form-submit-location" type="submit" class="uk-button uk-button-primary">Add Floor</button>
+                    <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
                 </div>
             </div>
         </form>
