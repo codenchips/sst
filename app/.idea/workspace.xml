@@ -27,7 +27,7 @@
     <favorites_list name="app" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.36673775">
+    <splitter split-orientation="horizontal" split-proportion="0.3619403">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="tables.php" pinned="false" current-in-tab="false">
@@ -72,8 +72,8 @@
           <file leaf-file-name="model.php" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/lib/model.php">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="8636">
-                  <caret line="477" column="36" selection-start-line="477" selection-start-column="36" selection-end-line="477" selection-end-column="36" />
+                <state relative-caret-position="672">
+                  <caret line="75" column="51" lean-forward="true" selection-start-line="75" selection-start-column="51" selection-end-line="75" selection-end-column="51" />
                 </state>
               </provider>
             </entry>
@@ -85,11 +85,10 @@
           <file leaf-file-name="scripts.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/js/scripts.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="540">
-                  <caret line="413" lean-forward="true" selection-start-line="329" selection-start-column="2" selection-end-line="413" />
+                <state relative-caret-position="-186">
+                  <caret line="221" column="9" lean-forward="true" selection-start-line="221" selection-start-column="9" selection-end-line="221" selection-end-column="9" />
                   <folding>
-                    <element signature="n#style#0;n#h5#0;n#!!top" expanded="true" />
-                    <marker date="1731329356789" expanded="true" signature="25823:26006" ph="..." />
+                    <marker date="1731426921301" expanded="true" signature="26794:26977" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -158,9 +157,9 @@
         <option value="$PROJECT_DIR$/views/tables.php" />
         <option value="$PROJECT_DIR$/scss/app.scss" />
         <option value="$PROJECT_DIR$/partials/header.php" />
-        <option value="$PROJECT_DIR$/js/scripts.js" />
         <option value="$PROJECT_DIR$/partials/tables-side.php" />
         <option value="$PROJECT_DIR$/lib/model.php" />
+        <option value="$PROJECT_DIR$/js/scripts.js" />
       </list>
     </option>
   </component>
@@ -271,12 +270,12 @@
       <updated>1728978621572</updated>
       <workItem from="1728978623245" duration="117499000" />
       <workItem from="1729686840319" duration="220995000" />
-      <workItem from="1731312662203" duration="6001000" />
+      <workItem from="1731312662203" duration="16158000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="344495000" />
+    <option name="totallyTimeSpent" value="354652000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -398,8 +397,7 @@
         <state relative-caret-position="4268">
           <caret line="194" lean-forward="true" selection-start-line="194" selection-end-line="194" />
           <folding>
-            <element signature="n#style#0;n#h5#0;n#!!top" expanded="true" />
-            <marker date="1731329356789" expanded="true" signature="25823:26006" ph="..." />
+            <marker date="1731426921301" expanded="true" signature="26794:26977" ph="..." />
           </folding>
         </state>
       </provider>
@@ -444,8 +442,7 @@
         <state relative-caret-position="4334">
           <caret line="197" column="8" lean-forward="true" selection-start-line="197" selection-start-column="8" selection-end-line="197" selection-end-column="8" />
           <folding>
-            <element signature="n#style#0;n#h5#0;n#!!top" expanded="true" />
-            <marker date="1731329356789" expanded="true" signature="25823:26006" ph="..." />
+            <marker date="1731426921301" expanded="true" signature="26794:26977" ph="..." />
           </folding>
         </state>
       </provider>
@@ -560,18 +557,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/model.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8636">
-          <caret line="477" column="36" selection-start-line="477" selection-start-column="36" selection-end-line="477" selection-end-column="36" />
+        <state relative-caret-position="672">
+          <caret line="75" column="51" lean-forward="true" selection-start-line="75" selection-start-column="51" selection-end-line="75" selection-end-column="51" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/scripts.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="413" lean-forward="true" selection-start-line="329" selection-start-column="2" selection-end-line="413" />
+        <state relative-caret-position="-186">
+          <caret line="221" column="9" lean-forward="true" selection-start-line="221" selection-start-column="9" selection-end-line="221" selection-end-column="9" />
           <folding>
-            <element signature="n#style#0;n#h5#0;n#!!top" expanded="true" />
-            <marker date="1731329356789" expanded="true" signature="25823:26006" ph="..." />
+            <marker date="1731426921301" expanded="true" signature="26794:26977" ph="..." />
           </folding>
         </state>
       </provider>

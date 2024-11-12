@@ -210,7 +210,7 @@ $(function() {
             }
         });
 
-        $(".floor-list p a").off('click').on('click', function(e) {
+        $(".floor-list .floor-name a").off('click').on('click', function(e) {
             e.preventDefault();
             const uid = $(this).data('id');
             const action = $(this).data('action');
@@ -330,58 +330,69 @@ $(function() {
     function generateNavMenu(data) {
         const $menu = $('<ul class="nav-menu"></ul>');
 
-        $.each(data, function(projectKey, projectData) {
-            $.each(projectData, function(locationKey, locationData) {
+        // Level 0: Projects
+        $.each(data, function (projectKey, projectData) {
+            // Level 1: Locations within each project
+            $.each(projectData, function (locationKey, locationData) {
                 if (locationKey === 'project_name' || locationKey === 'project_slug' || locationKey === 'project_id') return;
 
                 const locationName = locationData.location_name || "Add location";
                 const $locationItem = $('<li class="location-item"></li>');
                 $locationItem.append(`
-                        <div class="location-header">
-                          <span class="location-name">${locationName}</span>
-                          <div class="action-icons">            
-                            <i class="fa-solid fa-circle-minus" data-id="${locationData.location_id}" data-action="remove"></i>
-                          </div>
-                        </div>`);
+                <div class="location-header">
+                    <span class="location-name">${locationName}</span>
+                    <div class="action-icons">
+                        <i class="fa-solid fa-circle-minus" data-id="${locationData.location_id}" data-action="remove"></i>
+                    </div>
+                </div>
+            `);
 
                 const $buildingList = $('<ul class="building-list"></ul>');
+                let hasBuildings = false;
 
-                $.each(locationData, function(buildingKey, buildingData) {
+                // Level 2: Buildings within each location
+                $.each(locationData, function (buildingKey, buildingData) {
                     if (buildingKey === 'location_name' || buildingKey === 'location_slug' || buildingKey === 'location_id') return;
 
-                    const buildingName = buildingData.floor_name || "Add building";
+                    hasBuildings = true; // Mark that we have at least one building
+                    const buildingName = buildingData.building_name || "Add building";
                     const $buildingItem = $('<li class="building-item"></li>');
                     $buildingItem.append(`
-                          <h4 class="building-header">
-                            <span class="building-name">${buildingName}</span>
-                            <div class="action-icons">              
-                              <i class="fa-solid fa-circle-minus" data-id="${buildingData.floor_id}" data-action="remove"></i>
-                            </div>
-                          </h4>`);
+                    <h4 class="building-header">
+                        <span class="building-name">${buildingName}</span>
+                        <div class="action-icons">
+                            <i class="fa-solid fa-circle-minus" data-id="${buildingData.building_id}" data-action="remove"></i>
+                        </div>
+                    </h4>
+                `);
 
                     const $floorList = $('<ul class="floor-list"></ul>');
-                    // buildingData.floor_id is actually the id of the building here
-                    $floorList.append('<h5 style="display:none">Floors and rooms</h5>' +
-                        `<p><a data-id="${buildingData.floor_id}" data-action="add" hef="#">Add floor</a></p>`);
+                    let hasFloors = false;
 
-                    $.each(buildingData, function(floorKey, floorData) {
-                        if (floorKey === 'floor_name' || floorKey === 'floor_slug' || floorKey === 'floor_id') return;
+                    // Level 3: Floors within each building
+                    $.each(buildingData, function (floorKey, floorData) {
+                        if (floorKey === 'building_name' || floorKey === 'building_slug' || floorKey === 'building_id') return;
 
+                        hasFloors = true; // Mark that we have at least one floor
                         const floorName = floorData.floor_name || "Add floor";
                         const $floorItem = $('<li class="floor-item"></li>');
                         $floorItem.append(`
-                                <div class="floor-header">
-                                  <span class="floor-name">${floorName}</span>
-                                  <div class="action-icons">                
-                                    <i class="fa-solid fa-circle-minus" data-id="${floorData.floor_id}" data-action="remove"></i>
-                                  </div>
-                                </div>`);
+                        <div class="floor-header">
+                            <span class="floor-name">${floorName}</span>
+                            <div class="action-icons">
+                                <i class="fa-solid fa-circle-minus" data-id="${floorData.floor_id}" data-action="remove"></i>
+                            </div>
+                        </div>
+                    `);
 
                         const $roomList = $('<ul class="room-list"></ul>');
+                        let hasRooms = false;
 
-                        $.each(floorData, function(roomKey, roomData) {
+                        // Level 4: Rooms within each floor
+                        $.each(floorData, function (roomKey, roomData) {
                             if (roomKey === 'floor_name' || roomKey === 'floor_slug' || roomKey === 'floor_id') return;
 
+                            hasRooms = true; // Mark that we have at least one room
                             const roomName = roomData.room_name || "Add room";
                             const $roomItem = $('<li class="room-item"></li>');
                             $roomItem.append(`<span class="room-name"><a href="#" data-id="${roomData.room_id}">${roomName}</a></span>`);
@@ -389,28 +400,51 @@ $(function() {
                                 $roomItem.append(`<i class="fa-solid fa-circle-minus action-icon" data-id="${roomData.room_id}" data-action="remove"></i>`);
                             }
                             $roomList.append($roomItem);
-
                         });
-                        $roomList.append(`<li class="room-item"><span class="room-name"><a href="#" data-action="add" data-id="${floorData.floor_id}">Add room</a></span></li>`);
+
+                        // Show "Add Room" link if there is a valid floor ID
+                        if (floorData.floor_id) {
+                            $roomList.append(`<li class="room-item"><span class="room-name"><a href="#" data-action="add" data-id="${floorData.floor_id}">Add room</a></span></li>`);
+                        }
+
                         $floorItem.append($roomList);
                         $floorList.append($floorItem);
-
                     });
+
+                    // Show "Add Floor" link if there is a valid building ID
+                    if (buildingData.building_id) {
+                        $floorList.append(`<li class="floor-item"><span class="floor-name"><a href="#" data-id="${buildingData.building_id}" data-action="add">Add floor</a></span></li>`);
+                    }
+
                     $buildingItem.append($floorList);
                     $buildingList.append($buildingItem);
-                    $buildingList.append(`<li class="room-item"><p><a data-id="${locationData.location_id}" data-action="add" href="#">Add Building</a></p></li>`);
-                    $locationItem.append($buildingList);
-
-                    $menu.append($locationItem);
                 });
+
+                // Always show "Add Building" link with the location ID
+                if (locationData.location_id) {
+                    $buildingList.append(`<li class="building-item"><p><a href="#" data-id="${locationData.location_id}" data-action="add">Add building</a></p></li>`);
+                }
+
+                $locationItem.append($buildingList);
+                $menu.append($locationItem);
             });
         });
 
         const project_id = $('input#m_project_id').val();
-        $menu.append(`<ul class="building-list"><li class="room-item"><p><a class="add-location"  data-id="${project_id}" data-action="add" href="#">Add Location</a></p></li></ul>`);
+        $menu.append(`
+        <ul class="building-list">
+            <li class="building-item"><p><a class="add-location" href="#" data-id="${project_id}" data-action="add">Add Location</a></p></li>
+        </ul>
+    `);
 
         return $menu;
     }
+
+
+
+
+
+
 
 
 

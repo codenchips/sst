@@ -45,32 +45,40 @@ function ajax_get_all_by_project() {
         );
     }
     foreach ($res as $row) {
-        $p[$row->project_slug][$row->location_slug] = array(
-            "location_name" => $row->location_name,
-            "location_slug" => $row->location_slug,
-            "location_id" => $row->location_id,
-        );
+        if ($row->location_id) {
+            $p[$row->project_slug][$row->location_slug] = array(
+                "location_name" => $row->location_name,
+                "location_slug" => $row->location_slug,
+                "location_id" => $row->location_id,
+            );
+        }
     }
     foreach ($res as $row) {
-        $p[$row->project_slug][$row->location_slug][$row->building_slug] = array(
-            "floor_name" => $row->building_name,
-            "floor_slug" => $row->building_slug,
-            "floor_id" => $row->building_id,
-        );
+        if ($row->building_id) {
+            $p[$row->project_slug][$row->location_slug][$row->building_slug] = array(
+                "building_name" => $row->building_name,
+                "building_slug" => $row->building_slug,
+                "building_id" => $row->building_id,
+            );
+        }
     }
     foreach ($res as $row) {
-        $p[$row->project_slug][$row->location_slug][$row->building_slug][$row->floor_slug] = array(
-            "floor_name" => $row->floor_name,
-            "floor_slug" => $row->floor_slug,
-            "floor_id" => $row->floor_id,
-        );
+        if ($row->floor_id) {
+            $p[$row->project_slug][$row->location_slug][$row->building_slug][$row->floor_slug] = array(
+                "floor_name" => $row->floor_name,
+                "floor_slug" => $row->floor_slug,
+                "floor_id" => $row->floor_id,
+            );
+        }
     }
     foreach ($res as $row) {
-        $p[$row->project_slug][$row->location_slug][$row->building_slug][$row->floor_slug][$row->room_slug] = array(
-            "room_name" => $row->room_name,
-            "room_slug" => $row->room_slug,
-            "room_id" => $row->room_id,
-        );
+        if ($row->room_id) {
+            $p[$row->project_slug][$row->location_slug][$row->building_slug][$row->floor_slug][$row->room_slug] = array(
+                "room_name" => $row->room_name,
+                "room_slug" => $row->room_slug,
+                "room_id" => $row->room_id,
+            );
+        }
     }
 
 
