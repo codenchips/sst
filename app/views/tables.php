@@ -13,21 +13,45 @@ $types = get_types();
 
 <?php include ('./partials/tables-side.php'); ?>
 
-<div class="manage-bar uk-margin" uk-grid>
-    <div class="uk-width-1-1 location-heading uk-text-left" >
-        <span style="display:none" class="project_name"></span>
-        <span style="display:none" class="location_name"></span>
-        <span style="display:none" class="building_name"></span>
+
+
+
+
+<div style="display:none;" id="table_mode_nodata" class="uk-width-1-1 uk-margin">
+
+    <div class="uk-card uk-card-large uk-card-default">
+        <div class="uk-card-header">
+            <h3 class="uk-card-title">Welcome to your project</h3>
+        </div>
+        <div class="uk-card-body">
+            <p>Use the sidebar to manage this projects buildings, floors and rooms.</p>
+        </div>
+        <div class="uk-card-footer uk-align-center">
+            <button class="uk-button uk-button-primary" type="button" uk-toggle="target: #tables-side">Manage Project</button>
+        </div>
+
     </div>
 
-    <div class="uk-width-1-3 uk-margin">
-        <button class="uk-button uk-button-primary" type="button" uk-toggle="target: #tables-side">Manage Building</button>
-    </div>
+
 
 </div>
 
 
-<div class="uk-width-1-1 uk-margin">
+
+<div style="display:none;" id="table_mode_view" class="uk-width-1-1 uk-margin">
+
+    <div class="uk-width-1-3 uk-margin">
+        <button class="uk-button uk-button-primary" type="button" uk-toggle="target: #tables-side">Manage Project</button>
+    </div>
+
+
+    <div class="manage-bar uk-margin" uk-grid>
+        <div class="uk-width-1-1 location-heading uk-text-left" >
+            <span style="display:none" class="project_name"></span>
+            <span style="display:none" class="location_name"></span>
+            <span style="display:none" class="building_name"></span>
+        </div>
+    </div>
 
 <form id="product-select-form">
 

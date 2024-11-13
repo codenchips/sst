@@ -5,9 +5,7 @@
 <div id="tables-side-desktop" >
     <div class="uk-visible@m uk-flex uk-flex-column">
 
-        <h4>Manage Project</h4>
-
-        <div id="locations"></div>
+        <div id="__locations"></div>
 
     </div>
 </div>
@@ -29,6 +27,63 @@
 <!-- end rooms nav -->
 
 
+
+
+
+
+<!-- remove floor/ room modal -->
+<div id="remove-location" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical uk-modal-body">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <form id="form-remove-location">
+            <div class="uk-text-center" uk-grid>
+                <div class="uk-width-1-1">
+                    <h3>Remove Location</h3>
+                </div>
+
+                <div class="uk-width-1-1">
+                    <h4>This will delete this location.</h4>
+                    <p>This will remove all rooms on this location and all products assigned to those rooms.</p>
+                </div>
+
+                <div class="uk-width-1-1">
+                    <input type="hidden" name="modal_form_project_slug" value="<?php echo $project_slug; ?>" />
+                    <input type="hidden" name="modal_form_uid" value="" />
+
+                    <button id="form-submit-room" type="submit" class="uk-button uk-button-primary">Remove</button>
+                    <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- remove floor/ room modal -->
+<div id="remove-building" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical uk-modal-body">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <form id="form-remove-building">
+            <div class="uk-text-center" uk-grid>
+                <div class="uk-width-1-1">
+                    <h3>Remove Building</h3>
+                </div>
+
+                <div class="uk-width-1-1">
+                    <h4>This will delete this building.</h4>
+                    <p>This will remove all rooms on this building and all products assigned to those rooms.</p>
+                </div>
+
+                <div class="uk-width-1-1">
+                    <input type="hidden" name="modal_form_project_slug" value="<?php echo $project_slug; ?>" />
+                    <input type="hidden" name="modal_form_uid" value="" />
+
+                    <button id="form-submit-room" type="submit" class="uk-button uk-button-primary">Remove</button>
+                    <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 <!-- remove floor/ room modal -->
 <div id="remove-floor" uk-modal>
@@ -190,7 +245,7 @@
                 <div class="uk-width-1-1">
                     <input type="hidden" name="modal_form_uid" value="" />
 
-                    <button id="form-submit-building" type="submit" class="uk-button uk-button-primary">Add Floor</button>
+                    <button id="form-submit-building" type="submit" class="uk-button uk-button-primary">Add Building</button>
                     <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
                 </div>
             </div>
@@ -223,7 +278,7 @@
                 <div class="uk-width-1-1">
                     <input type="hidden" name="modal_form_uid" value="" />
 
-                    <button id="form-submit-location" type="submit" class="uk-button uk-button-primary">Add Floor</button>
+                    <button id="form-submit-location" type="submit" class="uk-button uk-button-primary">Add Location</button>
                     <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
                 </div>
             </div>

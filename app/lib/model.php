@@ -31,7 +31,7 @@ function ajax_get_all_by_project() {
             left join sst_floors f on f.building_id_fk = b.id
             left join sst_rooms r on r.floor_id_fk = f.id
             where j.owner_id = 1
-            and j.id = 1 
+            and j.id = $pid 
             order by project_slug, location_slug, building_slug, floor_slug, room_slug";
     $q = $pdo->query($sql);
     $res = $q->fetchAll(PDO::FETCH_OBJ);
@@ -81,12 +81,33 @@ function ajax_get_all_by_project() {
         }
     }
 
-
-
     return(return_json($p));
 }
 
 
+function ajax_get_headings_by_room_id() {
+    global $pdo;
+    $uid = $_POST['uid'];
+
+    $sql = "select 
+            r.`name` as room_name,r.slug as room_slug,r.id as room_id,
+            f.`name` as floor_name,f.slug as floor_slug,f.id as floor_id,
+            b.`name` as building_name,b.slug as building_slug,b.id as building_id,
+            l.`name` as location_name,l.slug as location_slug,l.id as location_id,
+            j.`name` as project_name,j.slug as project_slug,j.id as project_id
+            from sst_projects j
+            left join sst_locations l on l.project_id_fk = j.id
+            left join sst_buildings b on b.location_id_fk = l.id
+            left join sst_floors f on f.building_id_fk = b.id
+            left join sst_rooms r on r.floor_id_fk = f.id
+            where j.owner_id = 1
+            and r.id = $uid  
+            limit 1";
+    $q = $pdo->query($sql);
+    $res = $q->fetchAll(PDO::FETCH_OBJ);
+
+    return(return_json($res));
+}
 
 
 
@@ -494,33 +515,107 @@ function ajax_add_location() {
 }
 
 
+function ajax_remove_location() {
+    global $pdo;
+
+    $uid = $_POST['modal_form_uid'];
+
+    $buildings = false;
+    $floors = false;
+    $rooms = false;
+
+    // get buildings in this location
+    $q = $pdo->query("SELECT id FROM sst_buildings WHERE location_id_fk = $uid");
+    $buildings = $q->fetchAll(PDO::FETCH_COLUMN, 0);
+
+    // get the floors in the building
+    if ($buildings) {
+        $buildingsStr = implode(',', $buildings);
+        $q = $pdo->query("SELECT id FROM sst_floors WHERE building_id_fk IN ($buildingsStr)");
+        $floors = $q->fetchAll(PDO::FETCH_COLUMN, 0);
+    }
+
+    if ($floors) {
+        $floorsStr = implode(',',$floors);
+        // get the rooms in all of these floors
+        $q = $pdo->query("SELECT id FROM sst_rooms WHERE floor_id_fk IN ($floorsStr)");
+        $rooms = $q->fetchAll(PDO::FETCH_COLUMN, 0);
+        $roomsStr = implode(',', $rooms);
+    }
+
+    if ($uid) {
+
+        $pdo->prepare("DELETE FROM sst_locations WHERE id = ?")->execute([$uid]);
+        $pdo->prepare("DELETE FROM sst_buildings WHERE location_id_fk = ?")->execute([$uid]);
+        if ($buildings) {
+            $pdo->prepare("DELETE FROM sst_floors WHERE building_id_fk IN (?)")->execute([$buildingsStr]);
+        }
+        if ($floors) {
+            $pdo->prepare("DELETE FROM sst_rooms WHERE floor_id_fk IN (?)")->execute($floorsStr);
+        }
+        if ($rooms) {
+            $pdo->prepare("DELETE FROM sst_products WHERE room_id_fk IN (?)")->execute([$roomsStr]);
+        }
+        $ret = json_encode(['deleted' => 1]);
+    } else {
+        $ret = json_encode(['deleted' => 0]);
+    }
+    exit($ret);
+}
+
+
+function ajax_remove_building() {
+    global $pdo;
+
+    $uid = $_POST['modal_form_uid'];
+
+    $floors = false;
+    $rooms = false;
+
+    // get the floors in the building
+    $q = $pdo->query("SELECT id FROM sst_floors WHERE building_id_fk = $uid");
+    $floors = $q->fetchAll(PDO::FETCH_COLUMN, 0);
+
+    if (count($floors) > 0) {
+        $floorsStr = implode(',',$floors);
+        // get the rooms in all of these floors
+        $q = $pdo->query("SELECT id FROM sst_rooms WHERE floor_id_fk IN ($floorsStr)");
+        $rooms = $q->fetchAll(PDO::FETCH_COLUMN, 0);
+        $roomsStr = implode(',', $rooms);
+    }
+
+    if ($uid) {
+        $pdo->prepare("DELETE FROM sst_buildings WHERE id = ?")->execute([$uid]);
+        $pdo->prepare("DELETE FROM sst_floors WHERE building_id_fk = ?")->execute([$uid]);
+        if ($floors) {
+            $pdo->prepare("DELETE FROM sst_rooms WHERE floor_id_fk IN (?)")->execute($floorsStr);
+        }
+        if ($rooms) {
+            $pdo->prepare("DELETE FROM sst_products WHERE room_id_fk IN (?)")->execute([$roomsStr]);
+        }
+        $ret = json_encode(['deleted' => 1]);
+    } else {
+        $ret = json_encode(['deleted' => 0]);
+    }
+    exit($ret);
+}
+
+
 function ajax_remove_floor() {
     global $pdo;
 
     $uid = $_POST['modal_form_uid'];
 
-    $q = $pdo->query("SELECT `project_slug`, `location`, `building`, `floor`
-                                    FROM survey_sites WHERE site_uid_pk = $uid LIMIT 1");
-    $data = $q->fetch(PDO::FETCH_OBJ);
-
-    // get all uids from sites to be deleted from both sites and tables
-    // that match this project, location and building
-    $q = $pdo->query("SELECT `site_uid_pk` FROM survey_sites WHERE
-                      `project_slug` = '$data->project_slug' AND
-                      `location` = '$data->location' AND
-                      `building` = '$data->building' AND
-                      `floor` = '$data->floor'");
-    $data = $q->fetchAll(PDO::FETCH_ASSOC);
-    $idsStr = "(";
-    foreach ($data as $row) {
-        $idsStr .= $row['site_uid_pk'].',';
-    }
-    $idsStr = trim($idsStr, ',');
-    $idsStr .= ")";
+    // get the rooms in the floor
+    $q = $pdo->query("SELECT id FROM sst_rooms WHERE floor_id_fk = $uid");
+    $rooms = $q->fetchAll(PDO::FETCH_COLUMN, 0);
+    $roomsStr = implode(',',$rooms);
 
     if ($uid) {
-        $pdo->query("DELETE FROM survey_tables WHERE site_uid_fk IN $idsStr")->execute();
-        $pdo->query("DELETE FROM survey_sites WHERE site_uid_pk IN $idsStr")->execute();
+
+        $pdo->prepare("DELETE FROM sst_floors WHERE id = ?")->execute([$uid]);
+        $pdo->prepare("DELETE FROM sst_rooms WHERE floor_id_fk = ?")->execute([$uid]);
+        $pdo->prepare("DELETE FROM sst_products WHERE room_id_fk IN (?)")->execute([$roomsStr]);
         $ret = json_encode(['deleted' => 1]);
     } else {
         $ret = json_encode(['deleted' => 0]);
@@ -534,8 +629,8 @@ function ajax_remove_room() {
     $uid = $_POST['modal_form_uid'];
 
     if ($uid) {
-        $pdo->prepare("DELETE FROM survey_tables WHERE site_uid_fk=?")->execute([$uid]);
-        $pdo->prepare("DELETE FROM survey_sites WHERE site_uid_pk=?")->execute([$uid]);
+        $pdo->prepare("DELETE FROM sst_rooms WHERE id=?")->execute([$uid]);
+        $pdo->prepare("DELETE FROM sst_products WHERE room_id_fk=?")->execute([$uid]);
         $ret = json_encode(['deleted' => 1]);
     } else {
         $ret = json_encode(['deleted' => 0]);
@@ -604,26 +699,22 @@ function ajax_get_dashtabledata() {
     global $pdo;
     $uid = $_POST['uid'];
 
-    $q = $pdo->query("SELECT
-                p.id,
-                DATE_FORMAT(p.created_on, '%d/%c/%y') as created,
-                p.project_name,
-                p.version,
-                p.project_slug,
-                s.project_slug,
-                s.location,
-                COUNT( t.sku ) AS num_products,
-                COUNT(DISTINCT(s.floor)) AS num_floors,
-                COUNT(DISTINCT(s.room)) AS num_rooms,
-                t.site_uid_fk as site_uid
-            FROM
-                survey_tables t
-                LEFT JOIN survey_sites s ON t.site_uid_fk = s.site_uid_pk
-                LEFT JOIN survey_projects p on p.project_slug = s.project_slug
-            WHERE
-                s.owner_id = $uid
-            GROUP BY
-                s.location");
+    $q = $pdo->query("select 
+            j.`name` as project_name,
+            j.slug as project_slug,
+            j.version as version,
+            j.id as project_id,
+            DATE_FORMAT(j.created_on, '%d/%c/%y') as created,
+            count(d.sku) as products 
+            from sst_projects j
+            left join sst_locations l on l.project_id_fk = j.id
+            left join sst_buildings b on b.location_id_fk = l.id
+            left join sst_floors f on f.building_id_fk = b.id
+            left join sst_rooms r on r.floor_id_fk = f.id
+            left join sst_products d on d.room_id_fk = r.id
+            where j.owner_id = $uid
+            group by j.id
+            order by project_slug");
 
     $res = $q->fetchAll();
     if (count($res) < 1) {
@@ -707,7 +798,7 @@ function ajax_edit_ref() {
         'uid' => $_POST['uid']
     ];
 
-    $sql = "UPDATE survey_tables SET ref=:ref WHERE sku=:sku AND site_uid_fk=:uid";
+    $sql = "UPDATE sst_products SET ref=:ref WHERE sku=:sku AND room_id_fk=:uid";
     $pdo->prepare($sql)->execute($data);
 }
 

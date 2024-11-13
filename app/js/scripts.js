@@ -166,6 +166,27 @@ $(function() {
         updateTableSideNav();
         UIkit.modal($('#add-room')).hide();
     });
+
+    $("#form-remove-location").off("submit").on("submit", function(e) {
+        e.preventDefault();
+        console.log('Remove location submitted');
+        const form = document.querySelector("#form-remove-location");
+        sendData(form, 'remove_location');
+        // update sidebar nav
+        updateTableSideNav();
+        UIkit.modal($('#remove-location')).hide();
+        UIkit.offcanvas($('#tables-side')).show();
+    });
+    $("#form-remove-building").off("submit").on("submit", function(e) {
+        e.preventDefault();
+        console.log('Remove Building submitted');
+        const form = document.querySelector("#form-remove-building");
+        sendData(form, 'remove_building');
+        // update sidebar nav
+        updateTableSideNav();
+        UIkit.modal($('#remove-building')).hide();
+        UIkit.offcanvas($('#tables-side')).show();
+    });
     $("#form-remove-floor").off("submit").on("submit", function(e) {
         e.preventDefault();
         console.log('Remove floor submitted');
@@ -194,9 +215,41 @@ $(function() {
     });
 
 
+    function updateTableModeHeadings(uid) {
+
+        $.ajax("/api/get_headings_by_room_id", {
+            type: "post",
+            data: { uid: uid },
+            success: function(data, status, xhr) {
+                const jsonData = $.parseJSON(data);
+                const hd = jsonData[0]
+                console.log(hd.room_name);
+
+                $('span.project_name').text(hd.project_name).show();
+                $('span.location_name').text(hd.location_name).show();
+                $('span.building_name').text(hd.building_name).show();
+                $('span.floor_name').text(hd.floor_name).show();
+                $('span.room_name').text(hd.room_name).show();
+            }
+        });
+    }
+
 
     function bindNavClicks() {
-        $(".room-list .room-item a").off('click').on('click', function(e) {
+
+        $(".room-list .room-item.view-room a").off('click').on('click', function(e) {
+            e.preventDefault();
+            const uid = $(this).data('id');
+
+            $('input#uid,input#m_room_id,input#add_product_room_id').val(uid);
+
+            updateTableModeHeadings(uid);
+            updatepTable();
+
+        });
+
+
+        $(".room-list .room-item.add-room a").off('click').on('click', function(e) {
             e.preventDefault();
             const uid = $(this).data('id');
             const action = $(this).data('action');
@@ -205,8 +258,8 @@ $(function() {
                 $('input[name=modal_form_uid]').val(uid);
                 UIkit.modal($('#add-room')).show();
             } else {
-                $('input#uid,input#m_room_id,input#add_product_room_id').val(uid);
-                updatepTable();
+                // $('input#uid,input#m_room_id,input#add_product_room_id').val(uid);
+                // updatepTable();
             }
         });
 
@@ -254,11 +307,29 @@ $(function() {
         });
 
 
-        $("#locations li.room-item i").on('click', function(e) {
+        $("#locations li.room-item i.action-icon").off('click').on('click', function(e) {
             e.preventDefault();
             const uid = $(this).data('id');
             $('input[name=modal_form_uid]').val(uid);
             UIkit.modal($('#remove-room')).show();
+        });
+        $("#locations .action-icons.floor i").off('click').on('click', function(e) {
+            e.preventDefault();
+            const uid = $(this).data('id');
+            $('input[name=modal_form_uid]').val(uid);
+            UIkit.modal($('#remove-floor')).show();
+        });
+        $("#locations .action-icons.building i").off('click').on('click', function(e) {
+            e.preventDefault();
+            const uid = $(this).data('id');
+            $('input[name=modal_form_uid]').val(uid);
+            UIkit.modal($('#remove-building')).show();
+        });
+        $("#locations .action-icons.location i").off('click').on('click', function(e) {
+            e.preventDefault();
+            const uid = $(this).data('id');
+            $('input[name=modal_form_uid]').val(uid);
+            UIkit.modal($('#remove-location')).show();
         });
     }
     async function sendData(form, method) {
@@ -278,19 +349,31 @@ $(function() {
         }
     }
     if ($('#ptable').length) {
-        updatepTable(false);
+        const currentRoomId = $('input#m_room_id').val();
+        if (currentRoomId == "") {
+            console.warn("no room id");
+            $('#table_mode_nodata').fadeIn(1000);
+        } else {
+            updatepTable(false);
+        }
     }
     if ($('#tables-side').length) {
-        updateTableSideNav();
+        const currentProjectId = $('input#m_project_id').val();
+        if (currentProjectId == "") {
+            console.warn("no room id");
+            $('#table_mode_nodata').fadeIn(1000);
+        } else {
+            updateTableSideNav(currentProjectId);
+        }
     }
 
-    function updateTableSideNav() {
+    function updateTableSideNav(currentProjectId) {
         if ($('#tables-side').length) {
-
+            if (!currentProjectId) currentProjectId = $('#m_project_id').val();
             $.ajax("/api/get_all_by_project", {
                 type: "post",
                 data: {
-                    pid: 1,
+                    pid: currentProjectId,
                 },
                 success: function(data, status, xhr) {
                     console.log(data);
@@ -303,29 +386,8 @@ $(function() {
 
                 }
             });
-
-            // $.ajax("/api/get_project_sidenav", {
-            //     type: "post",
-            //     data: {
-            //         project_slug: 'cov-uni',
-            //         site_uid: $('input#site_uid').val(),
-            //         method: 'get_project_sidenav'
-            //     },
-            //     success: function(data, status, xhr) {
-            //         $('#locations').empty();
-            //         const locationsDiv = document.getElementById('locations');
-            //         var jsonData = $.parseJSON(data);
-            //         const locationList = createList(jsonData.locations, jsonData.project_slug);
-            //         locationsDiv.appendChild(locationList);
-            //         bindNavClicks();
-            //     }
-            // });
         }
     }
-
-
-
-
 
     function generateNavMenu(data) {
         const $menu = $('<ul class="nav-menu"></ul>');
@@ -341,7 +403,7 @@ $(function() {
                 $locationItem.append(`
                 <div class="location-header">
                     <span class="location-name">${locationName}</span>
-                    <div class="action-icons">
+                    <div class="action-icons location">
                         <i class="fa-solid fa-circle-minus" data-id="${locationData.location_id}" data-action="remove"></i>
                     </div>
                 </div>
@@ -360,7 +422,7 @@ $(function() {
                     $buildingItem.append(`
                     <h4 class="building-header">
                         <span class="building-name">${buildingName}</span>
-                        <div class="action-icons">
+                        <div class="action-icons building">
                             <i class="fa-solid fa-circle-minus" data-id="${buildingData.building_id}" data-action="remove"></i>
                         </div>
                     </h4>
@@ -379,7 +441,7 @@ $(function() {
                         $floorItem.append(`
                         <div class="floor-header">
                             <span class="floor-name">${floorName}</span>
-                            <div class="action-icons">
+                            <div class="action-icons floor">
                                 <i class="fa-solid fa-circle-minus" data-id="${floorData.floor_id}" data-action="remove"></i>
                             </div>
                         </div>
@@ -394,7 +456,7 @@ $(function() {
 
                             hasRooms = true; // Mark that we have at least one room
                             const roomName = roomData.room_name || "Add room";
-                            const $roomItem = $('<li class="room-item"></li>');
+                            const $roomItem = $('<li class="room-item view-room"></li>');
                             $roomItem.append(`<span class="room-name"><a href="#" data-id="${roomData.room_id}">${roomName}</a></span>`);
                             if (roomData.room_name) {
                                 $roomItem.append(`<i class="fa-solid fa-circle-minus action-icon" data-id="${roomData.room_id}" data-action="remove"></i>`);
@@ -404,7 +466,7 @@ $(function() {
 
                         // Show "Add Room" link if there is a valid floor ID
                         if (floorData.floor_id) {
-                            $roomList.append(`<li class="room-item"><span class="room-name"><a href="#" data-action="add" data-id="${floorData.floor_id}">Add room</a></span></li>`);
+                            $roomList.append(`<li class="room-item add-room"><span class="room-name"><a href="#" data-action="add" data-id="${floorData.floor_id}">Add room</a></span></li>`);
                         }
 
                         $floorItem.append($roomList);
@@ -434,18 +496,15 @@ $(function() {
         $menu.append(`
         <ul class="building-list">
             <li class="building-item"><p><a class="add-location" href="#" data-id="${project_id}" data-action="add">Add Location</a></p></li>
-        </ul>
-    `);
+        </ul>`);
+
+        console.log($menu);
+        if ($menu.length == 1) {
+            console.warn('adding loaction');
+        }
 
         return $menu;
     }
-
-
-
-
-
-
-
 
 
     function updatepTable(room_id = false) {
@@ -463,11 +522,6 @@ $(function() {
                             pTable.setData(data);
                             // set the uid for ref by others
                             $('input#uid').val(room_id);
-                            // $('.room-heading .floor_name').html(jsonData[0].floor_name).show();
-                            // $('.room-heading .room_name').html(jsonData[0].room_name).show();
-                            // $('.location-heading .project_name').html(jsonData[0].project_name).show();
-                            // $('.location-heading .location_name').html(jsonData[0].location_name).show();
-                            // $('.location-heading .building_name').html(jsonData[0].building_name).show();
                         } else {
                             pTable.setData([]);
                         }
@@ -475,6 +529,8 @@ $(function() {
                 });
             }
         },100);
+        $('#table_mode_nodata').slideUp(1000);
+        $('#table_mode_view').slideDown(1000);
     }
     // pTable.on("rowClick", function(e, row){
     //     alert("Row " + row.getData().id + " Clicked");
@@ -562,7 +618,7 @@ $(function() {
         pTable.on("cellEdited", function (cell) {
             //cell - cell component
             const sku = cell.getRow().getData().sku;
-            const uid = cell.getRow().getData().room_id;
+            const uid = cell.getRow().getData().room_id_fk;
             const ref = cell.getRow().getData().ref
             //console.log('sku: '+sku+' ref: '+ref);
             if (sku != "" && ref != "") {
@@ -680,11 +736,6 @@ $(function() {
                     visible: false
                 },
                 {
-                    title: "site_uid",
-                    field: "site_uid",
-                    visible: false
-                },
-                {
                     title: "project_slug",
                     field: "project_slug",
                     visible: false
@@ -702,39 +753,29 @@ $(function() {
                         url: "#",
                     },
                     cellClick: function(e, cell) {
-                        location = "/tables/"+cell.getRow().getData().site_uid;
+                        location = "/tables/"+cell.getRow().getData().project_id;
                     }
                 },
-
                 {
-                    title: "Site",
-                    field: "location",
-                    formatter: "link",
-                    sorter:"string",
-                    formatterParams:{
-                        labelField: "location",
-                        target: "_self",
-                        url: "#",
-                    },
-                    cellClick: function(e, cell) {
-                        location = "/tables/"+cell.getRow().getData().site_uid;
-                    }
+                    title: "Products",
+                    field: "products",
+                    width: 120
                 },
                 {
                     title: "Rev",
                     field: "version",
-                    width: 100
+                    width: 80
                 },
                 {
-                    title: "Created On",
+                    title: "Created",
                     field: "created",
-                    width: 150
+                    width: 110
                 },
                 {
                     visible: true,
                     headerSort: false,
                     formatter: iconX,
-                    width: 30,
+                    width: 20,
                     hozAlign: "center",
                     cellClick: function (e, cell) {
                         deleteProject(cell.getRow().getData().site_uid);
