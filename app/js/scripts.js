@@ -1,6 +1,70 @@
 $(function() {
     console.log("Loaded ..");
 
+    var login = UIkit.modal('.loginmodal', {
+        bgClose : false,
+        escClose : false
+    });
+    var uid = getCookie('user_id');
+    if (!uid) {
+        UIkit.modal('.loginmodal').show();
+    } else {
+        $('#m_user_id').val(uid);
+    }
+    $("#form-login").off("submit").on("submit", function(e) {
+        e.preventDefault();
+        $('.login-error').hide();
+        console.log('Login submitted');
+        const form = document.querySelector("#form-login");
+        const formData = new FormData(form);
+            $.ajax("/api/login", {
+                type: "post",
+                enctype: 'multipart/form-data',
+                processData: false,
+                contentType: false,
+                cache: false,
+                data: formData,
+                success: function(data, status, xhr) {
+                    var jsonData = $.parseJSON(data);
+                    if (jsonData.id) {
+                        $('#m_user_id').val(jsonData.id);
+                        setCookie('user_id', jsonData.id);
+                        setCookie('user_name', jsonData.name);
+                        UIkit.modal($('#login')).hide();
+                    }
+                    if (jsonData.error) {
+                        $('.login-error p').html(jsonData.error);
+                        $('.login-error').show();
+                    }
+                }
+            });
+    });
+
+
+    function setCookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        let expires = "expires="+d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    function getCookie(cname) {
+        let name = cname + "=";
+        let ca = document.cookie.split(';');
+        for(let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+
+
     var iconPlus = function(cell, formatterParams, onRendered) {
         return '<i class="fa-solid fa-circle-plus"></i>';
     };
@@ -215,6 +279,12 @@ $(function() {
     });
 
 
+
+    function deleteProject(slug) {
+        alert ('DELETE: '+slug);
+    }
+
+
     function updateTableModeHeadings(uid) {
 
         $.ajax("/api/get_headings_by_room_id", {
@@ -245,6 +315,11 @@ $(function() {
 
             updateTableModeHeadings(uid);
             updatepTable();
+
+            $('#table_mode_nodata').slideUp(1000);
+            $('#table_mode_view').slideDown(1000);
+
+
 
         });
 
@@ -352,16 +427,18 @@ $(function() {
         const currentRoomId = $('input#m_room_id').val();
         if (currentRoomId == "") {
             console.warn("no room id");
-            $('#table_mode_nodata').fadeIn(1000);
-        } else {
             updatepTable(false);
+            $('#table_mode_nodata').fadeIn(1000);
+
+        } else {
+
         }
     }
     if ($('#tables-side').length) {
         const currentProjectId = $('input#m_project_id').val();
         if (currentProjectId == "") {
             console.warn("no room id");
-            $('#table_mode_nodata').fadeIn(1000);
+            //$('#table_mode_nodata').fadeIn(1000);
         } else {
             updateTableSideNav(currentProjectId);
         }
@@ -498,11 +575,6 @@ $(function() {
             <li class="building-item"><p><a class="add-location" href="#" data-id="${project_id}" data-action="add">Add Location</a></p></li>
         </ul>`);
 
-        console.log($menu);
-        if ($menu.length == 1) {
-            console.warn('adding loaction');
-        }
-
         return $menu;
     }
 
@@ -529,8 +601,8 @@ $(function() {
                 });
             }
         },100);
-        $('#table_mode_nodata').slideUp(1000);
-        $('#table_mode_view').slideDown(1000);
+        //$('#table_mode_nodata').slideUp(1000);
+        //$('#table_mode_view').slideDown(1000);
     }
     // pTable.on("rowClick", function(e, row){
     //     alert("Row " + row.getData().id + " Clicked");
@@ -778,16 +850,13 @@ $(function() {
                     width: 20,
                     hozAlign: "center",
                     cellClick: function (e, cell) {
-                        deleteProject(cell.getRow().getData().site_uid);
+                        deleteProject(cell.getRow().getData().project_id);
                     }
                 },
             ],
         });
     }
 
-    function deleteProject(slug) {
-        alert ('DELETE: '+slug);
-    }
 
 
     $("#form-create-project").off("submit").on("submit", function(e) {
@@ -796,7 +865,7 @@ $(function() {
         const form = document.querySelector("#form-create-project");
         sendData(form, 'add_project');
         // update sidebar nav
-        //updateTableSideNav();
+        updateDashTable();
         UIkit.modal($('#create-project')).hide();
     });
 
@@ -807,33 +876,16 @@ $(function() {
     $('#form_project_name').off('blur').on('blur', function(e) {
         if ($(this).val() != "") {
             $('#form_location').removeAttr('disabled').focus();
-
         }
     });
-
-
-    $('#form_location').off('focus').on('focus', function(e) {
-        if ($('#form_project_name').val() != "") {
-            $.ajax("/api/get_locations_for_project", {
-                type: "post",
-                data: {
-                    project_name: $('#form_project_name').val()
-                },
-                success: function (data, status, xhr) {
-                    var html = data;
-                    if (html) {
-                        $("#form_location_select").html(html);
-                    }
-                    $('#form_location').off('focus').on('focus', function(e) {
-                        $('#form_building').attr({'disabled':'disabled'});
-                    });
-                    $('#form_location').off('blur').on('blur', function(e) {
-                        if ($(this).val() != "") {
-                            $('#form_building').removeAttr('disabled').focus();
-                        }
-                    });
-                }
-            });
+    $('#form_location').off('blur').on('blur', function(e) {
+        if ($(this).val() != "") {
+            $('#form_building').removeAttr('disabled').focus();
+        }
+    });
+    $('#form_building').off('blur').on('blur', function(e) {
+        if ($(this).val() != "") {
+            $('#form_floor').removeAttr('disabled').focus();
         }
     });
 

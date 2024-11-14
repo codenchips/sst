@@ -104,7 +104,7 @@
                     <input type="hidden" name="modal_form_project_slug" value="<?php echo $project_slug; ?>" />
                     <input type="hidden" name="modal_form_uid" value="" />
 
-                    <button id="form-submit-room" type="submit" class="uk-button uk-button-primary">Remove</button>
+                    <button type="submit" class="uk-button uk-button-primary">Remove</button>
                     <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
                 </div>
             </div>
@@ -129,7 +129,7 @@
                 <div class="uk-width-1-1">
                     <input type="hidden" name="modal_form_project_slug" value="<?php echo $project_slug; ?>" />
                     <input type="hidden" name="modal_form_uid" value="" />
-                    <button id="form-submit-room" type="submit" class="uk-button uk-button-primary">Remove</button>
+                    <button type="submit" class="uk-button uk-button-primary">Remove</button>
                     <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
                 </div>
             </div>
@@ -167,7 +167,7 @@
 
                     <input type="hidden" name="modal_form_uid" value="" />
                     <div class="form-actions">
-                        <button id="form-submit-room" type="submit" class="uk-button uk-button-primary">Add Room</button>
+                        <button type="submit" class="uk-button uk-button-primary">Add Room</button>
                         <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
 
                     </div>

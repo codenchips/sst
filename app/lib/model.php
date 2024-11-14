@@ -14,10 +14,35 @@ function return_json($res) {
     }
 }
 
+function ajax_login() {
+    global $pdo;
+    $data = $_POST;
+    $email = $data['modal_form_email'];
+    $password = $data['modal_form_password'];
+    $sql = "SELECT * FROM sst_users 
+            WHERE email = '$email' AND password = '$password'
+            AND active = 1 LIMIT 1";
+    $q = $pdo->query($sql);
+    $res = $q->fetch(PDO::FETCH_ASSOC);
+
+    if (isset($res['id'])) {
+        $_COOKIE['user_id'] = $res['id'];
+        $_COOKIE['user_name'] = $res['name'];
+        return_json($res);
+    } else {
+        $res = array('id' => false, 'error' => "invalid login");
+        return_json($res);
+    }
+}
+function user_id() {
+    return($_COOKIE['user_id']);
+}
+
 
 function ajax_get_all_by_project() {
     global $pdo;
     $pid = $_POST['pid'];
+    $user_id = user_id();
 
     $sql = "select 
             r.`name` as room_name,r.slug as room_slug,r.id as room_id,
@@ -30,7 +55,7 @@ function ajax_get_all_by_project() {
             left join sst_buildings b on b.location_id_fk = l.id
             left join sst_floors f on f.building_id_fk = b.id
             left join sst_rooms r on r.floor_id_fk = f.id
-            where j.owner_id = 1
+            where j.owner_id = $user_id
             and j.id = $pid 
             order by project_slug, location_slug, building_slug, floor_slug, room_slug";
     $q = $pdo->query($sql);
@@ -88,6 +113,7 @@ function ajax_get_all_by_project() {
 function ajax_get_headings_by_room_id() {
     global $pdo;
     $uid = $_POST['uid'];
+    $user_id = user_id();
 
     $sql = "select 
             r.`name` as room_name,r.slug as room_slug,r.id as room_id,
@@ -100,7 +126,7 @@ function ajax_get_headings_by_room_id() {
             left join sst_buildings b on b.location_id_fk = l.id
             left join sst_floors f on f.building_id_fk = b.id
             left join sst_rooms r on r.floor_id_fk = f.id
-            where j.owner_id = 1
+            where j.owner_id = $user_id
             and r.id = $uid  
             limit 1";
     $q = $pdo->query($sql);
@@ -109,108 +135,6 @@ function ajax_get_headings_by_room_id() {
     return(return_json($res));
 }
 
-
-
-
-
-
-
-
-function ajax_get_project_sidenav() {
-    global $pdo;
-
-    $site_uid = $_POST['site_uid'];
-    $q = $pdo->query("SELECT project_slug, location FROM survey_sites WHERE site_uid_pk = '$site_uid'");
-    $site_res = $q->fetch(PDO::FETCH_OBJ);
-
-    $q = $pdo->query("SELECT * FROM survey_sites WHERE project_slug = '$site_res->project_slug' AND location = '$site_res->location'");
-    $res = $q->fetchAll(PDO::FETCH_OBJ);  // id!
-
-    $nav = array();
-    $nav['project_slug'] = $res[0]->project_slug;
-
-    foreach ($res as $key => $val) {
-        $location = slugify($val->location);
-        $nav['locations'][$location]['name'] = $val->location;
-        $nav['locations'][$location]['slug'] = $location;
-        if ($val->building) {
-            $nav['locations'][$location][slugify($val->building)] = array(
-                'slug' => slugify($val->building),
-                'name' => $val->building,
-                'uid' => $val->site_uid_pk
-            );
-        }
-    }
-
-    foreach ($res as $key => $val) {
-        $location = slugify($val->location);
-        $building = slugify($val->building);
-        $floor = slugify($val->floor);
-        if ($floor) {
-            $nav['locations'][$location][$building][$floor] = array(
-                'slug' => $floor,
-                'name' => $val->floor,
-                'uid' => $val->site_uid_pk
-            );
-        }
-    }
-
-    foreach ($res as $key => $val) {
-        $location = slugify($val->location);
-        $building = slugify($val->building);
-        $floor = slugify($val->floor);
-        $room = slugify($val->room);
-        if ($room) {
-            $nav['locations'][$location][$building][$floor][$room] = array(
-                'slug' => $room,
-                'name' => $val->room,
-                'uid' => $val->site_uid_pk
-            );
-        }
-    }
-
-    //vd($nav,1);
-
-    return(return_json($nav));
-}
-
-
-
-function get_location_for_project($project_slug) {
-    global $pdo;
-    $q = $pdo->query("SELECT location FROM survey_sites WHERE project_slug = '$project_slug'");
-    return ($q->fetch(PDO::FETCH_COLUMN, 0));
-}
-function get_buildings_for_location($project_slug, $location) {
-    global $pdo;
-    $q = $pdo->query("SELECT building
-                              FROM survey_sites
-                              WHERE location = '$location' && project_slug = '$project_slug'
-                              GROUP BY building");
-    return ($q->fetchAll(PDO::FETCH_COLUMN, 0));
-}
-function get_floors_for_building($project_slug, $location, $building) {
-    global $pdo;
-    $q = $pdo->query("SELECT floor
-                              FROM survey_sites
-                              WHERE building = '$building' &&
-                                    location = '$location' &&
-                                    project_slug = '$project_slug'
-                              GROUP BY floor
-                              ORDER BY created_on ASC ");
-    return ($q->fetchAll(PDO::FETCH_COLUMN, 0));
-}
-function get_rooms_for_floor($project_slug, $location, $building, $floor) {
-    global $pdo;
-    $q = $pdo->query("SELECT room
-                              FROM survey_sites
-                              WHERE building = '$building' &&
-                                    location = '$location' &&
-                                    project_slug = '$project_slug' &&
-                                    floor = '$floor'
-                              GROUP BY floor");
-    return ($q->fetchAll(PDO::FETCH_COLUMN, 0));
-}
 
 
 // Get the types fpr Tamlite
@@ -226,9 +150,7 @@ function get_types() {
     return ((count($res)) ? $res : false);
 }
 
-
-function get_products()
-{
+function get_products() {
     global $pdo;
     $q = $pdo->query("SELECT
     product_name, product_slug_pk, description, site
@@ -238,19 +160,6 @@ function get_products()
     $res = $q->fetchAll(PDO::FETCH_OBJ);
     return ((count($res)) ? $res : false);
 }
-
-function get_projects() {
-    global $pdo;
-
-    $q = $pdo->query( "select *, s.site_uid_pk as site_uid from 
-            survey_projects p left join survey_sites s
-            on p.project_slug = s.project_slug
-            group by s.project_slug");
-    $res = $q->fetchAll(PDO::FETCH_OBJ);
-
-    return ((count($res)) ? $res : false);
-}
-
 
 function get_product_name_by_slug($slug) {
     global $pdo;
@@ -262,9 +171,7 @@ function get_product_name_by_slug($slug) {
     return($q->fetchAll(PDO::FETCH_COLUMN, 0)[0]);
 }
 
-
-function ajax_get_types()
-{
+function ajax_get_types() {
     global $pdo;
 
     $brand = $_POST['brand'];
@@ -276,18 +183,13 @@ function ajax_get_types()
     ORDER BY type_name ASC");
 
     $res = $q->fetchAll(PDO::FETCH_OBJ);
-
     return(return_json($res));
 }
 
-function ajax_get_products_for_type()
-{
+function ajax_get_products_for_type() {
     global $pdo;
     $ands = default_ands();
-
-
     $slug = $_POST['type_slug'];
-
     $q = $pdo->query("SELECT
                         UPPER(
                             REPLACE(REPLACE(product_slug_pk, '-', ' '), 'xcite ', '')
@@ -300,17 +202,12 @@ function ajax_get_products_for_type()
                         ORDER BY product_name ASC");
 
     $res = $q->fetchAll();
-
     return(return_json($res));
 }
 
-function ajax_get_skus_for_product()
-{
+function ajax_get_skus_for_product() {
     global $pdo;
-    //$ands = default_ands();
-
     $slug = $_POST['product_slug'];
-
     $q = $pdo->query("SELECT
                         product_code_pk
                         FROM p__variants
@@ -318,7 +215,6 @@ function ajax_get_skus_for_product()
                         ORDER BY product_code_pk ASC");
 
     $res = $q->fetchAll(PDO::FETCH_COLUMN, 0);
-
     return(return_json($res));
 }
 
@@ -326,6 +222,7 @@ function ajax_add_product() {
     global $pdo;
 
     $data = $_POST;
+    $data['user_id'] = user_id();
     unset($data['uid']);
     $data['product_name'] = get_product_name_by_slug($_POST['form_product']);
 
@@ -350,13 +247,12 @@ function ajax_add_product() {
             :product_name, 
             :form_sku, 
             :form_custom, 
-            1, 
+            :user_id, 
             1, 
             CURRENT_TIMESTAMP)";
 
     $pdo->prepare($q)->execute($data);
     $ret = json_encode(['added' => $pdo->lastInsertId()]);
-
     exit($ret);
 }
 
@@ -366,38 +262,57 @@ function ajax_add_project() {
     global $pdo;
 
     $data = (object) $_POST;
+    $data->user_id = user_id();
     $project_slug = slugify($data->form_project_name);
 
 
-    $sql = "INSERT INTO survey_projects 
+    $sql = "INSERT INTO sst_projects 
                   SET 
-                  project_slug = '$project_slug', 
-                  project_name = '$data->form_project_name',
-                  owner_id = '$data->uid',
+                  slug = '$project_slug', 
+                  `name` = '$data->form_project_name',
+                  owner_id = '$data->user_id',
                   version = '1',
                   created_on = CURRENT_TIMESTAMP";
     $res = $pdo->exec($sql);
     if ($res) {
         $lastId  = $pdo->query("SELECT LAST_INSERT_ID()")->fetchColumn();
-        $sql = "INSERT INTO survey_sites 
-                  SET 
-                  project_slug = '$project_slug',
-                  project_id = $lastId,
-                  location = '$data->form_location', 
-                  building = '$data->form_building',                
-                  owner_id = '$data->uid',
+        $location_slug = slugify($data->form_location);
+        $sql = "INSERT INTO sst_locations 
+                  SET                   
+                  project_id_fk = $lastId,
+                  slug = '$location_slug',
+                  `name` = '$data->form_location',                                   
+                  owner_id = '$data->user_id',
                   version = '1',
                   created_on = CURRENT_TIMESTAMP";
         $res = $pdo->exec($sql);
         if ($res) {
             $lastId  = $pdo->query("SELECT LAST_INSERT_ID()")->fetchColumn();
-            $sql = "INSERT INTO survey_tables 
-                  SET 
-                  site_uid_fk = $lastId,
-                  `type` = 'placeholder', 
+            $building_slug = slugify($data->form_building);
+            $sql = "INSERT INTO sst_buildings  
+                  SET                   
+                  location_id_fk = $lastId,
+                  slug = '$building_slug',
+                  `name` = '$data->form_building',                                   
+                  owner_id = '$data->user_id',
+                  version = '1',
                   created_on = CURRENT_TIMESTAMP";
             $res = $pdo->exec($sql);
         }
+        if ($res) {
+            $lastId  = $pdo->query("SELECT LAST_INSERT_ID()")->fetchColumn();
+            $floor_slug = slugify($data->form_floor);
+            $sql = "INSERT INTO sst_floors  
+                  SET                   
+                  building_id_fk = $lastId,
+                  slug = '$floor_slug',
+                  `name` = '$data->form_floor',                                   
+                  owner_id = '$data->user_id',
+                  version = '1',
+                  created_on = CURRENT_TIMESTAMP";
+            $res = $pdo->exec($sql);
+        }
+
     }
     if ($res) {
         $ret = json_encode(['added' => $pdo->lastInsertId()]);
@@ -412,6 +327,7 @@ function ajax_add_special() {
     global $pdo;
 
     $data = $_POST;
+    $data['user_id'] = user_id();
     $data['custom_slug'] = slugify($_POST['form_custom_product_name']);
 
     $q  = "INSERT INTO sst_products 
@@ -435,7 +351,7 @@ function ajax_add_special() {
             :form_custom_product_name,
             :form_custom_sku, 
             :form_custom, 
-            1, 
+            :user_id, 
             1, 
             CURRENT_TIMESTAMP)";
 
@@ -452,10 +368,11 @@ function ajax_add_floor() {
     $data['uid'] = $_POST['modal_form_uid'];
     $data['floor'] = $_POST['modal_form_floor'];
     $data['floor_slug'] = slugify($_POST['modal_form_floor']);
+    $data['user_id'] = user_id();
 
     $q  = "INSERT INTO sst_floors 
             ( `building_id_fk`, `name`, `slug`, `owner_id`, `version`, `created_on`)
-            VALUES ( :uid, :floor, :floor_slug, 1, 1, CURRENT_TIMESTAMP)";
+            VALUES ( :uid, :floor, :floor_slug, :user_id, 1, CURRENT_TIMESTAMP)";
 
     $pdo->prepare($q)->execute($data);
     $ret = json_encode(['added' => $pdo->lastInsertId()]);
@@ -469,10 +386,11 @@ function ajax_add_room() {
     $data['uid'] = $_POST['modal_form_uid'];
     $data['room'] = $_POST['modal_form_room'];
     $data['room_slug'] = slugify($_POST['modal_form_room']);
+    $data['user_id'] = user_id();
 
     $q  = "INSERT INTO sst_rooms 
             ( `floor_id_fk`, `name`, `slug`, `owner_id`, `version`, `created_on`)
-            VALUES ( :uid, :room, :room_slug, 1, 1, CURRENT_TIMESTAMP)";
+            VALUES ( :uid, :room, :room_slug, :user_id, 1, CURRENT_TIMESTAMP)";
 
     $pdo->prepare($q)->execute($data);
     $ret = json_encode(['added' => $pdo->lastInsertId()]);
@@ -486,10 +404,11 @@ function ajax_add_building() {
     $data['uid'] = $_POST['modal_form_uid'];
     $data['building'] = $_POST['modal_form_building'];
     $data['building_slug'] = slugify($_POST['modal_form_building']);
+    $data['user_id'] = user_id();
 
     $q  = "INSERT INTO sst_buildings 
             ( `location_id_fk`, `name`, `slug`, `owner_id`, `version`, `created_on`)
-            VALUES ( :uid, :building, :building_slug, 1, 1, CURRENT_TIMESTAMP)";
+            VALUES ( :uid, :building, :building_slug, :user_id, 1, CURRENT_TIMESTAMP)";
 
     $pdo->prepare($q)->execute($data);
     $ret = json_encode(['added' => $pdo->lastInsertId()]);
@@ -503,10 +422,11 @@ function ajax_add_location() {
     $data['uid'] = $_POST['modal_form_uid'];
     $data['location'] = $_POST['modal_form_location'];
     $data['location_slug'] = slugify($_POST['modal_form_location']);
+    $data['user_id'] = user_id();
 
     $q  = "INSERT INTO sst_locations 
             ( `project_id_fk`, `name`, `slug`, `owner_id`, `version`, `created_on`)
-            VALUES ( :uid, :location, :location_slug, 1, 1, CURRENT_TIMESTAMP)";
+            VALUES ( :uid, :location, :location_slug, :user_id, 1, CURRENT_TIMESTAMP)";
 
     $pdo->prepare($q)->execute($data);
     $ret = json_encode(['added' => $pdo->lastInsertId()]);
@@ -641,11 +561,12 @@ function ajax_remove_room() {
 function ajax_get_products_in_room() {
     global $pdo;
     $room_id = $_POST['room_id'];
+    $user_id = user_id();
 
     $q = $pdo->query("SELECT *, count(sku) as qty FROM
                     sst_products p                      
                     WHERE room_id_fk = $room_id
-                    AND owner_id = 1 
+                    AND owner_id = $user_id 
                     GROUP BY sku");
 
     $res = $q->fetchAll();
@@ -657,47 +578,10 @@ function ajax_get_products_in_room() {
 }
 
 
-function ajax_get_ptabledata() {
-    global $pdo;
-    $uid = $_POST['uid'];
-
-        $q = $pdo->query("SELECT
-                        s.room AS room_name,
-                        s.floor AS floor_name,
-                        s.location AS location_name,
-                        s.building AS building_name,
-                        p.project_name,
-                        COUNT( t.sku ) AS qty,
-                        t.id,
-                        t.site_uid_fk,
-                        t.sku,
-                        t.ref,
-                        t.product_slug,
-                        t.product_name,
-                        t.`position`,
-                        s.project_id as pid
-                    FROM
-                        survey_tables t	
-                        INNER JOIN survey_sites s ON t.site_uid_fk = s.site_uid_pk
-                        INNER JOIN survey_projects p ON p.id = s.project_id 	
-                    WHERE
-                        site_uid_fk = $uid
-                    GROUP BY  sku");
-
-    $res = $q->fetchAll();
-    if (count($res) < 1) {
-        $res[0] = array();
-    }
-
-    //vd($res, 1);
-
-
-    return(return_json($res));
-}
-
 function ajax_get_dashtabledata() {
     global $pdo;
     $uid = $_POST['uid'];
+    $user_id = user_id();
 
     $q = $pdo->query("select 
             j.`name` as project_name,
@@ -712,7 +596,7 @@ function ajax_get_dashtabledata() {
             left join sst_floors f on f.building_id_fk = b.id
             left join sst_rooms r on r.floor_id_fk = f.id
             left join sst_products d on d.room_id_fk = r.id
-            where j.owner_id = $uid
+            where j.owner_id = $user_id
             group by j.id
             order by project_slug");
 
@@ -722,28 +606,6 @@ function ajax_get_dashtabledata() {
     }
 
     return(return_json($res));
-}
-
-function ajax_get_locations_for_project() {
-    global $pdo;
-
-    $project_name = $_POST['project_name'];
-    $slug = slugify($project_name);
-
-    $q = $pdo->query("SELECT location FROM survey_sites 
-                              WHERE project_slug = '$slug'
-                              GROUP BY location");
-    $res = $q->fetchAll(PDO::FETCH_OBJ);
-
-    if (count($res)) {
-        $html = "";
-        foreach ($res as $l) {
-            $html .= "<option value='$l->location'></option>";
-        }
-    }
-    exit($html);
-
-
 }
 
 

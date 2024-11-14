@@ -41,11 +41,11 @@ function project_select_options() {
             <div class="uk-text-center" uk-grid>
 
                 <div class="uk-width-1-1">
-                    <h3>New Location</h3>
+                    <h3>New Project</h3>
                 </div>
 
                 <div class="uk-width-1-1 uk-text-left">
-                    <label>Select an existing project or create a new project</label>
+                    <label>Project Name</label>
                     <input id="form_project_name"
                            name="form_project_name"
                            class="uk-input free-type"
@@ -53,12 +53,8 @@ function project_select_options() {
                            autocomplete="off"
                            required
                            value=""
-                           list="project_names"
                            oninvalid="this.setCustomValidity('You must name this project')"
                            oninput="this.setCustomValidity('')" />
-                            <datalist id="project_names">
-                                <?php echo project_select_options(); ?>
-                            </datalist>
                 </div>
 
                 <div class="uk-width-1-1 uk-text-left">
@@ -71,10 +67,8 @@ function project_select_options() {
                            required
                            disabled
                            value=""
-                           list="form_location_select"
                            oninvalid="this.setCustomValidity('You enter a location')"
                            oninput="this.setCustomValidity('')" />
-                    <datalist id="form_location_select"></datalist>
                 </div>
 
                 <div class="uk-width-1-1 uk-text-left">
@@ -89,6 +83,26 @@ function project_select_options() {
                            value=""
                            oninvalid="this.setCustomValidity('Enter a building name')"
                            oninput="this.setCustomValidity('')" />
+                </div>
+
+                <div class="uk-width-1-1 uk-text-left">
+                    <label>Floor</label>
+                    <input id="form_floor"
+                           name="form_floor"
+                           class="uk-input free-type"
+                           placeholder="Ground Floor"
+                           autocomplete="off"
+                           list="floor_suggestions"
+                           required
+                           disabled
+                           value=""
+                           oninvalid="this.setCustomValidity('Enter a floor name')"
+                           oninput="this.setCustomValidity('')" />
+                    <datalist id="floor_suggestions">
+                        <option value="Ground Floor"></option>
+                        <option value="First Floor"></option>
+                        <option value="Second Floor"></option>
+                    </datalist>
                 </div>
 
             </div>

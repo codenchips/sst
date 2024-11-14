@@ -180,8 +180,6 @@ body {
 }
 
 
-
-
 label {
   display:block;
   margin-bottom: 7px;
@@ -192,5 +190,18 @@ label {
   color: #333;
   border-color: $ltblue;
   border-width: 3px;
+}
+
+#table_mode_nodata {
+  padding-top: 40px;
+  .uk-card-title {
+    color: $primary-color;
+  }
+  .uk-card-body {
+    p {
+      font-size: 1.3em;
+      text-align: left;
+      line-height: 1.5em;    }
+  }
 }
 

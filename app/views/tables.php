@@ -21,18 +21,17 @@ $types = get_types();
 
     <div class="uk-card uk-card-large uk-card-default">
         <div class="uk-card-header">
-            <h3 class="uk-card-title">Welcome to your project</h3>
+            <h3 class="uk-card-title">Welcome to your project, <?php echo $_COOKIE['user_name']; ?></h3>
         </div>
         <div class="uk-card-body">
-            <p>Use the sidebar to manage this projects buildings, floors and rooms.</p>
+            <p>Use the <b>sidebar menu</b> to manage buildings, floors and rooms in this project.</p>
+            <p>Then select a <b>room</b> to manage the products in that room.</p>
         </div>
         <div class="uk-card-footer uk-align-center">
             <button class="uk-button uk-button-primary" type="button" uk-toggle="target: #tables-side">Manage Project</button>
         </div>
 
     </div>
-
-
 
 </div>
 
