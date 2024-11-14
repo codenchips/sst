@@ -239,7 +239,7 @@ $(function() {
         // update sidebar nav
         updateTableSideNav();
         UIkit.modal($('#remove-location')).hide();
-        UIkit.offcanvas($('#tables-side')).show();
+        UIkit.offcanvas($('.tables-side')).show();
     });
     $("#form-remove-building").off("submit").on("submit", function(e) {
         e.preventDefault();
@@ -249,7 +249,7 @@ $(function() {
         // update sidebar nav
         updateTableSideNav();
         UIkit.modal($('#remove-building')).hide();
-        UIkit.offcanvas($('#tables-side')).show();
+        UIkit.offcanvas($('.tables-side')).show();
     });
     $("#form-remove-floor").off("submit").on("submit", function(e) {
         e.preventDefault();
@@ -259,7 +259,7 @@ $(function() {
         // update sidebar nav
         updateTableSideNav();
         UIkit.modal($('#remove-floor')).hide();
-        UIkit.offcanvas($('#tables-side')).show();
+        UIkit.offcanvas($('.tables-side')).show();
     });
     $("#form-remove-room").off("submit").on("submit", function(e) {
         e.preventDefault();
@@ -269,12 +269,12 @@ $(function() {
         // update sidebar nav
         updateTableSideNav();
         UIkit.modal($('#remove-room')).hide();
-        UIkit.offcanvas($('#tables-side')).show();
+        UIkit.offcanvas($('.tables-side')).show();
     });
     // add floor close. re-open the sidebar
     $("#add-floor,#add-room,#form-remove-room,#form-remove-floor").on('hidden', function(e) {
         setTimeout(function() {
-            UIkit.offcanvas($('#tables-side')).show();
+            UIkit.offcanvas($('.tables-side')).show();
         }, 200);
     });
 
@@ -367,7 +367,7 @@ $(function() {
         });
 
 
-        $("#locations .add-location").off('click').on('click', function(e) {
+        $(".locations .add-location").off('click').on('click', function(e) {
             e.preventDefault();
             const uid = $(this).data('id');
             const action = $(this).data('action');
@@ -382,25 +382,25 @@ $(function() {
         });
 
 
-        $("#locations li.room-item i.action-icon").off('click').on('click', function(e) {
+        $(".locations li.room-item i.action-icon").off('click').on('click', function(e) {
             e.preventDefault();
             const uid = $(this).data('id');
             $('input[name=modal_form_uid]').val(uid);
             UIkit.modal($('#remove-room')).show();
         });
-        $("#locations .action-icons.floor i").off('click').on('click', function(e) {
+        $(".locations .action-icons.floor i").off('click').on('click', function(e) {
             e.preventDefault();
             const uid = $(this).data('id');
             $('input[name=modal_form_uid]').val(uid);
             UIkit.modal($('#remove-floor')).show();
         });
-        $("#locations .action-icons.building i").off('click').on('click', function(e) {
+        $(".locations .action-icons.building i").off('click').on('click', function(e) {
             e.preventDefault();
             const uid = $(this).data('id');
             $('input[name=modal_form_uid]').val(uid);
             UIkit.modal($('#remove-building')).show();
         });
-        $("#locations .action-icons.location i").off('click').on('click', function(e) {
+        $(".locations .action-icons.location i").off('click').on('click', function(e) {
             e.preventDefault();
             const uid = $(this).data('id');
             $('input[name=modal_form_uid]').val(uid);
@@ -434,7 +434,7 @@ $(function() {
 
         }
     }
-    if ($('#tables-side').length) {
+    if ($('.tables-side').length) {
         const currentProjectId = $('input#m_project_id').val();
         if (currentProjectId == "") {
             console.warn("no room id");
@@ -445,7 +445,7 @@ $(function() {
     }
 
     function updateTableSideNav(currentProjectId) {
-        if ($('#tables-side').length) {
+        if ($('.tables-side').length) {
             if (!currentProjectId) currentProjectId = $('#m_project_id').val();
             $.ajax("/api/get_all_by_project", {
                 type: "post",
@@ -454,10 +454,10 @@ $(function() {
                 },
                 success: function(data, status, xhr) {
                     console.log(data);
-                    $('#locations').empty();
+                    $('.locations').empty();
                     var jsonData = $.parseJSON(data);
                     const locationList = generateNavMenu(jsonData);
-                    $('#locations').html(locationList);
+                    $('.locations').html(locationList);
                     bindNavClicks();
 
 
@@ -744,7 +744,7 @@ $(function() {
         });
     }
 
-    UIkit.util.on('#tables-side', 'show', function () {
+    UIkit.util.on('.tables-side', 'show', function () {
        //console.log('show nav');
     });
 

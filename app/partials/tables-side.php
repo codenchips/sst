@@ -2,10 +2,12 @@
 
 
 <!-- rooms nav -->
-<div id="tables-side-desktop" >
+<div class="uk-offcanvas-bar uk-visible@m tables-side" id="desktop-sidebar">
     <div class="uk-visible@m uk-flex uk-flex-column">
 
-        <div id="__locations"></div>
+        <h4>Manage Project</h4>
+
+        <div id="locations" class="locations"></div>
 
     </div>
 </div>
@@ -14,13 +16,13 @@
 
 
 
-<!-- rooms nav -->
-<div id="tables-side" uk-offcanvas="mode: slide; overlay: true">
-    <div class="uk-visible@m uk-offcanvas-bar uk-flex uk-flex-column">
+<!-- rooms nav offcanvas-sidebar -->
+<div id="offcanvas-sidebar" class="tables-side" uk-offcanvas="mode: push; overlay: true">
+    <div class="uk-offcanvas-bar uk-flex uk-flex-column">
 
         <h4>Manage Project</h4>
 
-        <div id="locations"></div>
+        <div id="locations" class="locations"></div>
 
     </div>
 </div>

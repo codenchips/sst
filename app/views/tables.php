@@ -28,7 +28,7 @@ $types = get_types();
             <p>Then select a <b>room</b> to manage the products in that room.</p>
         </div>
         <div class="uk-card-footer uk-align-center">
-            <button class="uk-button uk-button-primary" type="button" uk-toggle="target: #tables-side">Manage Project</button>
+            <button class="uk-button uk-button-primary" type="button" uk-toggle="target: .tables-side">Manage Project</button>
         </div>
 
     </div>
@@ -40,7 +40,7 @@ $types = get_types();
 <div style="display:none;" id="table_mode_view" class="uk-width-1-1 uk-margin">
 
     <div class="uk-width-1-3 uk-margin">
-        <button class="uk-button uk-button-primary" type="button" uk-toggle="target: #tables-side">Manage Project</button>
+        <button class="uk-button uk-button-primary" type="button" uk-toggle="target: .tables-side">Manage Project</button>
     </div>
 
 
