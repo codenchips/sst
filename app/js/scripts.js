@@ -599,10 +599,13 @@ $(function() {
                         }
                     }
                 });
+                updateNotes(room_id);
             }
+
         },100);
         //$('#table_mode_nodata').slideUp(1000);
         //$('#table_mode_view').slideDown(1000);
+
     }
     // pTable.on("rowClick", function(e, row){
     //     alert("Row " + row.getData().id + " Clicked");
@@ -747,6 +750,81 @@ $(function() {
     UIkit.util.on('.tables-side', 'show', function () {
        //console.log('show nav');
     });
+
+    function updateNotes(room_id) {
+        if ($('.notes-area').length) {
+            $('#target-notes').empty();
+            $.ajax("/api/get_notes", {
+                type: "post",
+                data: {
+                    room_id: room_id
+                },
+                success: function (data, status, xhr) {
+                    var jsonData = $.parseJSON(data);
+                    const template = document.getElementById('tmp-notes').innerHTML;
+                    jsonData.forEach(noteData => {
+                        const rendered = Mustache.render(template, noteData);
+                        document.getElementById('target-notes').insertAdjacentHTML('beforeend', rendered);
+                        //$("textarea.note").height( $("textarea")[0].scrollHeight );
+                        bindNoteActions();
+                    });
+
+                }
+            });
+        }
+    }
+
+    $('#add-note').off('click').on('click', function(e) {
+        e.preventDefault();
+        //$('.notes-area').append('<textarea></textarea>');
+        var template = $("#tmp-notes").html();
+        var rendered = Mustache.render(template, {
+            id: 0,
+            room_id: $('#m_room_id').val()
+        });
+        $("#target-notes").prepend(rendered);
+        bindNoteActions();
+    });
+    function bindNoteActions() {
+        $('.note').off('blur').on('blur', function (e) {
+            e.preventDefault();
+            if ($(this).data('id') != 0 && $(this).val() == "") {
+                var that = $(this);
+                // delete existing note
+                console.log('delete note: '+$(this).data('id'));
+                $.ajax("/api/remove_note", {
+                    type: "post",
+                    data: {
+                        id: $(this).data('id'),
+                    },
+                    success: function (data, status, xhr) {
+                        $(that).slideUp('1000').remove();
+                    }
+                });
+            }
+
+            if ($(this).val() != "") {
+                console.log($(this).val());
+                var that = $(this);
+                $.ajax("/api/save_note", {
+                    type: "post",
+                    data: {
+                        id: $(this).data('id'),
+                        room_id: $(this).data('room_id'),
+                        note: $(this).val()
+                    },
+                    success: function (data, status, xhr) {
+                        var res = $.parseJSON(data);
+                        if (res.added != 0) {
+                            that.data('id', res.added);
+                            that.attr('data-id', res.added);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
 
     /*
     * // END TABLE MODE

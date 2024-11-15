@@ -651,6 +651,71 @@ function ajax_decrease_qty() {
     exit($ret);
 }
 
+function ajax_get_notes() {
+    global $pdo;
+
+    $room_id = $_POST['room_id'];
+
+    $q = $pdo->query("SELECT 
+                              id, 
+                              room_id_fk as room_id,
+                              note
+                              FROM sst_notes
+                              WHERE room_id_fk = $room_id  
+                              ORDER BY created_on DESC");
+    $res = $q->fetchAll(PDO::FETCH_ASSOC);
+    return(return_json($res));
+}
+
+function ajax_remove_note() {
+    global $pdo;
+
+    $uid = $_POST['id'];
+
+    if ($uid) {
+        $pdo->prepare("DELETE FROM sst_notes WHERE id=?")->execute([$uid]);
+        $ret = json_encode(['deleted' => 1]);
+    } else {
+        $ret = json_encode(['deleted' => 0]);
+    }
+    exit($ret);
+}
+
+function ajax_save_note() {
+    global $pdo;
+
+    $data['note_id'] = $_POST['id'];
+    $data['room_id'] = $_POST['room_id'];
+    $data['note'] = $_POST['note'];
+    $data['user_id'] = user_id();
+
+    if ($data['note_id'] == 0) {
+        unset($data['note_id']);
+        $q = "INSERT INTO sst_notes (room_id_fk, note, owner_id, version, created_on)
+              VALUES
+              (:room_id, :note, :user_id, 1, CURRENT_TIMESTAMP)";
+    } else {
+        $q = "UPDATE sst_notes SET 
+              room_id_fk = :room_id, 
+              note = :note, 
+              owner_id = :user_id,
+              version = 1              
+              WHERE
+              id = :note_id";
+    }
+
+    try {
+        $pdo->prepare($q)->execute($data);
+    }  catch (Exception $e) {
+        vd($q);
+        exit($e->getMessage());
+    }
+    $ret = json_encode(['added' => $pdo->lastInsertId()]);
+    exit($ret);
+}
+
+
+
 function ajax_edit_ref() {
     global $pdo;
 

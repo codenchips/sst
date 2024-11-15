@@ -28,7 +28,7 @@ $types = get_types();
             <p>Then select a <b>room</b> to manage the products in that room.</p>
         </div>
         <div class="uk-card-footer uk-align-center">
-            <button class="uk-button uk-button-primary" type="button" uk-toggle="target: .tables-side">Manage Project</button>
+            <button class="uk-button uk-button-primary uk-hidden@m" type="button" uk-toggle="target: .tables-side">Manage Project</button>
         </div>
 
     </div>
@@ -39,7 +39,7 @@ $types = get_types();
 
 <div style="display:none;" id="table_mode_view" class="uk-width-1-1 uk-margin">
 
-    <div class="uk-width-1-3 uk-margin">
+    <div class="uk-width-1-3 uk-margin uk-hidden@m">
         <button class="uk-button uk-button-primary" type="button" uk-toggle="target: .tables-side">Manage Project</button>
     </div>
 
@@ -131,6 +131,15 @@ $types = get_types();
     <div class="uk-width-1-1">
         <div id="ptable"></div>
     </div>
+
+    <div class="uk-width-1-1">
+        <button id="add-note" class="uk-button uk-button-primary uk-align-right uk-width-1-5">Add Note</button>
+    </div>
+
+    <div class="uk-width-1-1">
+        <div id="target-notes" class="notes-area"></div>
+    </div>
+
 </div>
 
 <div id="debug"></div>
@@ -199,6 +208,9 @@ $types = get_types();
 
 
 <!-- Templates -->
+<script id="tmp-notes" type="x-tmpl-mustache">
+    <textarea oninput='this.style.height = "";this.style.height = this.scrollHeight + 3 + "px"' class="note" data-id="{{id}}" data-room_id="{{room_id}}">{{note}}</textarea>
+</script>
 <script id="tmp-select-product-type" type="x-tmpl-mustache">
 <select required id="form_type" name="form_type" class="uk-select select-product-type"
 oninvalid="this.setCustomValidity('Please select a product type.')"
