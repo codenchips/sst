@@ -153,36 +153,26 @@ $(function() {
     }
     // END get skus for product
     // get skus for product
-    function bindSelectSKU() {
-        // only do this if we want to pull up an image or something on sku selection
-        return (true);
-        $(".select-sku").val("").off("change").on("change", function(e) {
-            e.preventDefault();
-            var slug = $(this).val();
-            console.log('selected sku: ' + slug);
-            $.ajax("/api/get_skus_for_product", {
-                type: "post",
-                data: {
-                    sku: slug
-                },
-                success: function(data, status, xhr) {
-                    var jsonData = $.parseJSON(data);
-                    var template = $("#tmp-select-sku").html();
-                    var rendered = Mustache.render(template, {
-                        skus: jsonData
-                    });
-                    $("#target-select-sku").html(rendered);
-                }
-            });
-        });
-    }
+
     // END get skus for product
     $("#product-select-form").off("submit").on("submit", function(e) {
         e.preventDefault();
         console.log('product select form submitted');
         const form = document.querySelector("#product-select-form");
         if ($('form_sku').val() != "") {
-            sendData(form, 'add_product');
+            //sendData(form, 'add_product');
+            (async () => {
+                try {
+                    const result = await sendData(form, "add_product");
+                    console.log("Result from backend:", result);
+                    // Perform additional logic with `result`.
+                    updatepTable();
+                } catch (error) {
+                    console.error("Error during sendData:", error);
+                    // Handle the error.
+                    alert('There as a network error, please try again');
+                }
+            })();
         } else {
             alert('You must select a SKU')
         }
@@ -191,43 +181,98 @@ $(function() {
         e.preventDefault();
         console.log('Special form submitted');
         const form = document.querySelector("#form-submit-special");
-        sendData(form, 'add_special');
+        //sendData(form, 'add_special');
+        (async () => {
+            try {
+                const result = await sendData(form, "add_special");
+                console.log("Result from backend:", result);
+                // Perform additional logic with `result`.
+                updatepTable();
+            } catch (error) {
+                console.error("Error during sendData:", error);
+                // Handle the error.
+                alert('There was a network error, please try again.');
+            }
+        })();
         UIkit.modal($('#add-special')).hide();
     });
     $("#form-add-floor").off("submit").on("submit", function(e) {
         e.preventDefault();
         console.log('Add floor  form submitted');
         const form = document.querySelector("#form-add-floor");
-        sendData(form, 'add_floor');
+        //sendData(form, 'add_floor');
         // update sidebar nav
-        updateTableSideNav();
+        (async () => {
+            try {
+                const result = await sendData(form, "add_floor");
+                console.log("Result from backend:", result);
+                // Perform additional logic with `result`.
+                updateTableSideNav();
+            } catch (error) {
+                console.error("Error during sendData:", error);
+                // Handle the error.
+                alert('There was a network error, please try again.');
+            }
+        })();
         UIkit.modal($('#add-floor')).hide();
     });
     $("#form-add-building").off("submit").on("submit", function(e) {
         e.preventDefault();
         console.log('Add building  form submitted');
         const form = document.querySelector("#form-add-building");
-        sendData(form, 'add_building');
+        //sendData(form, 'add_building');
         // update sidebar nav
-        updateTableSideNav();
+        (async () => {
+            try {
+                const result = await sendData(form, "add_building");
+                console.log("Result from backend:", result);
+                // Perform additional logic with `result`.
+                updateTableSideNav();
+            } catch (error) {
+                console.error("Error during sendData:", error);
+                // Handle the error.
+                alert('There was a network error, please try again.');
+            }
+        })();
         UIkit.modal($('#add-building')).hide();
     });
     $("#form-add-location").off("submit").on("submit", function(e) {
         e.preventDefault();
         console.log('Add location  form submitted');
         const form = document.querySelector("#form-add-location");
-        sendData(form, 'add_location');
-        // update sidebar nav
-        updateTableSideNav();
+        //sendData(form, 'add_location');
+        (async () => {
+            try {
+                const result = await sendData(form, "add_location");
+                console.log("Result from backend:", result);
+                // Perform additional logic with `result`.
+                updateTableSideNav();
+            } catch (error) {
+                console.error("Error during sendData:", error);
+                // Handle the error.
+                alert('There was a network error, please try again.');
+            }
+        })();
         UIkit.modal($('#add-location')).hide();
     });
     $("#form-add-room").off("submit").on("submit", function(e) {
         e.preventDefault();
         console.log('Add room submitted');
         const form = document.querySelector("#form-add-room");
-        sendData(form, 'add_room');
-        // update sidebar nav
-        updateTableSideNav();
+        //sendData(form, 'add_room');
+        (async () => {
+            try {
+                const result = await sendData(form, "add_room");
+                console.log("Result from backend:", result);
+                // Perform additional logic with `result`.
+                updateTableSideNav();
+            } catch (error) {
+                console.error("Error during sendData:", error);
+                // Handle the error.
+                alert('There was a network error, please try again.');
+            }
+        })();
+
         UIkit.modal($('#add-room')).hide();
     });
 
@@ -235,9 +280,20 @@ $(function() {
         e.preventDefault();
         console.log('Remove location submitted');
         const form = document.querySelector("#form-remove-location");
-        sendData(form, 'remove_location');
+        //sendData(form, 'remove_location');
         // update sidebar nav
-        updateTableSideNav();
+        (async () => {
+            try {
+                const result = await sendData(form, "remove_location");
+                console.log("Result from backend:", result);
+                // Perform additional logic with `result`.
+                updateTableSideNav();
+            } catch (error) {
+                console.error("Error during sendData:", error);
+                // Handle the error.
+                alert('There was a network error, please try again.');
+            }
+        })();
         UIkit.modal($('#remove-location')).hide();
         UIkit.offcanvas($('.tables-side')).show();
     });
@@ -245,9 +301,20 @@ $(function() {
         e.preventDefault();
         console.log('Remove Building submitted');
         const form = document.querySelector("#form-remove-building");
-        sendData(form, 'remove_building');
+        //sendData(form, 'remove_building');
         // update sidebar nav
-        updateTableSideNav();
+        (async () => {
+            try {
+                const result = await sendData(form, "remove_building");
+                console.log("Result from backend:", result);
+                // Perform additional logic with `result`.
+                updateTableSideNav();
+            } catch (error) {
+                console.error("Error during sendData:", error);
+                // Handle the error.
+                alert('There was a network error, please try again.');
+            }
+        })();
         UIkit.modal($('#remove-building')).hide();
         UIkit.offcanvas($('.tables-side')).show();
     });
@@ -255,9 +322,20 @@ $(function() {
         e.preventDefault();
         console.log('Remove floor submitted');
         const form = document.querySelector("#form-remove-floor");
-        sendData(form, 'remove_floor');
+        //sendData(form, 'remove_floor');
         // update sidebar nav
-        updateTableSideNav();
+        (async () => {
+            try {
+                const result = await sendData(form, "remove_floor");
+                console.log("Result from backend:", result);
+                // Perform additional logic with `result`.
+                updateTableSideNav();
+            } catch (error) {
+                console.error("Error during sendData:", error);
+                // Handle the error.
+                alert('There was a network error, please try again.');
+            }
+        })();
         UIkit.modal($('#remove-floor')).hide();
         UIkit.offcanvas($('.tables-side')).show();
     });
@@ -265,9 +343,20 @@ $(function() {
         e.preventDefault();
         console.log('Remove room submitted');
         const form = document.querySelector("#form-remove-room");
-        sendData(form, 'remove_room');
+        //sendData(form, 'remove_room');
         // update sidebar nav
-        updateTableSideNav();
+        (async () => {
+            try {
+                const result = await sendData(form, "remove_room");
+                console.log("Result from backend:", result);
+                // Perform additional logic with `result`.
+                updateTableSideNav();
+            } catch (error) {
+                console.error("Error during sendData:", error);
+                // Handle the error.
+                alert('There was a network error, please try again.');
+            }
+        })();
         UIkit.modal($('#remove-room')).hide();
         UIkit.offcanvas($('.tables-side')).show();
     });
@@ -414,20 +503,34 @@ $(function() {
                 method: "post",
                 body: formData,
             });
+
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
             }
-            console.log(await response.json());
-            updatepTable();
+
+            const data = await response.json(); // Parse the response JSON.
+            console.log(data);
+
+            // Optional: Perform additional actions based on visibility or other conditions.
+            if ($('#ptable').filter(':visible').length) {
+                console.log('ptable visible');
+                //updatepTable(); // Ensure this function doesn't interfere with the returned data.
+            }
+
+            return data; // Return the parsed data for further use.
         } catch (e) {
             console.error(e);
+            throw e; // Re-throw the error for the calling function to handle.
         }
     }
+
     if ($('#ptable').length) {
         const currentRoomId = $('input#m_room_id').val();
         if (currentRoomId == "") {
             console.warn("no room id");
-            updatepTable(false);
+            if ($('#ptable').filter(':visible').length) {
+                updatepTable(false);
+            }
             $('#table_mode_nodata').fadeIn(1000);
 
         } else {
@@ -773,10 +876,13 @@ $(function() {
                 },
                 success: function(data, status, xhr) {
                     var jsonData = $.parseJSON(data);
-
-                    if (data) {
+                    console.log(jsonData[0].project_name);
+                    if (jsonData[0].project_name) {
+                        $('#dashboard_projects').show();
                         dashTable.setData(data);
                     } else {
+                        //alert("no data");
+                        $('#dashboard_projects').hide();
                         dashTable.setData([]);
                     }
                 }
@@ -793,15 +899,6 @@ $(function() {
             initialSort:[
                 {column:"project_name", dir:"asc"}, //sort by this first
             ],
-            // groupBy: "project_name",
-            // groupHeader:function(value, count, data, group){
-            //     //value - the value all members of this group share
-            //     //count - the number of rows in this group
-            //     //data - an array of all the row data objects in this group
-            //     //group - the group component for the group
-            //
-            //     return "Project Name: <span style='color:#0f7ae5; margin-left: 10px;'>" + value + "</span><span style='float:right;'><a href='#'>Add Location</a></span>";
-            // },
             columns: [{
                     title: "project_id",
                     field: "id",
@@ -863,9 +960,21 @@ $(function() {
         e.preventDefault();
         console.log('Add project submitted');
         const form = document.querySelector("#form-create-project");
-        sendData(form, 'add_project');
-        // update sidebar nav
-        updateDashTable();
+        //sendData(form, 'add_project');
+
+        (async () => {
+            try {
+                const result = await sendData(form, "add_project");
+                console.log("Result from backend:", result);
+                // Perform additional logic with `result`.
+                updateDashTable();
+            } catch (error) {
+                console.error("Error during sendData:", error);
+                // Handle the error.
+                alert('There was a network error, please try again.');
+            }
+        })();
+
         UIkit.modal($('#create-project')).hide();
     });
 
