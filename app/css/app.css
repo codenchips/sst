@@ -70,11 +70,19 @@ body {
   font-weight: bold;
 }
 .nav-menu .building-list {
+  margin-top: 0;
   list-style: none;
   padding-left: 0.5em;
 }
 .nav-menu .building-list .building-item {
   font-size: 1em;
+  padding-bottom: 15px;
+}
+.nav-menu .building-list .building-item p {
+  margin: 0;
+}
+.nav-menu .building-list .building-item .add-location {
+  font-size: 1.15em;
 }
 .nav-menu .building-list .building-item .building-header {
   display: flex;
@@ -99,6 +107,7 @@ body {
   align-items: center;
 }
 .nav-menu .floor-list .floor-item .floor-header .floor-name {
+  padding-top: 15px;
   font-weight: 500;
 }
 .nav-menu .floor-list h5 {

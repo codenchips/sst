@@ -98,11 +98,21 @@ body {
   }
 
   .building-list {
+    margin-top: 0;
     list-style: none;
     padding-left: 0.5em; // Reduced indentation
 
     .building-item {
       font-size: 1em; // ~17px
+      padding-bottom: 15px;
+
+      p {
+        margin: 0;
+      }
+
+      .add-location {
+        font-size: 1.15em;
+      }
 
       .building-header {
         display: flex;
@@ -131,6 +141,7 @@ body {
         align-items: center;
 
         .floor-name {
+          padding-top: 15px;
           font-weight: 500;
         }
       }
