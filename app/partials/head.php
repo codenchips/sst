@@ -9,7 +9,7 @@
 
 <!-- UIkit CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/css/uikit.min.css" />
-<link href="../css/app.css" rel="stylesheet" />
+<link href="../css/app.css?v=<?php echo time(); ?>" rel="stylesheet" />
 
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
@@ -22,4 +22,4 @@
 
 <link href="https://unpkg.com/tabulator-tables@6.3.0/dist/css/tabulator_bootstrap4.min.css" rel="stylesheet">
 
-<script src="../js/scripts.js"></script>
+<script src="../js/scripts.js?v=<?php echo time(); ?>"></script>

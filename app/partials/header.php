@@ -1,4 +1,11 @@
 
+<div id="spinner" style="display:none;">
+    <div uk-spinner="ratio: 4"></div>
+</div>
+
+
+
+
 <nav class="uk-navbar-container">
     <div class="uk-container uk-padding-remove">
         <div uk-navbar>

@@ -27,27 +27,20 @@
     <favorites_list name="app" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.45788914">
+    <splitter split-orientation="horizontal" split-proportion="0.5687633">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="tables.php" pinned="false" current-in-tab="false">
+          <file leaf-file-name="tables.php" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/views/tables.php">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="325">
-                  <caret line="159" column="36" lean-forward="true" selection-start-line="159" selection-start-column="36" selection-end-line="159" selection-end-column="36" />
+                <state relative-caret-position="320">
+                  <caret line="72" column="54" selection-start-line="72" selection-start-column="54" selection-end-line="72" selection-end-column="54" />
                   <folding>
                     <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
                     <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
+                    <element signature="n#style#0;n#div#1;n#div#1;n#!!top" expanded="true" />
+                    <element signature="n#style#0;n#div#0;n#div#2;n#div#1;n#!!top" expanded="true" />
                   </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="scripts-notes.js" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/js/scripts-notes.js">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-44">
-                  <caret line="13" lean-forward="true" selection-start-line="13" selection-end-line="13" />
                 </state>
               </provider>
             </entry>
@@ -55,7 +48,7 @@
           <file leaf-file-name="dashboard.php" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/views/dashboard.php">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="161">
+                <state>
                   <caret line="36" column="23" selection-start-line="36" selection-start-column="9" selection-end-line="36" selection-end-column="23" />
                 </state>
               </provider>
@@ -64,20 +57,11 @@
           <file leaf-file-name="header.php" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/partials/header.php">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-1181">
-                  <caret line="8" column="57" selection-start-line="8" selection-start-column="57" selection-end-line="8" selection-end-column="57" />
+                <state relative-caret-position="550">
+                  <caret line="24" column="7" lean-forward="true" selection-start-line="24" selection-start-column="7" selection-end-line="24" selection-end-column="7" />
                   <folding>
-                    <element signature="n#style#0;n#div#3;n#div#0;n#form#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                    <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
                   </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="index.php" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/index.php">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="286">
-                  <caret line="13" lean-forward="true" selection-start-line="13" selection-end-line="13" />
                 </state>
               </provider>
             </entry>
@@ -85,8 +69,8 @@
           <file leaf-file-name="tables-side.php" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/partials/tables-side.php">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="88">
-                  <caret line="4" column="12" lean-forward="true" selection-start-line="4" selection-start-column="12" selection-end-line="4" selection-end-column="29" />
+                <state relative-caret-position="484">
+                  <caret line="33" column="19" lean-forward="true" selection-start-line="33" selection-start-column="19" selection-end-line="33" selection-end-column="19" />
                 </state>
               </provider>
             </entry>
@@ -94,8 +78,8 @@
           <file leaf-file-name="model.php" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/lib/model.php">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="249">
-                  <caret line="661" column="34" lean-forward="true" selection-start-line="661" selection-start-column="34" selection-end-line="661" selection-end-column="34" />
+                <state relative-caret-position="440">
+                  <caret line="148" column="40" lean-forward="true" selection-start-line="148" selection-start-column="40" selection-end-line="148" selection-end-column="40" />
                 </state>
               </provider>
             </entry>
@@ -107,8 +91,11 @@
           <file leaf-file-name="scripts.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/js/scripts.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="550">
-                  <caret line="52" column="27" selection-start-line="52" selection-start-column="27" selection-end-line="52" selection-end-column="27" />
+                <state relative-caret-position="664">
+                  <caret line="1098" column="34" selection-start-line="1098" selection-start-column="34" selection-end-line="1098" selection-end-column="34" />
+                  <folding>
+                    <element signature="e#21312#27192#0" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -116,8 +103,8 @@
           <file leaf-file-name="app.scss" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/scss/app.scss">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="282">
-                  <caret line="109" column="18" selection-start-line="109" selection-start-column="18" selection-end-line="109" selection-end-column="18" />
+                <state relative-caret-position="270">
+                  <caret line="325" column="16" lean-forward="true" selection-start-line="325" selection-start-column="16" selection-end-line="325" selection-end-column="16" />
                 </state>
               </provider>
             </entry>
@@ -128,26 +115,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>ref</find>
-      <find>room-name</find>
-      <find>updatepTable</find>
-      <find>room-item</find>
-      <find>#add-r</find>
-      <find>#add-f</find>
-      <find>get_all_by_project</find>
-      <find>get_dashtabledata</find>
-      <find>form_location</find>
-      <find>id=&quot;form-submit-room&quot;</find>
-      <find>hide</find>
-      <find>updateTableModeHeadings</find>
-      <find>table_mode_nodata</find>
-      <find>#locations</find>
-      <find>tables-side-deskto</find>
-      <find>offcanvas-sidebar</find>
-      <find>id=&quot;add_product_room_id&quot;</find>
-      <find>tables-side</find>
-      <find>#tables-side</find>
-      <find>add_project</find>
       <find>select-product-type</find>
       <find>updateNotes</find>
       <find>slide</find>
@@ -157,7 +124,27 @@
       <find>#add-special</find>
       <find>action</find>
       <find>add-special</find>
+      <find>~</find>
+      <find>span.p</find>
+      <find>.proje</find>
+      <find>floor:</find>
+      <find>location_name</find>
+      <find>.pro</find>
+      <find>location:</find>
       <find>notes</find>
+      <find>the sidebar menu to m</find>
+      <find>anage buildings, floors and rooms in this project.</find>
+      <find>tables-</find>
+      <find>update</find>
+      <find>add-room</find>
+      <find>add-floo</find>
+      <find>uik</find>
+      <find>set-qty</find>
+      <find>qty</find>
+      <find>location-heading</find>
+      <find>UIkit.modal</find>
+      <find>before</find>
+      <find>show</find>
     </findStrings>
     <replaceStrings>
       <replace>building</replace>
@@ -169,7 +156,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/partials/head.php" />
         <option value="$PROJECT_DIR$/config/database.php" />
         <option value="&lt;ea5ceed4-5586-406a-9357-3a1e17539c1d&gt;/api.php" />
         <option value="&lt;ea5ceed4-5586-406a-9357-3a1e17539c1d&gt;/index.php" />
@@ -179,12 +165,13 @@
         <option value="$PROJECT_DIR$/config/routes.php" />
         <option value="$PROJECT_DIR$/lib/helpers.php" />
         <option value="$PROJECT_DIR$/views/dashboard.php" />
-        <option value="$PROJECT_DIR$/lib/model.php" />
         <option value="$PROJECT_DIR$/partials/header.php" />
-        <option value="$PROJECT_DIR$/views/tables.php" />
         <option value="$PROJECT_DIR$/partials/tables-side.php" />
+        <option value="$PROJECT_DIR$/partials/head.php" />
         <option value="$PROJECT_DIR$/scss/app.scss" />
         <option value="$PROJECT_DIR$/js/scripts.js" />
+        <option value="$PROJECT_DIR$/lib/model.php" />
+        <option value="$PROJECT_DIR$/views/tables.php" />
       </list>
     </option>
   </component>
@@ -261,7 +248,7 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="reference.settings.deploy.options" />
+    <property name="settings.editor.selected.configurable" value="watcher.settings" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -296,12 +283,12 @@
       <updated>1728978621572</updated>
       <workItem from="1728978623245" duration="117499000" />
       <workItem from="1729686840319" duration="220995000" />
-      <workItem from="1731312662203" duration="89098000" />
+      <workItem from="1731312662203" duration="134608000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="427592000" />
+    <option name="totallyTimeSpent" value="473102000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -319,7 +306,7 @@
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49789253" weight="0.14923747" />
       <window_info anchor="bottom" id="Event Log" order="13" sideWeight="0.46695095" side_tool="true" weight="0.089324616" />
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
-      <window_info anchor="bottom" id="File Transfer" order="12" sideWeight="0.565032" visible="true" weight="0.10784314" />
+      <window_info anchor="bottom" id="File Transfer" order="12" sideWeight="0.565032" weight="0.10784314" />
       <window_info anchor="bottom" id="Version Control" order="11" show_stripe_button="false" sideWeight="0.6765016" weight="0.10566449" />
       <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4968017" weight="0.09586056" />
       <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.53304905" weight="0.07734205" />
@@ -327,6 +314,7 @@
       <window_info active="true" content_ui="combo" x="-372" y="7" width="369" height="1022" id="Project" order="0" sideWeight="0.6579521" type="FLOATING" visible="true" weight="0.13059701" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" x="1328" y="10" width="285" height="1013" id="Database" order="3" weight="0.16204691" />
+      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49946696" weight="0.0882353" />
       <window_info x="-630" y="83" width="296" height="549" id="Structure" order="1" sideWeight="0.34204793" side_tool="true" type="FLOATING" weight="0.13006397" />
       <window_info id="Favorites" order="2" sideWeight="0.21638142" side_tool="true" weight="0.2238806" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
@@ -335,7 +323,6 @@
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="SQL Generator" order="15" sideWeight="0.49840087" weight="0.22440088" />
-      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49946696" visible="true" weight="0.0882353" />
       <window_info anchor="bottom" id="Messages" order="8" weight="0.32897604" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -387,6 +374,8 @@
           <folding>
             <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#1;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#2;n#div#1;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -417,7 +406,7 @@
         <state relative-caret-position="616">
           <caret line="28" column="2" selection-start-line="28" selection-start-column="2" selection-end-line="28" selection-end-column="2" />
           <folding>
-            <element signature="n#style#0;n#div#3;n#div#0;n#form#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -426,6 +415,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4268">
           <caret line="194" lean-forward="true" selection-start-line="194" selection-end-line="194" />
+          <folding>
+            <element signature="e#21312#27192#0" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -443,6 +435,8 @@
           <folding>
             <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#1;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#2;n#div#1;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -472,6 +466,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4334">
           <caret line="197" column="8" lean-forward="true" selection-start-line="197" selection-start-column="8" selection-end-line="197" selection-end-column="8" />
+          <folding>
+            <element signature="e#21312#27192#0" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -531,10 +528,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/partials/head.php">
+    <entry file="file://$PROJECT_DIR$/js/scripts-notes.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="13" column="21" selection-start-line="13" selection-start-column="21" selection-end-line="13" selection-end-column="21" />
+        <state relative-caret-position="-44">
+          <caret line="13" lean-forward="true" selection-start-line="13" selection-end-line="13" />
         </state>
       </provider>
     </entry>
@@ -545,66 +542,71 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/model.php">
+    <entry file="file://$PROJECT_DIR$/partials/tables-side.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="249">
-          <caret line="661" column="34" lean-forward="true" selection-start-line="661" selection-start-column="34" selection-end-line="661" selection-end-column="34" />
+        <state relative-caret-position="484">
+          <caret line="33" column="19" lean-forward="true" selection-start-line="33" selection-start-column="19" selection-end-line="33" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/partials/head.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="682">
+          <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/partials/header.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1181">
-          <caret line="8" column="57" selection-start-line="8" selection-start-column="57" selection-end-line="8" selection-end-column="57" />
+        <state relative-caret-position="550">
+          <caret line="24" column="7" lean-forward="true" selection-start-line="24" selection-start-column="7" selection-end-line="24" selection-end-column="7" />
           <folding>
-            <element signature="n#style#0;n#div#3;n#div#0;n#form#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/dashboard.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
-          <caret line="36" column="23" selection-start-line="36" selection-start-column="9" selection-end-line="36" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/partials/tables-side.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
-          <caret line="4" column="12" lean-forward="true" selection-start-line="4" selection-start-column="12" selection-end-line="4" selection-end-column="29" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scss/app.scss">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="282">
-          <caret line="109" column="18" selection-start-line="109" selection-start-column="18" selection-end-line="109" selection-end-column="18" />
+        <state relative-caret-position="270">
+          <caret line="325" column="16" lean-forward="true" selection-start-line="325" selection-start-column="16" selection-end-line="325" selection-end-column="16" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/tables.php">
+    <entry file="file://$PROJECT_DIR$/views/dashboard.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="325">
-          <caret line="159" column="36" lean-forward="true" selection-start-line="159" selection-start-column="36" selection-end-line="159" selection-end-column="36" />
-          <folding>
-            <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/scripts-notes.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-44">
-          <caret line="13" lean-forward="true" selection-start-line="13" selection-end-line="13" />
+        <state>
+          <caret line="36" column="23" selection-start-line="36" selection-start-column="9" selection-end-line="36" selection-end-column="23" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/scripts.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="550">
-          <caret line="52" column="27" selection-start-line="52" selection-start-column="27" selection-end-line="52" selection-end-column="27" />
+        <state relative-caret-position="664">
+          <caret line="1098" column="34" selection-start-line="1098" selection-start-column="34" selection-end-line="1098" selection-end-column="34" />
+          <folding>
+            <element signature="e#21312#27192#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/model.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="440">
+          <caret line="148" column="40" lean-forward="true" selection-start-line="148" selection-start-column="40" selection-end-line="148" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/tables.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="320">
+          <caret line="72" column="54" selection-start-line="72" selection-start-column="54" selection-end-line="72" selection-end-column="54" />
+          <folding>
+            <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#1;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#2;n#div#1;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -1,12 +1,59 @@
+::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   font: 100% Helvetica, sans-serif;
   color: #192542;
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+  padding: 0 2px;
+}
+
+#spinner {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #container {
   max-width: 768px;
   position: relative;
   margin: 0 auto;
+}
+
+.handle {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  font-size: 1.1em;
+  transform: translateY(-50%);
+  background-color: rgb(34, 34, 34);
+  color: #fff;
+  border: none;
+  border-radius: 0 9px 9px 0;
+  padding: 25px 10px 25px 7px;
+  cursor: pointer;
+  z-index: 1050;
+  writing-mode: vertical-rl;
+  letter-spacing: 2px;
+  transition: left 0.3s ease;
+}
+.handle:hover {
+  background-color: #0f7ae5;
+}
+.handle.open {
+  left: 348px;
+}
+
+.uk-offcanvas.uk-open ~ #sidebar-handle {
+  left: 348px;
 }
 
 .uk-input, .uk-select, .uk-textarea {
@@ -25,38 +72,33 @@ body {
   flex-direction: row-reverse; /* Reverse the elements inside */
 }
 
+.room-heading, .location-heading {
+  font-weight: bold;
+}
 .room-heading span, .location-heading span {
   display: inline-block;
   color: #192542;
-  margin-right: 30px;
+}
+.room-heading span.uk-icon, .location-heading span.uk-icon {
+  margin-right: 5px;
+  position: relative;
+  top: -3px;
+}
+.room-heading span.name, .location-heading span.name {
+  margin-right: 25px;
+  font-weight: normal;
 }
 .room-heading span:last-child, .location-heading span:last-child {
   margin-right: 0;
-}
-.room-heading .project_name:before, .location-heading .project_name:before {
-  content: "Project: ";
-  font-weight: bold;
-}
-.room-heading .location_name:before, .location-heading .location_name:before {
-  content: "Location: ";
-  font-weight: bold;
-}
-.room-heading .building_name:before, .location-heading .building_name:before {
-  content: "Building: ";
-  font-weight: bold;
-}
-.room-heading .floor_name:before, .location-heading .floor_name:before {
-  content: "Floor: ";
-  font-weight: bold;
-}
-.room-heading .room_name:before, .location-heading .room_name:before {
-  content: "Room: ";
-  font-weight: bold;
 }
 
 .nav-menu {
   list-style: none;
   padding: 0;
+}
+.nav-menu .ik-icon {
+  position: relative;
+  top: -3px;
 }
 .nav-menu .location-item {
   font-size: 1.2em;
@@ -81,6 +123,9 @@ body {
 .nav-menu .building-list .building-item p {
   margin: 0;
 }
+.nav-menu .building-list .building-item:last-child a {
+  color: #0f7ae5;
+}
 .nav-menu .building-list .building-item .add-location {
   font-size: 1.15em;
 }
@@ -100,6 +145,13 @@ body {
 }
 .nav-menu .floor-list .floor-item {
   font-size: 1em;
+}
+.nav-menu .floor-list .floor-item.add-floor {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.nav-menu .floor-list .floor-item:last-child a {
+  color: #0f7ae5;
 }
 .nav-menu .floor-list .floor-item .floor-header {
   display: flex;
@@ -127,6 +179,13 @@ body {
   align-items: center;
   margin-top: 0.5em;
   margin-bottom: 0.5em;
+}
+.nav-menu .room-list .room-item.add-room {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.nav-menu .room-list .room-item.add-room a {
+  color: #0f7ae5;
 }
 .nav-menu .room-list .room-item .room-name {
   font-weight: normal;
@@ -199,4 +258,11 @@ label {
   display: block;
   overflow: visible;
   resize: none;
+}
+
+input#qty {
+  font-size: 193%;
+  padding: 25px 0px 25px 4px;
+  border: 2px solid #aaa;
+  text-align: center;
 }

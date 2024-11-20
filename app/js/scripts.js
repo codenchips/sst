@@ -5,6 +5,14 @@ $(function() {
         stack : true,
     });
 
+    function showSpin() {
+        $('#spinner').fadeIn('fast');
+    }
+    function hideSpin() {
+        $('#spinner').fadeOut('fast');
+    }
+
+
     var login = UIkit.modal('.loginmodal', {
         bgClose : false,
         escClose : false
@@ -153,7 +161,7 @@ $(function() {
                         skus: jsonData
                     });
                     $("#target-select-sku").html(rendered);
-                    bindSelectSKU();
+                    //bindSelectSKU();
                 }
             });
         });
@@ -271,7 +279,10 @@ $(function() {
             try {
                 const result = await sendData(form, "add_room");
                 console.log("Result from backend:", result);
+                room_id = result.added;
+                console.log("new room id: "+room_id);
                 // Perform additional logic with `result`.
+                showRoom(room_id);
                 updateTableSideNav();
             } catch (error) {
                 console.error("Error during sendData:", error);
@@ -279,7 +290,6 @@ $(function() {
                 alert('There was a network error, please try again.');
             }
         })();
-
         UIkit.modal($('#add-room')).hide();
     });
 
@@ -302,7 +312,7 @@ $(function() {
             }
         })();
         UIkit.modal($('#remove-location')).hide();
-        UIkit.offcanvas($('.tables-side')).show();
+        UIkit.offcanvas($('#offcanvas-sidebar')).show();
     });
     $("#form-remove-building").off("submit").on("submit", function(e) {
         e.preventDefault();
@@ -323,7 +333,7 @@ $(function() {
             }
         })();
         UIkit.modal($('#remove-building')).hide();
-        UIkit.offcanvas($('.tables-side')).show();
+        UIkit.offcanvas($('#offcanvas-sidebar')).show();
     });
     $("#form-remove-floor").off("submit").on("submit", function(e) {
         e.preventDefault();
@@ -344,7 +354,7 @@ $(function() {
             }
         })();
         UIkit.modal($('#remove-floor')).hide();
-        UIkit.offcanvas($('.tables-side')).show();
+        UIkit.offcanvas($('#offcanvas-sidebar')).show();
     });
     $("#form-remove-room").off("submit").on("submit", function(e) {
         e.preventDefault();
@@ -365,8 +375,33 @@ $(function() {
             }
         })();
         UIkit.modal($('#remove-room')).hide();
-        UIkit.offcanvas($('.tables-side')).show();
+        UIkit.offcanvas($('#offcanvas-sidebar')).show();
     });
+    $("#form-submit-set-qty").off("submit").on("submit", function(e) {
+        e.preventDefault();
+        const qty = $('#set_qty_qty').val();
+        if (qty =="") { return (true); }
+
+        const form = document.querySelector("#form-submit-set-qty");
+        const formData = new FormData(form);
+        console.log(formData);
+        // update sidebar nav
+        (async () => {
+            try {
+                const result = await sendData(form, "set_qty");
+                console.log("Result from backend:", result);
+                // Perform additional logic with `result`.
+                updatepTable();
+            } catch (error) {
+                console.error("Error during sendData:", error);
+                // Handle the error.
+                alert('There was a network error, please try again.');
+            }
+        })();
+        UIkit.modal($('#set-qty')).hide();
+    });
+
+
     // add floor close. re-open the sidebar
     $("#add-floor,#add-room,#form-remove-room,#form-remove-floor").on('hidden', function(e) {
         setTimeout(function() {
@@ -382,23 +417,41 @@ $(function() {
 
 
     function updateTableModeHeadings(uid) {
-
+        showSpin();
         $.ajax("/api/get_headings_by_room_id", {
             type: "post",
             data: { uid: uid },
             success: function(data, status, xhr) {
+                hideSpin();
                 const jsonData = $.parseJSON(data);
                 const hd = jsonData[0]
-                console.log(hd.room_name);
+                console.log(hd.floor_name);
 
-                $('span.project_name').text(hd.project_name).show();
-                $('span.location_name').text(hd.location_name).show();
-                $('span.building_name').text(hd.building_name).show();
-                $('span.floor_name').text(hd.floor_name).show();
-                $('span.room_name').text(hd.room_name).show();
+                $('span.project_name').text(hd.project_name);
+                $('span.location_name').text(hd.location_name);
+                $('span.building_name').text(hd.building_name);
+                $('span.floor_name').text(hd.floor_name);
+                $('span.room_name').text(hd.room_name);
+
+                $('.location-heading,.room-heading').show();
             }
         });
     }
+
+
+    function showRoom(uid = false) {
+        if (uid) {
+            $('input#uid,input#m_room_id,input#add_product_room_id').val(uid);
+
+            updateTableModeHeadings(uid);
+            updatepTable();
+            updateNotes();
+            UIkit.offcanvas($('#offcanvas-sidebar')).hide();
+            $('#table_mode_nodata').slideUp(1000);
+            $('#table_mode_view').slideDown(1000);
+        }
+    }
+
 
 
     function bindNavClicks() {
@@ -406,17 +459,7 @@ $(function() {
         $(".room-list .room-item.view-room a").off('click').on('click', function(e) {
             e.preventDefault();
             const uid = $(this).data('id');
-
-            $('input#uid,input#m_room_id,input#add_product_room_id').val(uid);
-
-            updateTableModeHeadings(uid);
-            updatepTable();
-
-            $('#table_mode_nodata').slideUp(1000);
-            $('#table_mode_view').slideDown(1000);
-
-
-
+            showRoom(uid);
         });
 
 
@@ -504,6 +547,7 @@ $(function() {
         });
     }
     async function sendData(form, method) {
+        showSpin();
         const formData = new FormData(form);
         try {
             const response = await fetch("/api/" + method, {
@@ -518,14 +562,10 @@ $(function() {
             const data = await response.json(); // Parse the response JSON.
             console.log(data);
 
-            // Optional: Perform additional actions based on visibility or other conditions.
-            if ($('#ptable').filter(':visible').length) {
-                console.log('ptable visible');
-                //updatepTable(); // Ensure this function doesn't interfere with the returned data.
-            }
-
+            hideSpin();
             return data; // Return the parsed data for further use.
         } catch (e) {
+            hideSpin();
             console.error(e);
             throw e; // Re-throw the error for the calling function to handle.
         }
@@ -556,6 +596,7 @@ $(function() {
 
     function updateTableSideNav(currentProjectId) {
         if ($('.tables-side').length) {
+            showSpin();
             if (!currentProjectId) currentProjectId = $('#m_project_id').val();
             $.ajax("/api/get_all_by_project", {
                 type: "post",
@@ -563,6 +604,7 @@ $(function() {
                     pid: currentProjectId,
                 },
                 success: function(data, status, xhr) {
+                    hideSpin();
                     console.log(data);
                     $('.locations').empty();
                     var jsonData = $.parseJSON(data);
@@ -589,7 +631,7 @@ $(function() {
                 const $locationItem = $('<li class="location-item"></li>');
                 $locationItem.append(`
                 <div class="location-header">
-                    <span class="location-name">${locationName}</span>
+                    <span class="location-name"><span uk-icon="icon: location;"></span> ${locationName}</span>
                     <div class="action-icons location">
                         <i class="fa-solid fa-circle-minus" data-id="${locationData.location_id}" data-action="remove"></i>
                     </div>
@@ -608,7 +650,7 @@ $(function() {
                     const $buildingItem = $('<li class="building-item"></li>');
                     $buildingItem.append(`
                     <h4 class="building-header">
-                        <span class="building-name">${buildingName}</span>
+                        <span class="building-name"><span uk-icon="icon: home;"></span> ${buildingName}</span>
                         <div class="action-icons building">
                             <i class="fa-solid fa-circle-minus" data-id="${buildingData.building_id}" data-action="remove"></i>
                         </div>
@@ -627,7 +669,7 @@ $(function() {
                         const $floorItem = $('<li class="floor-item"></li>');
                         $floorItem.append(`
                         <div class="floor-header">
-                            <span class="floor-name">${floorName}</span>
+                            <span class="floor-name"><span uk-icon="icon: table;"></span> ${floorName}</span>
                             <div class="action-icons floor">
                                 <i class="fa-solid fa-circle-minus" data-id="${floorData.floor_id}" data-action="remove"></i>
                             </div>
@@ -644,7 +686,7 @@ $(function() {
                             hasRooms = true; // Mark that we have at least one room
                             const roomName = roomData.room_name || "Add room";
                             const $roomItem = $('<li class="room-item view-room"></li>');
-                            $roomItem.append(`<span class="room-name"><a href="#" data-id="${roomData.room_id}">${roomName}</a></span>`);
+                            $roomItem.append(`<span class="room-name"><a href="#" data-id="${roomData.room_id}"><span uk-icon="icon: move;"></span> ${roomName}</a></span>`);
                             if (roomData.room_name) {
                                 $roomItem.append(`<i class="fa-solid fa-circle-minus action-icon" data-id="${roomData.room_id}" data-action="remove"></i>`);
                             }
@@ -695,16 +737,20 @@ $(function() {
                 room_id = $('input#m_room_id').val();
             }
             if ($('#ptable').length && room_id) {
+                showSpin();
                 $.ajax("/api/get_products_in_room", {
                     type: "post",
                     data: { room_id: room_id },
                     success: function(data, status, xhr) {
                         var jsonData = $.parseJSON(data);
-                        if (data) {
+                        hideSpin();
+                        if (jsonData[0].id) {
                             pTable.setData(data);
                             // set the uid for ref by others
                             $('input#uid').val(room_id);
+                            $('#ptable').show();
                         } else {
+                            $('#ptable').hide();
                             pTable.setData([]);
                         }
                     }
@@ -752,6 +798,7 @@ $(function() {
                     title: "Ref",
                     field: "ref",
                     editor: "input",
+                    visible: true,
                     editorParams: {
                         search: true,
                         mask: "",
@@ -765,9 +812,13 @@ $(function() {
                     title: "Qty",
                     field: "qty",
                     width: 80,
-                    hozAlign: "left"
+                    hozAlign: "left",
+                    cellClick: function (e, cell) {
+                        setQty(cell.getRow().getData().id, cell.getRow().getData().qty, cell.getRow().getData().sku);
+                    }
                 },
                 {
+                    visible: false,
                     headerSort: false,
                     formatter: iconPlus,
                     width: 30,
@@ -777,6 +828,7 @@ $(function() {
                     }
                 },
                 {
+                    visible: false,
                     headerSort: false,
                     formatter: iconMinus,
                     width: 30,
@@ -822,6 +874,21 @@ $(function() {
         });
     }
 
+
+
+    function setQty(id, qty, sku) {
+        //$('#form-submit-set-qty #set_qty_qty').val(qty);
+        $('#form-submit-set-qty #set_qty_product_id').val(id);
+        $('#form-submit-set-qty #set_qty_sku').val(sku);
+        UIkit.modal($('#set-qty')).show();
+
+    }
+    UIkit.util.on('#set-qty', 'shown', function () {
+        console.log('set qty down');
+        $('#set_qty_qty').focus();
+    });
+
+
     function increaseQty(id) {
         $.ajax("/api/increase_qty", {
             type: "post",
@@ -854,31 +921,33 @@ $(function() {
         });
     }
 
-    UIkit.util.on('.tables-side', 'show', function () {
-       //console.log('show nav');
-    });
-
-    function updateNotes(room_id) {
-        if ($('.notes-area').length) {
-            $('#target-notes').empty();
-            $.ajax("/api/get_notes", {
-                type: "post",
-                data: {
-                    room_id: room_id
-                },
-                success: function (data, status, xhr) {
-                    var jsonData = $.parseJSON(data);
-                    const template = document.getElementById('tmp-notes').innerHTML;
-                    jsonData.forEach(noteData => {
-                        const rendered = Mustache.render(template, noteData);
-                        document.getElementById('target-notes').insertAdjacentHTML('beforeend', rendered);
-                        //$("textarea.note").height( $("textarea")[0].scrollHeight );
-                        bindNoteActions();
-                    });
-
-                }
-            });
-        }
+    function updateNotes(room_id = false) {
+        setTimeout(function() {
+            if (room_id == false) {
+                room_id = $('input#m_room_id').val();
+            }
+            if ($('.notes-area').length && room_id) {
+                $('#target-notes').empty();
+                $.ajax("/api/get_notes", {
+                    type: "post",
+                    data: {
+                        room_id: room_id
+                    },
+                    success: function (data, status, xhr) {
+                        if (data.length > 2) {
+                            var jsonData = $.parseJSON(data);
+                            const template = document.getElementById('tmp-notes').innerHTML;
+                            jsonData.forEach(noteData => {
+                                const rendered = Mustache.render(template, noteData);
+                                document.getElementById('target-notes').insertAdjacentHTML('beforeend', rendered);
+                                //$("textarea.note").height( $("textarea")[0].scrollHeight );
+                                bindNoteActions();
+                            });
+                        }
+                    }
+                });
+            }
+        },500);
     }
 
     $('#add-note').off('click').on('click', function(e) {
@@ -951,12 +1020,14 @@ $(function() {
             uid = 1  // user_id
         }
         if ($('#dashboard_projects').length ) {
+            showSpin();
             $.ajax("/api/get_dashtabledata", {
                 type: "post",
                 data: {
                     uid: uid
                 },
                 success: function(data, status, xhr) {
+                    hideSpin();
                     var jsonData = $.parseJSON(data);
                     console.log(jsonData[0].project_name);
                     if (jsonData[0].project_name) {
@@ -1015,15 +1086,17 @@ $(function() {
                 {
                     title: "Rev",
                     field: "version",
-                    width: 80
+                    width: 80,
+                    visible: false
                 },
                 {
                     title: "Created",
                     field: "created",
-                    width: 110
+                    width: 110,
+                    visible: false
                 },
                 {
-                    visible: true,
+                    visible: false,
                     headerSort: false,
                     formatter: iconX,
                     width: 20,
@@ -1086,6 +1159,8 @@ $(function() {
     /*
     *  DASHBOARD
     */
+
+
 
 
 });

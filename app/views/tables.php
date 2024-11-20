@@ -14,9 +14,6 @@ $types = get_types();
 <?php include ('./partials/tables-side.php'); ?>
 
 
-
-
-
 <div style="display:none;" id="table_mode_nodata" class="uk-width-1-1 uk-margin">
 
     <div class="uk-card uk-card-large uk-card-default">
@@ -28,7 +25,7 @@ $types = get_types();
             <p>Then select a <b>room</b> to manage the products in that room.</p>
         </div>
         <div class="uk-card-footer uk-align-center">
-            <button class="uk-button uk-button-primary uk-hidden@m" type="button" uk-toggle="target: .tables-side">Manage Project</button>
+            <button class="uk-button uk-button-primary uk-hidden@xl " type="button" uk-toggle="target: #offcanvas-sidebar">Manage Project</button>
         </div>
 
     </div>
@@ -39,16 +36,17 @@ $types = get_types();
 
 <div style="display:none;" id="table_mode_view" class="uk-width-1-1 uk-margin">
 
-    <div class="uk-width-1-3 uk-margin uk-hidden@m">
-        <button class="uk-button uk-button-primary" type="button" uk-toggle="target: .tables-side">Manage Project</button>
+    <div class="uk-width-1-1 uk-margin uk-hidden@xl">
+        <button class="uk-button uk-button-primary uk-align-right" type="button" uk-toggle="target: #offcanvas-sidebar">Manage Project</button>
     </div>
 
 
-    <div class="manage-bar uk-margin" uk-grid>
-        <div class="uk-width-1-1 location-heading uk-text-left" >
-            <span style="display:none" class="project_name"></span>
-            <span style="display:none" class="location_name"></span>
-            <span style="display:none" class="building_name"></span>
+    <div style="display:none;"  class="uk-margin uk-width-1-1 location-heading" uk-grid>
+        <div class="uk-width-1-2">
+            <span class="uk-icon" uk-icon="icon: location;"></span> <span class="name location_name"></span>
+        </div>
+        <div class="uk-width-1-2">
+            <span class="uk-icon" uk-icon="icon: home;"></span></span> <span class="name building_name"></span>
         </div>
     </div>
 
@@ -56,7 +54,7 @@ $types = get_types();
 
     <div class="uk-text-center" uk-grid>
 
-        <div class="uk-width-1-3">
+        <div class="uk-width-1-2">
             <select id="form_brand"
                     name="form_brand"
                     class="uk-select select-brand">
@@ -65,14 +63,14 @@ $types = get_types();
             </select>
         </div>
 
-        <div class="uk-width-1-3">
+        <div class="uk-width-1-2">
             <div id="target-select-product-type" class="uk-margin">
                 <select id="form_type"
                         name="form_type"
                         class="uk-select select-product-type"
                         oninvalid="this.setCustomValidity('Please select a product type.')"
                         oninput="this.setCustomValidity('')">
-                    <option selected value="">Select a Product Type</option>
+                    <option selected value="">Select Product Type</option>
                     <?php foreach ($types as $p) {
                         echo "<option value='$p->type_slug_pk'>$p->type_name</option>";
                     } ?>
@@ -80,7 +78,7 @@ $types = get_types();
             </div>
         </div>
 
-        <div class="uk-width-1-3">
+        <div class="uk-width-1-2">
             <div id="target-select-product" class="uk-margin">
                 <select required id="form_product"
                         name="form_product"
@@ -92,7 +90,7 @@ $types = get_types();
             </div>
         </div>
 
-        <div class="uk-width-1-3">
+        <div class="uk-width-1-2">
             <div id="target-select-sku" class="uk-margin">
                 <select required id="form_sku"
                         name="form_sku"
@@ -104,11 +102,11 @@ $types = get_types();
             </div>
         </div>
 
-        <div class="uk-width-1-3">
+        <div class="uk-width-1-2">
             <button id="form-submit" type="submit" class="uk-button uk-button-primary uk-width-1-1">Add</button>
         </div>
 
-        <div class="uk-width-1-3">
+        <div class="uk-width-1-2">
             <button type="button" uk-toggle="target: #add-special" class="uk-button uk-button-primary uk-width-1-1">Add Special</button>
         </div>
 
@@ -124,16 +122,20 @@ $types = get_types();
 
 
 <div uk-grid>
-    <div class="uk-width-1-1 room-heading">
-        <span style="display:none" class="floor_name"></span>
-        <span style="display:none" class="room_name"></span>
+    <div style="display:none;" class="uk-width-1-1 room-heading" uk-grid>
+        <div class="uk-width-1-2">
+            <span class="uk-icon" uk-icon="icon: table;"></span> <span class="name floor_name"></span>
+        </div>
+        <div class="uk-width-1-2">
+            <span class="uk-icon" uk-icon="icon: move;"></span> <span class="name room_name"></span>
+        </div>
     </div>
     <div class="uk-width-1-1">
         <div id="ptable"></div>
     </div>
 
     <div class="uk-width-1-1">
-        <button id="add-note" class="uk-button uk-button-primary uk-align-right uk-width-1-5">Add Note</button>
+        <button id="add-note" class="uk-button uk-button-primary uk-align-right">Add Note</button>
     </div>
 
     <div class="uk-width-1-1">
@@ -143,6 +145,35 @@ $types = get_types();
 </div>
 
 <div id="debug"></div>
+
+
+
+<!-- set qty modal -->
+<div id="set-qty" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical uk-modal-body">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <form id="form-submit-set-qty">
+            <div class="uk-text-center" uk-grid>
+                <div class="uk-width-1-1">
+                    <h3>Set Quantity</h3>
+                </div>
+
+                <div class="uk-width-1-1 uk-align-center">
+                    <input id="set_qty_qty" class="uk-input uk-width-1-5" name="set_qty_qty" type="number" min="0" max="999" step="1" value="">
+                </div>
+
+                <div class="uk-width-1-1 uk-margin-small">
+                    <input type="hidden" name="set_qty_product_id" id="set_qty_product_id" value="" />
+                    <input type="hidden" name="set_qty_sku" id="set_qty_sku" value="" />
+
+                    <button  id="form-submit-set-qty" type="submit" class="uk-button uk-button-primary">OK</button>
+                    <button  class="uk-modal-close uk-button uk-button-default">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 
 

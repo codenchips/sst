@@ -154,7 +154,7 @@ function get_products() {
     global $pdo;
     $q = $pdo->query("SELECT
     product_name, product_slug_pk, description, site
-    FROM p__products
+    FROM p__products WHERE status = 1 AND obsolete = 0 AND hidden = 0 AND uk = 1
     ORDER BY type_name ASC");
 
     $res = $q->fetchAll(PDO::FETCH_OBJ);
@@ -606,6 +606,45 @@ function ajax_get_dashtabledata() {
     }
 
     return(return_json($res));
+}
+
+
+function ajax_set_qty() {
+    global $pdo;
+
+    $id = $_POST['set_qty_product_id'];
+    $qty = $_POST['set_qty_qty'];
+
+    $q = $pdo->query("SELECT room_id_fk, brand, `type`, `range`, product_slug, product_name, sku, custom, ref, `order`, owner_id, version  FROM sst_products WHERE id = $id");
+    $data = $q->fetch(PDO::FETCH_ASSOC);
+
+    // remove them first
+    $del = array();
+    $del['room_id'] = $data['room_id_fk'];
+    $del['sku'] = $data['sku'];
+    $q = "DELETE FROM sst_products WHERE room_id_fk = :room_id AND sku = :sku";
+    try {
+        $pdo->prepare($q)->execute($del);
+    }  catch (Exception $e) {
+        exit('del: '.$e->getMessage());
+    }
+    if ($qty > 0) {
+        // and insert the qty
+        for ($i = 0; $i < $qty; $i++) {
+            $q = "INSERT INTO sst_products 
+            (room_id_fk, brand, `type`, `range`, product_slug, product_name, sku, custom, ref, `order`, owner_id, version, created_on)
+            VALUES 
+            (:room_id_fk, :brand, :type, :range, :product_slug, :product_name, :sku, :custom, :ref, :order, :owner_id, :version, CURRENT_TIMESTAMP)";
+
+            try {
+                $pdo->prepare($q)->execute($data);
+            } catch (Exception $e) {
+                exit('ins' . $e->getMessage());
+            }
+        }
+    }
+    $ret = json_encode(['added' => $pdo->lastInsertId()]);
+    exit($ret);
 }
 
 

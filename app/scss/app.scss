@@ -3,16 +3,95 @@ $primary-color: #192542;
 $ltblue: #0f7ae5;
 $xcred: #C8102E;
 
+$handle-hover-bg-color: #0f7ae5;
+$handle-color: #fff;
+$handle-width: 348px; // Adjust to match the sidebar width
+$transition-duration: 0.3s;
+$z-index-handle: 1050;
+$handle-bg-color: rgb(34, 34, 34);;
+$darkgray: rgb(34, 34, 34);
+
+::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   font: 100% $font-stack;
   color: $primary-color;
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+  padding: 0 2px;
+
 }
+
+#spinner {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left:0;
+  //background-color: #fafafa66;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
 #container {
   max-width: 768px;
   position: relative;
   margin: 0 auto;
 }
+
+
+
+// Mixin for transitions
+@mixin transition($property, $duration, $timing-function: ease-in-out) {
+  transition: $property $duration $timing-function;
+}
+
+// Handle styles
+.handle {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  font-size: 1.1em;
+  transform: translateY(-50%);
+  background-color: $handle-bg-color;
+  color: $handle-color;
+  border: none;
+  border-radius: 0 9px 9px 0;
+  padding: 25px 10px 25px 7px;
+  cursor: pointer;
+  z-index: $z-index-handle;
+  writing-mode: vertical-rl;
+  letter-spacing: 2px;
+
+  // Transition for smooth movement
+  @include transition(left, $transition-duration, ease);
+
+
+  // Hover effect
+  &:hover {
+    background-color: $handle-hover-bg-color;
+  }
+
+  // State when the sidebar is open
+  &.open {
+    left: $handle-width;
+  }
+
+}
+
+
+// Sync handle with sidebar's animation classes
+.uk-offcanvas {
+  &.uk-open ~ #sidebar-handle {
+    left: $handle-width;
+  }
+}
+
 
 
 .uk-input, .uk-select, .uk-textarea {
@@ -34,10 +113,20 @@ body {
 }
 
 .room-heading, .location-heading {
+  font-weight: bold;
+
   span {
     display: inline-block;
     color: $primary-color;
-    margin-right: 30px;
+    &.uk-icon {
+      margin-right: 5px;
+      position: relative;
+      top: -3px;
+    }
+    &.name {
+      margin-right: 25px;
+      font-weight: normal;
+    }
   }
   span:first-child {
     //padding-left: 10px;
@@ -45,33 +134,6 @@ body {
   span:last-child {
     margin-right: 0;
   };
-
-  span:first-child::after {
-    //content: '\00BB';
-    //padding-left: 20px;
-    //font-size: 20px;
-  }
-  .project_name:before {
-    content: "Project: ";
-    font-weight: bold;
-  }
-  .location_name:before {
-    content: "Location: ";
-    font-weight: bold;
-  }
-  .building_name:before {
-    content: "Building: ";
-    font-weight: bold;
-  }
-  .floor_name:before {
-    content: "Floor: ";
-    font-weight: bold;
-  }
-  .room_name:before {
-    content: "Room: ";
-    font-weight: bold;
-  }
-
 
 
 }
@@ -82,6 +144,10 @@ body {
 .nav-menu {
   list-style: none;
   padding: 0;
+  .ik-icon {
+    position: relative;
+    top: -3px;
+  }
 
   .location-item {
     font-size: 1.2em; // ~19px
@@ -109,7 +175,9 @@ body {
       p {
         margin: 0;
       }
-
+      &:last-child a {
+        color: $ltblue;
+      }
       .add-location {
         font-size: 1.15em;
       }
@@ -134,6 +202,14 @@ body {
 
     .floor-item {
       font-size: 1em; // ~14px, matching room size
+      &.add-floor {
+        padding-top: 5px;
+        padding-bottom: 5px;
+
+      }
+      &:last-child a {
+        color: $ltblue;
+      }
 
       .floor-header {
         display: flex;
@@ -166,6 +242,15 @@ body {
       align-items: center;
       margin-top: 0.5em; // Spacing between room names
       margin-bottom: 0.5em; // Spacing between room names
+      &.add-room {
+        padding-top: 5px;
+        padding-bottom: 5px;
+
+      }
+      &.add-room a {
+        color: $ltblue;
+      }
+
 
       .room-name {
         font-weight: normal;
@@ -253,3 +338,11 @@ label {
     resize: none;
   }
 }
+
+input#qty {
+  font-size: 193%;
+  padding: 25px 0px 25px 4px;
+  border: 2px solid #aaa;
+  text-align: center;
+}
+

@@ -2,7 +2,7 @@
 
 
 <!-- rooms nav -->
-<div class="uk-offcanvas-bar uk-visible@m tables-side" id="desktop-sidebar">
+<div class="uk-offcanvas-bar uk-visible@xl tables-side" id="desktop-sidebar">
     <div class="uk-visible@m uk-flex uk-flex-column">
 
         <h4>Manage Project</h4>
@@ -17,7 +17,9 @@
 
 
 <!-- rooms nav offcanvas-sidebar -->
-<div id="offcanvas-sidebar" class="tables-side" uk-offcanvas="mode: push; overlay: true">
+<div id="offcanvas-sidebar" class="tables-side" uk-offcanvas="mode: slide; overlay: true">
+
+
     <div class="uk-offcanvas-bar uk-flex uk-flex-column">
 
         <h4>Manage Project</h4>
@@ -29,7 +31,8 @@
 <!-- end rooms nav -->
 
 
-
+<!-- The handle -->
+<!--<button id="sidebar-handle" class="handle" aria-label="Toggle Sidebar" uk-toggle="target: #offcanvas-sidebar"><span>Manage Project</span></button>-->
 
 
 
