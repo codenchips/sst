@@ -1,50 +1,57 @@
+<?php
+$project_id = get_uri_part(2);
+?>
+
 
 <div id="spinner" style="display:none;">
     <div uk-spinner="ratio: 4"></div>
 </div>
 
-
-
-
 <nav class="uk-navbar-container">
     <div class="uk-container uk-padding-remove">
         <div uk-navbar>
-
-            <div class="uk-navbar-left">
-
-
-                <a class="uk-navbar-item uk-logo" href="/" aria-label="Back to Home"><img width="80" src="/images/tamlite-logo.jpg"></a>
-
-                <ul class="uk-navbar-nav">
+            <a class="uk-navbar-item uk-logo" href="/"><img width="80" src="/images/tamlite-logo.jpg"></a>
+            <div class="uk-navbar-right">
+                <ul class="uk-navbar-nav mobile-nav">
                     <li>
                         <a href="/">
-                            <span class="uk-icon uk-margin-small-right" uk-icon="icon: grid"></span>
-                            Dashboard
+                            <span class="uk-icon" uk-icon="icon: world; ratio: 2"></span>
+                            <small>Projects</small>
                         </a>
                     </li>
-<!---->
-<!--                    <li>-->
-<!--                        <a href="/tables">-->
-<!--                            <span class="uk-icon uk-margin-small-right" uk-icon="icon: grid"></span>-->
-<!--                            Table Mode-->
-<!--                        </a>-->
-<!--                    </li>-->
+                    <?php if ($project_id) { ?>
+                        <li>
+                            <a href="/tables/<?php echo $project_id; ?>">
+                                <span class="uk-icon" uk-icon="icon: file-text; ratio: 2"></span>
+                                <small>Table Mode</small>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/schedule/<?php echo $project_id; ?>">
+                                <span class="uk-icon" uk-icon="icon: file-pdf; ratio: 2"></span>
+                                <small>Schedule</small>
+                            </a>
+                        </li>
+                    <?php } ?>
+                    <li>
+                        <a href="#">
+                            <span class="uk-icon" uk-icon="icon: user; ratio: 2"></span>
+                            <small>Account</small>
+                        </a>
+                    </li>
                 </ul>
-
-
             </div>
-
         </div>
     </div>
 </nav>
 <?php $uid = (isset($_SESSION['user_id'])) ? $_SESSION['user_id'] : '';  ?>
-<input type="hidden" id="site_uid" name="site_uid" value="<?php echo get_uri_part(2); ?>" />
+<input type="hidden" id="site_uid" name="site_uid" value="<?php echo $project_id; ?>" />
+<input type="hidden" id="m_project_id" name="m_project_id" value="<?php echo $project_id; ?>" />
 <input type="hidden" id="m_user_id" name="m_user_id" value="<?php echo $uid; ?>" />
 <input type="hidden" id="m_room_id" name="m_room_id" value="" />
 <input type="hidden" id="m_floor_id" name="m_floor_id" value="" />
 <input type="hidden" id="m_building_id" name="m_building_id" value="" />
 <input type="hidden" id="m_location_id" name="m_location_id" value="" />
-<input type="hidden" id="m_project_id" name="m_project_id" value="<?php echo get_uri_part(2); ?>" />
 
 
 <!-- Login modal -->

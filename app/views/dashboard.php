@@ -17,13 +17,7 @@ function project_select_options() {
 ?>
 <div class="uk-width-1-1 uk-margin">
 
-<div uk-grid>
 
-    <div class="uk-width-1-1 uk-text-right">
-        <button class="uk-button uk-button-primary" type="button" uk-toggle="target: #create-project">New </button>
-    </div>
-
-</div>
 
 <div uk-grid>
     <div class="uk-width-1-1">
@@ -31,6 +25,13 @@ function project_select_options() {
     </div>
 </div>
 
+<div uk-grid>
+
+    <div class="uk-width-1-1 uk-text-center">
+        <button class="uk-button uk-button-primary" type="button" uk-toggle="target: #create-project">New Project</button>
+    </div>
+
+</div>
 
 
 <!-- add project modal -->

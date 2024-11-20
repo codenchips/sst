@@ -266,3 +266,11 @@ input#qty {
   border: 2px solid #aaa;
   text-align: center;
 }
+
+.uk-navbar-container .uk-icon {
+  color: #192542;
+  font-weight: bold;
+}
+.uk-navbar-container .mobile-nav li a {
+  flex-direction: column;
+}
