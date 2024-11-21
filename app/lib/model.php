@@ -558,6 +558,77 @@ function ajax_remove_room() {
     exit($ret);
 }
 
+
+function ajax_get_products_in_project() {
+    global $pdo;
+    $project_id = $_POST['project_id'];
+    if (!$project_id) {
+        return(return_json(array('error'=>'No Project ID')));
+    }
+    $q = $pdo->query("SELECT
+            d.ref, 			
+			d.product_name,
+			d.product_slug,					
+			d.sku,
+			d.custom,
+			d.owner_id,
+			p.id as project_id_fk,
+			count(sku) as qty
+			FROM sst_products d 			
+			LEFT JOIN sst_rooms r on r.id = d.room_id_fk
+			LEFT JOIN sst_floors f on f.id = r.floor_id_fk
+			LEFT JOIN sst_buildings b on b.id = f.building_id_fk
+			LEFT JOIN sst_locations l on l.id = b.location_id_fk			
+			LEFT JOIN sst_projects p on p.id = l.project_id_fk
+			WHERE p.id = $project_id
+			GROUP BY d.ref,  d.sku");
+
+    $res = $q->fetchAll(PDO::FETCH_ASSOC);
+
+    if (count($res) < 1) {
+        $res[0] = array();
+        return(return_json($res));
+    }
+
+    // clear the schedule of this project
+    $pdo->prepare("DELETE FROM sst_schedules WHERE project_id_fk=?")->execute([$project_id]);
+    // save these to a schedule.
+    foreach ($res as $row) {
+        $q  = "INSERT INTO sst_schedules 
+            (
+            project_id_fk, 
+            product_slug, 
+            product_name, 
+            sku,   
+            ref,           
+            qty, 
+            custom,
+            owner_id, 
+            version, 
+            created_on)
+            VALUES 
+            (
+            :project_id_fk, 
+            :product_slug, 
+            :product_name, 
+            :sku,   
+            :ref,           
+            :qty, 
+            :custom,
+            :owner_id, 
+            1, 
+            CURRENT_TIMESTAMP)";
+
+        $res = $pdo->prepare($q)->execute($row);
+    }
+
+    $q = $pdo->query("SELECT * FROM sst_schedules WHERE project_id_fk = $project_id");
+    $res = $q->fetchAll(PDO::FETCH_ASSOC);
+    return(return_json($res));
+}
+
+
+
 function ajax_get_products_in_room() {
     global $pdo;
     $room_id = $_POST['room_id'];

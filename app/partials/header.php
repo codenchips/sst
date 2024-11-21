@@ -44,7 +44,7 @@ $project_id = get_uri_part(2);
         </div>
     </div>
 </nav>
-<?php $uid = (isset($_SESSION['user_id'])) ? $_SESSION['user_id'] : '';  ?>
+<?php $uid = (isset($_COOKIE['user_id'])) ? $_COOKIE['user_id'] : '';  ?>
 <input type="hidden" id="site_uid" name="site_uid" value="<?php echo $project_id; ?>" />
 <input type="hidden" id="m_project_id" name="m_project_id" value="<?php echo $project_id; ?>" />
 <input type="hidden" id="m_user_id" name="m_user_id" value="<?php echo $uid; ?>" />

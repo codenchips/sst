@@ -804,7 +804,7 @@ $(function() {
                         mask: "",
                         selectContents: true,
                         elementAttributes: {
-                            maxlength: "5",
+                            maxlength: "7",
                         }
                     }
                 },
@@ -1153,13 +1153,146 @@ $(function() {
         }
     });
 
+    /*
+    *  END DASHBOARD
+    */
 
 
 
     /*
-    *  DASHBOARD
-    */
+    *  SCHEDULE
+     */
 
+    if ($('#stable').length) {
+        const currentProjectId = $('input#m_project_id').val();
+        if (currentProjectId != "") {
+            if ($('#stable').filter(':visible').length) {
+                console.log('update stable');
+                updatesTable(currentProjectId);
+            }
+            $('#schedule_mode_nodata').fadeIn(1000);
+        } else {
+            $('#stable').hide();
+        }
+    }
+
+    function updatesTable(project_id = false) {
+        setTimeout(function() {
+            if (project_id == false) {
+                project_id = $('input#m_project_id').val();
+            }
+            if ($('#stable').length && project_id) {
+                showSpin();
+                $.ajax("/api/get_products_in_project", {
+                    type: "post",
+                    data: { project_id: project_id },
+                    success: function(data, status, xhr) {
+                        var jsonData = $.parseJSON(data);
+                        hideSpin();
+                        if (jsonData[0].id) {
+                            $('#schedule_mode_nodata').hide();
+                            sTable.setData(data);
+                            // set the uid for ref by others
+                            $('input#uid').val(project_id);
+                            $('#stable').show();
+                        } else {
+                            $('#stable').hide();
+                            sTable.setData([]);
+                        }
+                    }
+                });
+            }
+            bindsTableFunctions();
+        },100);
+    }
+
+    function bindsTableFunctions() {
+        $('#confirm_stable').off('click').on('click', function(e) {
+            sTable.download("json", "data.json", {}, "visible");
+        })
+    }
+
+    if ($('#stable').length) {
+        var sTable = new Tabulator("#stable", {
+            importFormat: "json",
+            layout: "fitColumns",
+            loader: false,
+            dataLoaderError: "There was an error loading the data",
+            downloadEncoder: function(fileContents, mimeType){
+                //fileContents - the unencoded contents of the file
+                //mimeType - the suggested mime type for the output
+
+                //custom action to send blob to server could be included here
+                console.log(fileContents);
+                //return new Blob([fileContents], {type:mimeType}); //must return a blob to proceed with the download, return false to abort download
+            },
+
+            columns: [{
+                title: "id",
+                field: "id",
+                visible: false
+            },
+                {
+                    title: "Product",
+                    field: "product_name",
+                    hozAlign: "left",
+                    visible: false
+                },
+                {
+                    title: "Ref",
+                    field: "ref",
+                    editor: "input",
+                    visible: true,
+                    editorParams: {
+                        search: true,
+                        mask: "",
+                        selectContents: true,
+                        elementAttributes: {
+                            maxlength: "7",
+                        }
+                    }
+                },
+                {
+                    title: "Qty",
+                    field: "qty",
+                    width: 80,
+                    hozAlign: "left",
+                },
+                {
+                    title: "SKU",
+                    field: "sku",
+                    width: 150
+                },
+            ],
+        });
+        sTable.on("cellEdited", function (cell) {
+            //cell - cell component
+            const sku = cell.getRow().getData().sku;
+            const uid = cell.getRow().getData().room_id_fk;
+            const ref = cell.getRow().getData().ref
+            //console.log('sku: '+sku+' ref: '+ref);
+            if (sku != "" && ref != "") {
+                $.ajax("/api/edit_ref", {
+                    type: "post",
+                    data: {
+                        sku: sku,
+                        ref: ref,
+                        uid: uid
+                    },
+                    success: function (data, status, xhr) {
+                        var res = $.parseJSON(data);
+                        if (res.updated != 0) {
+                            //updatepTable();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    /*
+    * END SCHEDULE
+     */
 
 
 
