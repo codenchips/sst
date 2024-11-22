@@ -41,8 +41,13 @@ $types = get_types();
     </div>
 
     <div class="uk-card-footer uk-align-center">
-        <button id="confirm_stable" class="uk-button uk-button-primary" type="button">Confirm Schedule</button>
+        <button id="gen_datasheets" class="uk-button uk-button-primary" type="button">Generate Datasheets</button>
     </div>
+    
+    <div style="width: 100%; background-color: #ddd;">
+        <div id="progress-bar" style="width: 0%; height: 20px; background-color: #4caf50;"></div>
+    </div>
+    <p id="progress-text">Initializing...</p>
 
 
 </div>

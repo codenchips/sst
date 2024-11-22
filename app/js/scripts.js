@@ -1207,8 +1207,60 @@ $(function() {
     }
 
     function bindsTableFunctions() {
-        $('#confirm_stable').off('click').on('click', function(e) {
-            sTable.download("json", "data.json", {}, "visible");
+        $('#gen_datasheets').off('click').on('click', function(e) {
+            //sTable.download("json", "data.json", {}, "visible");
+
+            $.ajax({
+                url: "https://staging.tamlite.co.uk/ci_index.php/download_schedule",
+                type: "POST",
+                data: {
+                    sku: 'sku',
+                },
+                xhr: function () {
+                    const xhr = new window.XMLHttpRequest();
+
+                    // Monitor progress of the response
+                    xhr.onprogress = function (event) {
+                        const responseText = xhr.responseText.trim();
+
+                        // Split response text by lines (each line is a JSON object)
+                        const lines = responseText.split('\n');
+
+                        // Parse the latest line as JSON
+                        const latestUpdate = JSON.parse(lines[lines.length - 1]);
+
+                        // Update the progress bar and text
+                        if (latestUpdate.step && latestUpdate.total) {
+                            const percentage = (latestUpdate.step / latestUpdate.total) * 100;
+                            $('#progress-bar').css('width', percentage + '%'); // Update the width of the progress bar
+                            $('#progress-text').text(latestUpdate.message); // Update progress message
+                        }
+                    };
+
+                    return xhr;
+                },
+                success: function (data) {
+                    // Parse the final response
+                    const lines = data.trim().split('\n');
+                    const finalResponse = JSON.parse(lines[lines.length - 1]);
+
+                    if (finalResponse.complete) {
+                        $('#progress-text').text(finalResponse.message);
+                        console.log('Processing complete:', finalResponse);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    if (status === "timeout") {
+                        alert("The request timed out. Please try again later.");
+                    } else {
+                        console.error("An error occurred:", status, error);
+                        alert("An error occurred: " + error);
+                    }
+                },
+                timeout: 310000, // 310 seconds (5 minutes + buffer)
+            });
+
+
         })
     }
 
@@ -1241,16 +1293,7 @@ $(function() {
                 {
                     title: "Ref",
                     field: "ref",
-                    editor: "input",
                     visible: true,
-                    editorParams: {
-                        search: true,
-                        mask: "",
-                        selectContents: true,
-                        elementAttributes: {
-                            maxlength: "7",
-                        }
-                    }
                 },
                 {
                     title: "Qty",
