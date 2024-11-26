@@ -573,6 +573,8 @@ function ajax_get_products_in_project() {
 			d.custom,
 			d.owner_id,
 			p.id as project_id_fk,
+			p.slug as project_slug,
+			p.version as project_version,
 			count(sku) as qty
 			FROM sst_products d 			
 			LEFT JOIN sst_rooms r on r.id = d.room_id_fk
@@ -597,6 +599,8 @@ function ajax_get_products_in_project() {
         $q  = "INSERT INTO sst_schedules 
             (
             project_id_fk, 
+            project_slug,
+            project_version,
             product_slug, 
             product_name, 
             sku,   
@@ -608,7 +612,9 @@ function ajax_get_products_in_project() {
             created_on)
             VALUES 
             (
-            :project_id_fk, 
+            :project_id_fk,
+            :project_slug,
+            :project_version,  
             :product_slug, 
             :product_name, 
             :sku,   

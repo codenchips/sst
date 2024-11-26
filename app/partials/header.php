@@ -27,7 +27,7 @@ $project_id = get_uri_part(2);
                             </a>
                         </li>
                         <li>
-                            <a href="/schedule/<?php echo $project_id; ?>">
+                            <a href="/folio/<?php echo $project_id; ?>">
                                 <span class="uk-icon" uk-icon="icon: file-pdf; ratio: 2"></span>
                                 <small>Schedule</small>
                             </a>
@@ -47,6 +47,8 @@ $project_id = get_uri_part(2);
 <?php $uid = (isset($_COOKIE['user_id'])) ? $_COOKIE['user_id'] : '';  ?>
 <input type="hidden" id="site_uid" name="site_uid" value="<?php echo $project_id; ?>" />
 <input type="hidden" id="m_project_id" name="m_project_id" value="<?php echo $project_id; ?>" />
+<input type="hidden" id="m_project_slug" name="m_project_slug" value="" />
+<input type="hidden" id="m_project_version" name="m_project_version" value="" />
 <input type="hidden" id="m_user_id" name="m_user_id" value="<?php echo $uid; ?>" />
 <input type="hidden" id="m_room_id" name="m_room_id" value="" />
 <input type="hidden" id="m_floor_id" name="m_floor_id" value="" />

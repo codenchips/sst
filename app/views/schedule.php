@@ -33,25 +33,58 @@ $types = get_types();
 <div style="display:block;" id="schedule_mode_view" class="uk-width-1-1 uk-margin">
 
 
-
 <div uk-grid>
-
     <div class="uk-width-1-1">
-        <div id="stable"></div>
+    <ul class="uk-subnav uk-margin uk-subnav-pill" uk-switcher="animation: uk-animation-fade">
+        <li><a href="#">Contents</a></li>
+        <li><a href="#">Details</a></li>
+        <li><a href="#">Cover</a></li>
+    </ul>
+    <div class="uk-switcher uk-margin">
+        <div>
+
+            <div class="uk-width-1-1">
+                <div id="stable"></div>
+            </div>
+            <div class="uk-card-footer uk-align-center">
+                <button id="gen_datasheets" class="uk-button uk-button-primary" type="button">Generate Datasheets</button>
+            </div>
+
+        </div>
+        <div>Hello again! <a href="#" uk-switcher-item="next">Next item</a></div>
+        <div>Bazinga! <a href="#" uk-switcher-item="previous">Previous item</a></div>
+    </div>
     </div>
 
-    <div class="uk-card-footer uk-align-center">
-        <button id="gen_datasheets" class="uk-button uk-button-primary" type="button">Generate Datasheets</button>
-    </div>
-    
-    <div style="width: 100%; background-color: #ddd;">
-        <div id="progress-bar" style="width: 0%; height: 20px; background-color: #4caf50;"></div>
-    </div>
-    <p id="progress-text">Initializing...</p>
+
 
 
 </div>
 
+
+
+<!-- set qty modal -->
+<div id="folio-progress" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical uk-modal-body">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <form id="form-submit-folio-progress">
+            <div class="uk-text-center" uk-grid>
+                <div class="uk-width-1-1">
+                    <h3>Processing</h3>
+                </div>
+
+                <div class="uk-width-1-1 uk-align-center">
+                    <progress id="js-progressbar" class="uk-progress" value="10" max="100"></progress>
+                    <p id="progress-text">Gathering Product Data ...</p>
+                </div>
+
+                <div class="uk-width-1-1 uk-align-center">
+                    <button type="submit" disabled id="download_datasheets" class="uk-button uk-button-primary" type="button">Download Datasheets</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 <!-- set qty modal -->
 <div id="set-qty" uk-modal>

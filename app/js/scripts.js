@@ -1193,6 +1193,8 @@ $(function() {
                             $('#schedule_mode_nodata').hide();
                             sTable.setData(data);
                             // set the uid for ref by others
+                            $('#m_project_slug').val(jsonData[0].project_slug);
+                            $('#m_project_version').val(jsonData[0].project_version);
                             $('input#uid').val(project_id);
                             $('#stable').show();
                         } else {
@@ -1206,62 +1208,80 @@ $(function() {
         },100);
     }
 
+    $('#form-submit-folio-progress').off('submit').on('submit', function(e) {
+        e.preventDefault();
+        const form = document.querySelector("#form-submit-folio-progress");
+        const filename = $('#m_project_slug').val() + "-v" + $('#m_project_version').val();
+
+        //window.location.replace("https://staging.tamlite.co.uk/pdfmerge/schedule.pdf");
+        window.open("https://staging.tamlite.co.uk/pdfmerge/"+filename+".pdf", '_blank');
+
+    });
+
+
     function bindsTableFunctions() {
         $('#gen_datasheets').off('click').on('click', function(e) {
-            //sTable.download("json", "data.json", {}, "visible");
-
-            $.ajax({
-                url: "https://staging.tamlite.co.uk/ci_index.php/download_schedule",
-                type: "POST",
-                data: {
-                    sku: 'sku',
-                },
-                xhr: function () {
-                    const xhr = new window.XMLHttpRequest();
-
-                    // Monitor progress of the response
-                    xhr.onprogress = function (event) {
-                        const responseText = xhr.responseText.trim();
-
-                        // Split response text by lines (each line is a JSON object)
-                        const lines = responseText.split('\n');
-
-                        // Parse the latest line as JSON
-                        const latestUpdate = JSON.parse(lines[lines.length - 1]);
-
-                        // Update the progress bar and text
-                        if (latestUpdate.step && latestUpdate.total) {
-                            const percentage = (latestUpdate.step / latestUpdate.total) * 100;
-                            $('#progress-bar').css('width', percentage + '%'); // Update the width of the progress bar
-                            $('#progress-text').text(latestUpdate.message); // Update progress message
-                        }
-                    };
-
-                    return xhr;
-                },
-                success: function (data) {
-                    // Parse the final response
-                    const lines = data.trim().split('\n');
-                    const finalResponse = JSON.parse(lines[lines.length - 1]);
-
-                    if (finalResponse.complete) {
-                        $('#progress-text').text(finalResponse.message);
-                        console.log('Processing complete:', finalResponse);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    if (status === "timeout") {
-                        alert("The request timed out. Please try again later.");
-                    } else {
-                        console.error("An error occurred:", status, error);
-                        alert("An error occurred: " + error);
-                    }
-                },
-                timeout: 310000, // 310 seconds (5 minutes + buffer)
-            });
-
+            // trigger the download, which is intercepted and triggers
+            // generateDataSheets()
+            sTable.download("json", "data.json", {}, "visible");
 
         })
+    }
+    function generateDataSheets(data) {
+        UIkit.modal($('#folio-progress')).show();
+        jsonData = data; //JSON.stringify(data);
+
+        $.ajax({
+            url: "https://staging.tamlite.co.uk/ci_index.php/download_schedule",
+            type: "POST",
+            data: {
+                project_slug: $('#m_project_slug').val(),
+                project_version: $('#m_project_version').val(),
+                skus: jsonData,
+            },
+            xhr: function () {
+                const xhr = new window.XMLHttpRequest();
+                let lastProcessedIndex = 0;
+                xhr.onprogress = function () {
+                    const responseText = xhr.responseText.trim();
+                    const lines = responseText.split('\n');
+
+                    for (let i = lastProcessedIndex; i < lines.length; i++) {
+                        const line = lines[i].trim();;
+
+                        if (!line) {
+                            continue;
+                        }
+                        try {
+                            const update = JSON.parse(line);
+                            if (update.step && update.total) {
+                                const percentage = (update.step / (update.total - 1) ) * 100;
+                                $('#progress-text').text(update.message);
+                                $('.uk-progress').val(percentage);
+                            }
+                            if (update.complete) {
+                                console.log('Processing complete:', update);
+                                $('#progress-text').text(update.message);
+                                $('#download_datasheets').prop("disabled", false);
+                            }
+                        } catch (e) {
+                            console.warn("Skipping invalid JSON line:", line, e);
+                        }
+                    }
+                    lastProcessedIndex = lines.length;
+                };
+                return xhr;
+            },
+            success: function () {},
+            error: function (xhr, status, error) {
+                if (status === "timeout") {
+                    alert("The request timed out. Please try again later.");
+                } else {
+                    console.error("An error occurred:", status, error);
+                }
+            },
+            timeout: 310000, // 310 seconds (5 minutes + buffer)
+        });
     }
 
     if ($('#stable').length) {
@@ -1271,14 +1291,8 @@ $(function() {
             loader: false,
             dataLoaderError: "There was an error loading the data",
             downloadEncoder: function(fileContents, mimeType){
-                //fileContents - the unencoded contents of the file
-                //mimeType - the suggested mime type for the output
-
-                //custom action to send blob to server could be included here
-                console.log(fileContents);
-                //return new Blob([fileContents], {type:mimeType}); //must return a blob to proceed with the download, return false to abort download
+                generateDataSheets(fileContents);
             },
-
             columns: [{
                 title: "id",
                 field: "id",
@@ -1307,29 +1321,6 @@ $(function() {
                     width: 150
                 },
             ],
-        });
-        sTable.on("cellEdited", function (cell) {
-            //cell - cell component
-            const sku = cell.getRow().getData().sku;
-            const uid = cell.getRow().getData().room_id_fk;
-            const ref = cell.getRow().getData().ref
-            //console.log('sku: '+sku+' ref: '+ref);
-            if (sku != "" && ref != "") {
-                $.ajax("/api/edit_ref", {
-                    type: "post",
-                    data: {
-                        sku: sku,
-                        ref: ref,
-                        uid: uid
-                    },
-                    success: function (data, status, xhr) {
-                        var res = $.parseJSON(data);
-                        if (res.updated != 0) {
-                            //updatepTable();
-                        }
-                    }
-                });
-            }
         });
     }
 

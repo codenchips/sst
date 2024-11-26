@@ -13,13 +13,12 @@ function get_view() {
          case 'tables' :
             require('views/tables.php');
             break;
-         case 'schedule' :
+         case 'folio' :
             require('views/schedule.php');
             break;
          case 'api' :
             require('lib/api.php');
             break;
-
         default :
             require('views/404.php');
             break;
