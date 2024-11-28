@@ -22,4 +22,5 @@
 
 <link href="https://unpkg.com/tabulator-tables@6.3.0/dist/css/tabulator_bootstrap4.min.css" rel="stylesheet">
 
+
 <script src="../js/scripts.js?v=<?php echo time(); ?>"></script>

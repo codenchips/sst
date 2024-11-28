@@ -161,6 +161,27 @@ function get_products() {
     return ((count($res)) ? $res : false);
 }
 
+function get_project($project_id) {
+    global $pdo;
+    $q = $pdo->query("SELECT
+    p.id, 
+    p.name, 
+    p.slug, 
+    p.version as project_version, 
+    p.project_id, 
+    p.engineer,
+    u.name as username, 
+    u.email     
+    FROM sst_projects p LEFT JOIN sst_users u on p.owner_id = u.id 
+    WHERE p.id = $project_id 
+    
+    ORDER BY p.name ASC, p.version DESC
+    LIMIT 1");
+
+    $res = $q->fetchAll(PDO::FETCH_OBJ);
+    return ((count($res)) ? $res[0] : false);
+}
+
 function get_product_name_by_slug($slug) {
     global $pdo;
     $q = $pdo->query("SELECT
@@ -844,5 +865,19 @@ function ajax_edit_ref() {
     $sql = "UPDATE sst_products SET ref=:ref WHERE sku=:sku AND room_id_fk=:uid";
     $pdo->prepare($sql)->execute($data);
 }
+
+function ajax_auto_update() {
+    global $pdo;
+
+    $id = $_POST['id'];
+    $tbl = $_POST['tbl'];
+    $col = $_POST['col'];
+    $val = $_POST['val'];
+
+    $sql = "UPDATE $tbl SET $col = '$val' WHERE id= $id";
+    $pdo->prepare($sql)->execute();
+}
+
+
 
 ?>

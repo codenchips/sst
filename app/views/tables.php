@@ -2,30 +2,91 @@
 
 $project_slug = get_uri_part(2);
 
-//$project_slug = 'cov-uni';
+$p = get_project($project_slug);
 
 $types = get_types();
 //$location = get_location_for_project($project_slug);
 //$buildings = get_buildings_for_location($project_slug, $location);
 
-//vd($buildings, 1);
+//vd($p, 1);
 ?>
 
 <?php include ('./partials/tables-side.php'); ?>
 
 
-<div style="display:none;" id="table_mode_nodata" class="uk-width-1-1 uk-margin">
+<div style="display:none;" id="table_mode_nodata" class="uk-width-1-1">
 
-    <div class="uk-card uk-card-large uk-card-default">
-        <div class="uk-card-header">
+    <div class="uk-width-1-1">
+        <div class="uk-width-1-1 uk-text-left">
             <h3 class="uk-card-title">Welcome to your project, <?php echo $_COOKIE['user_name']; ?></h3>
         </div>
-        <div class="uk-card-body">
-            <p>Use the <b>sidebar menu</b> to manage buildings, floors and rooms in this project.</p>
-            <p>Then select a <b>room</b> to manage the products in that room.</p>
-        </div>
-        <div class="uk-card-footer uk-align-center">
-            <button class="uk-button uk-button-primary uk-hidden@xl " type="button" uk-toggle="target: #offcanvas-sidebar">Manage Project</button>
+
+
+            <div class="uk-width-1-1 uk-text-left uk-margin">
+                <label>Project Name</label>
+                <input id="form_project_name"
+                       name="form_project_name"
+                       class="uk-input free-type auto-update"
+                       data-id="<?php echo $p->id; ?>"
+                       data-tbl="sst_projects"
+                       data-col="name"
+                       placeholder="My Project"
+                       autocomplete="off"
+                       required
+                       value="<?php echo $p->name; ?>"
+                       oninvalid="this.setCustomValidity('You must name this project')"
+                       oninput="this.setCustomValidity('')" />
+            </div>
+            <div class="uk-width-1-1 uk-text-left  uk-margin">
+                <label>Project ID</label>
+                <input id="form_project_id"
+                       name="form_project_id"
+                       class="uk-input free-type auto-update"
+                       data-id="<?php echo $p->id; ?>"
+                       data-tbl="sst_projects"
+                       data-col="project_id"
+                       placeholder="123456"
+                       autocomplete="off"
+                       required
+                       value="<?php echo $p->project_id; ?>"
+                       oninvalid="this.setCustomValidity('You must have a project ID')"
+                       oninput="this.setCustomValidity('')" />
+            </div>
+            <div class="uk-width-1-1 uk-text-left uk-margin">
+                <label>Engineer</label>
+                <input id="form_project_engineer"
+                       name="form_project_engineer"
+                       class="uk-input free-type auto-update"
+                       data-id="<?php echo $p->id; ?>"
+                       data-tbl="sst_projects"
+                       data-col="engineer"
+                       placeholder=""
+                       autocomplete="off"
+                       required
+                       value="<?php echo ($p->engineer != "") ? $p->engineer : $p->username; ?>"
+                       oninvalid="this.setCustomValidity('Please specify the engineer name')"
+                       oninput="this.setCustomValidity('')" />
+            </div>
+            <div class="uk-width-1-1 uk-text-left uk-margin">
+                <label>Version</label>
+                <input id="form_project_version"
+                       name="form_project_version"
+                       class="uk-input free-type auto-update"
+                       data-id="<?php echo $p->id; ?>"
+                       data-tbl="sst_projects"
+                       data-col="version"
+                       placeholder=""
+                       readonly
+                       disabled
+                       autocomplete="off"
+                       required
+                       value="<?php echo $p->project_version; ?>"
+                       oninvalid="this.setCustomValidity('')"
+                       oninput="this.setCustomValidity('')" />
+            </div>
+
+        <div class="uk-width-1-1 uk-margin">
+            <button class="uk-button uk-align-center uk-button-primary uk-hidden@xl " type="button" uk-toggle="target: #offcanvas-sidebar">Manage Project</button>
         </div>
 
     </div>

@@ -218,7 +218,7 @@ label {
 }
 
 #table_mode_nodata {
-  padding-top: 40px;
+  padding: 10px 5px 0 5px;
 }
 #table_mode_nodata .uk-card-title {
   color: #192542;
@@ -273,4 +273,24 @@ input#qty {
 }
 .uk-navbar-container .mobile-nav li a {
   flex-direction: column;
+}
+
+.schedule-topper div {
+  background-color: #192542;
+  color: #fff;
+  border-bottom: 1px solid #fff;
+  border-right: 1px solid #fff;
+  text-align: left;
+}
+.schedule-topper div p {
+  line-height: 35px;
+  padding-left: 5px;
+  padding-right: 2px;
+  font-size: 90%;
+}
+.schedule-topper div p.heading {
+  font-variant: all-small-caps;
+  line-height: 32px;
+  padding: 0 5px;
+  font-size: 100%;
 }

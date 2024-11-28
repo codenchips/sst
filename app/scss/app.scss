@@ -289,7 +289,8 @@ label {
 }
 
 #table_mode_nodata {
-  padding-top: 40px;
+  padding: 10px 5px 0 5px;
+
   .uk-card-title {
     color: $primary-color;
   }
@@ -358,4 +359,29 @@ input#qty {
       }
     }
   }
+}
+
+.schedule-topper {
+
+  div {
+    background-color: $primary-color;
+    color: #fff;
+    border-bottom: 1px solid #fff;
+    border-right: 1px solid #fff;
+    text-align: left;
+    p {
+      line-height: 35px;
+      padding-left: 5px;
+      padding-right: 2px;
+      font-size: 90%;
+      &.heading {
+        font-variant: all-small-caps;
+        line-height: 32px;
+        padding: 0 5px;
+        font-size: 100%;
+      }
+    }
+
+  }
+
 }

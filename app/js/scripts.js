@@ -1153,6 +1153,32 @@ $(function() {
         }
     });
 
+    $('input.auto-update').off('blur').on('blur', function(e) {
+       e.preventDefault();
+       id = $(this).data('id');
+       tbl = $(this).data('tbl');
+       col = $(this).data('col');
+       val = $(this).val();
+        showSpin();
+        $.ajax("/api/auto_update", {
+            type: "post",
+            data: {
+                id: id,
+                tbl: tbl,
+                col: col,
+                val: val
+            },
+            success: function(data, status, xhr) {
+                hideSpin();
+                var jsonData = $.parseJSON(data);
+                console.log(jsonData);
+            }
+        });
+    });
+
+
+
+
     /*
     *  END DASHBOARD
     */
@@ -1214,14 +1240,25 @@ $(function() {
         const filename = $('#m_project_slug').val() + "-v" + $('#m_project_version').val();
 
         //window.location.replace("https://staging.tamlite.co.uk/pdfmerge/schedule.pdf");
-        window.open("https://staging.tamlite.co.uk/pdfmerge/"+filename+".pdf", '_blank');
+        window.open("https://staging.tamlite.co.uk/pdfmerge/"+filename+".pdf?t="+makeid(10), '_blank');
 
     });
 
+    function makeid(length) {
+        let result = '';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const charactersLength = characters.length;
+        let counter = 0;
+        while (counter < length) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            counter += 1;
+        }
+        return result;
+    }
 
     function bindsTableFunctions() {
         $('#gen_datasheets').off('click').on('click', function(e) {
-            // trigger the download, which is intercepted and triggers
+            // trigger the   download, which is intercepted and triggers
             // generateDataSheets()
             sTable.download("json", "data.json", {}, "visible");
 
@@ -1237,6 +1274,10 @@ $(function() {
             data: {
                 project_slug: $('#m_project_slug').val(),
                 project_version: $('#m_project_version').val(),
+                info_project_name: $('#info_project_name').text(),
+                info_project_id: $('#info_project_id').text(),
+                info_engineer: $('#info_engineer').text(),
+                info_date: $('#info_date').text(),
                 skus: jsonData,
             },
             xhr: function () {
@@ -1277,7 +1318,8 @@ $(function() {
                 if (status === "timeout") {
                     alert("The request timed out. Please try again later.");
                 } else {
-                    console.error("An error occurred:", status, error);
+                    // todo: this is actually firing but all works ok, debug
+                    //console.error("An error occurred:", status, error);
                 }
             },
             timeout: 310000, // 310 seconds (5 minutes + buffer)

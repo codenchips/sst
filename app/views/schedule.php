@@ -2,7 +2,7 @@
 
 $project_slug = get_uri_part(2);
 
-//$project_slug = 'cov-uni';
+$p = get_project($project_slug);
 
 $types = get_types();
 //$location = get_location_for_project($project_slug);
@@ -30,34 +30,58 @@ $types = get_types();
 
 
 
-<div style="display:block;" id="schedule_mode_view" class="uk-width-1-1 uk-margin">
-
+<div style="display:block;" id="schedule_mode_view" class="uk-width-1-1 uk-margin-remove">
 
 <div uk-grid>
-    <div class="uk-width-1-1">
-    <ul class="uk-subnav uk-margin uk-subnav-pill" uk-switcher="animation: uk-animation-fade">
-        <li><a href="#">Contents</a></li>
-        <li><a href="#">Details</a></li>
-        <li><a href="#">Cover</a></li>
-    </ul>
-    <div class="uk-switcher uk-margin">
-        <div>
-
-            <div class="uk-width-1-1">
-                <div id="stable"></div>
-            </div>
-            <div class="uk-card-footer uk-align-center">
-                <button id="gen_datasheets" class="uk-button uk-button-primary" type="button">Generate Datasheets</button>
-            </div>
-
+    <div class="uk-width-1-1 schedule-topper uk-margin-remove uk-padding-remove-vertical" uk-grid>
+        <div class="uk-width-auto uk-padding-remove">
+            <p class="heading">Project:</p>
         </div>
-        <div>Hello again! <a href="#" uk-switcher-item="next">Next item</a></div>
-        <div>Bazinga! <a href="#" uk-switcher-item="previous">Previous item</a></div>
+        <div class="uk-width-expand uk-padding-remove">
+            <p id="info_project_name"><?php echo $p->name; ?></p>
+        </div>
+        <div class="uk-width-auto uk-padding-remove">
+            <p class="heading">Project ID:</p>
+        </div>
+        <div class="uk-width-auto uk-padding-remove">
+            <p id="info_project_id"><?php echo $p->project_id; ?></p>
+        </div>
     </div>
+    <div class="uk-width-1-1 schedule-topper uk-margin-remove uk-padding-remove-vertical" uk-grid>
+        <div class="uk-width-auto uk-padding-remove">
+            <p class="heading">Engineer:</p>
+        </div>
+        <div class="uk-width-expand uk-padding-remove">
+            <p id="info_engineer"><?php echo ($p->engineer != "") ? $p->engineer : $_COOKIE['user_name']; ?></p>
+        </div>
+        <div class="uk-width-auto uk-padding-remove">
+            <p class="heading">Date:</p>
+        </div>
+        <div class="uk-width-auto uk-padding-remove">
+            <p id="info_date"><?php echo date("d/m/Y"); ?></p>
+        </div>
+    </div>
+
+    <div class="uk-width-1-1">
+        <div id="stable"></div>
+    </div>
+    <div class="uk-width-1-1 uk-align-center">
+        <button id="gen_datasheets" class="uk-button uk-button-primary uk-align-center" type="button">Generate Datasheets</button>
     </div>
 
 
-
+<!--    <div class="uk-width-1-1">-->
+<!--    <ul class="uk-subnav  uk-subnav-pill" uk-switcher="animation: uk-animation-fade">-->
+<!--        <li><a href="#">Contents</a></li>-->
+<!--        <li><a href="#">Cover</a></li>-->
+<!--        <li><a href="#">Cover</a></li>-->
+<!--    </ul>-->
+<!--    <div class="uk-switcher _uk-margin">-->
+<!--        <div></div>-->
+<!--        <div>Hello again! <a href="#" uk-switcher-item="next">Next item</a></div>-->
+<!--        <div>Bazinga! <a href="#" uk-switcher-item="previous">Previous item</a></div>-->
+<!--    </div>-->
+<!--    </div>-->
 
 </div>
 
