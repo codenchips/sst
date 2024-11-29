@@ -70,18 +70,6 @@ $types = get_types();
     </div>
 
 
-<!--    <div class="uk-width-1-1">-->
-<!--    <ul class="uk-subnav  uk-subnav-pill" uk-switcher="animation: uk-animation-fade">-->
-<!--        <li><a href="#">Contents</a></li>-->
-<!--        <li><a href="#">Cover</a></li>-->
-<!--        <li><a href="#">Cover</a></li>-->
-<!--    </ul>-->
-<!--    <div class="uk-switcher _uk-margin">-->
-<!--        <div></div>-->
-<!--        <div>Hello again! <a href="#" uk-switcher-item="next">Next item</a></div>-->
-<!--        <div>Bazinga! <a href="#" uk-switcher-item="previous">Previous item</a></div>-->
-<!--    </div>-->
-<!--    </div>-->
 
 </div>
 

@@ -195,13 +195,33 @@ $types = get_types();
         <div id="ptable"></div>
     </div>
 
-    <div class="uk-width-1-1">
-        <button id="add-note" class="uk-button uk-button-primary uk-align-right">Add Note</button>
+    <div class="uk-width-1-2">
+<!--        <button id="add-image" class="uk-width-1-1 uk-button uk-button-primary uk-align-right">Add Image</button>-->
+        <input id="add-image" name="add-image" type="file" accept="image/*;capture=camera">
+        <label for="add-image">Add Image</label>
+
+    </div>
+    <div class="uk-width-1-2">
+        <button id="add-note" class="uk-width-1-1 uk-button uk-button-primary uk-align-right">Add Note</button>
     </div>
 
-    <div class="uk-width-1-1">
-        <div id="target-notes" class="notes-area"></div>
-    </div>
+
+        <div class="uk-width-1-1">
+        <ul class="uk-subnav uk-subnav-pill tablinks" uk-switcher="animation: uk-animation-fade">
+            <li><a href="#">Notes</a></li>
+            <li><a href="#">Images</a></li>
+
+        </ul>
+        <div class="uk-switcher _uk-margin">
+            <div class="uk-width-1-1">
+                <div id="target-notes" class="notes-area"></div>
+            </div>
+            <div>
+                <div id="target-images" class="images-area"></div>
+            </div>
+        </div>
+        </div>
+
 
 </div>
 

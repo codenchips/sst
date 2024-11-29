@@ -1,5 +1,6 @@
 $(function() {
     console.log("Loaded ..");
+    //FastClick.attach(document.body);
 
     UIkit.modal('#add-special', {
         stack : true,
@@ -12,6 +13,10 @@ $(function() {
         $('#spinner').fadeOut('fast');
     }
 
+    $('.tablinks').off('click').on('click', function(e) {
+        e.preventDefault();
+    });
+
 
     var login = UIkit.modal('.loginmodal', {
         bgClose : false,
@@ -19,7 +24,6 @@ $(function() {
     });
     var uid = getCookie('user_id');
     if (!uid) {
-
         UIkit.modal('.loginmodal').show();
     } else {
         $('#m_user_id').val(uid);
@@ -876,15 +880,43 @@ $(function() {
 
 
 
+    if ($('#add-image').length) {
+        var addImage = $('#add-image');
+
+        addImage.on('change', function () {
+            var file = addImage[0].files[0]; // Get the selected file
+
+            if (file) {
+                var formData = new FormData();
+                formData.append('image', file);
+                formData.append('room_id', $('#m_room_id').val());
+
+                $.ajax({
+                    url: "/api/image_upload",
+                    type: 'POST',
+                    data: formData,
+                    processData: false, // Prevent jQuery from automatically transforming the data into a query string
+                    contentType: false, // Do not set content type (allows FormData to set it correctly)
+                    success: function (response) {
+                        console.log('File uploaded successfully:', response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('File upload failed:', error);
+                    }
+                });
+            } else {
+                console.warn('No file selected.');
+            }
+        });
+    }
+
+
     function setQty(id, qty, sku) {
-        //$('#form-submit-set-qty #set_qty_qty').val(qty);
         $('#form-submit-set-qty #set_qty_product_id').val(id);
         $('#form-submit-set-qty #set_qty_sku').val(sku);
         UIkit.modal($('#set-qty')).show();
-
     }
     UIkit.util.on('#set-qty', 'shown', function () {
-        console.log('set qty down');
         $('#set_qty_qty').focus();
     });
 
@@ -953,6 +985,7 @@ $(function() {
     $('#add-note').off('click').on('click', function(e) {
         e.preventDefault();
         //$('.notes-area').append('<textarea></textarea>');
+        console.log('add note');
         var template = $("#tmp-notes").html();
         var rendered = Mustache.render(template, {
             id: 0,
@@ -1175,10 +1208,6 @@ $(function() {
             }
         });
     });
-
-
-
-
     /*
     *  END DASHBOARD
     */
@@ -1187,8 +1216,7 @@ $(function() {
 
     /*
     *  SCHEDULE
-     */
-
+    */
     if ($('#stable').length) {
         const currentProjectId = $('input#m_project_id').val();
         if (currentProjectId != "") {

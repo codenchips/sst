@@ -878,6 +878,52 @@ function ajax_auto_update() {
     $pdo->prepare($sql)->execute();
 }
 
+function ajax_image_upload() {
+    global $pdo;
+    if (isset($_POST['room_id'])) {
+        $room_id = intval($_POST['room_id']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'No room id']);
+        exit();
+    }
+
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        // File properties
+        $fileTmpPath = $_FILES['image']['tmp_name'];
+        $fileName = $_FILES['image']['name'];
+        $fileSize = $_FILES['image']['size'];
+        $fileType = $_FILES['image']['type'];
+        $uploadDir = 'uploads/';
+
+        $safeFileName = uniqid() . '-' . basename($fileName);
+        $uploadFilePath = $uploadDir . $safeFileName;
+
+        if (move_uploaded_file($fileTmpPath, $uploadFilePath)) {
+
+            // file uploaded, add to the db
+            $data['room_id'] = $room_id;
+            $data['safeFileName'] = $safeFileName;
+            $data['fileName'] = $fileName;
+            $data['user_id'] = user_id();
+
+            $sql = "INSERT INTO sst_images (room_id_fk, filename, safe_filename, owner_id, version, created_on)
+              VALUES
+              (:room_id, :fileName, :safeFileName, :user_id, 1, CURRENT_TIMESTAMP)";
+            $pdo->prepare($sql)->execute($data);
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'File uploaded successfully!',
+                'filePath' => $uploadFilePath
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'File upload failed.']);
+        }
+    } else {
+        echo json_encode(['success' => false, 'message' => 'No file uploaded or there was an error.']);
+    }
+}
+
 
 
 ?>
