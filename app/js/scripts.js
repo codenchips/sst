@@ -450,6 +450,7 @@ $(function() {
             updateTableModeHeadings(uid);
             updatepTable();
             updateNotes();
+            updateImages();
             UIkit.offcanvas($('#offcanvas-sidebar')).hide();
             $('#table_mode_nodata').slideUp(1000);
             $('#table_mode_view').slideDown(1000);
@@ -899,6 +900,7 @@ $(function() {
                     contentType: false, // Do not set content type (allows FormData to set it correctly)
                     success: function (response) {
                         console.log('File uploaded successfully:', response);
+                        updateImages();
                     },
                     error: function (xhr, status, error) {
                         console.error('File upload failed:', error);
@@ -909,6 +911,36 @@ $(function() {
             }
         });
     }
+    function updateImages(room_id = false) {
+        setTimeout(function() {
+            if (room_id == false) {
+                room_id = $('input#m_room_id').val();
+            }
+            if ($('.images-area').length && room_id) {
+                $('#target-images').empty();
+                $.ajax("/api/get_images", {
+                    type: "post",
+                    data: {
+                        room_id: room_id
+                    },
+                    success: function(data, status, xhr) {
+                        if (data.length > 0) {
+                            var jsonData = $.parseJSON(data);
+                            var template = $("#tmp-images").html();
+                            var rendered = Mustache.render(template, {
+                                images: jsonData
+                            });
+                            $("#target-images").html(rendered);
+                            //bindSelectProductType();
+                        }
+                    }
+                });
+            }
+        },500);
+    }
+
+
+
 
 
     function setQty(id, qty, sku) {
@@ -981,7 +1013,6 @@ $(function() {
             }
         },500);
     }
-
     $('#add-note').off('click').on('click', function(e) {
         e.preventDefault();
         //$('.notes-area').append('<textarea></textarea>');

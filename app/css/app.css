@@ -316,3 +316,11 @@ input#qty {
   transition: 0.1s ease-in-out;
   transition-property: color, background-color, border-color;
 }
+
+.image-frame {
+  width: 31%;
+  display: inline-block;
+  border: 1px solid #192542;
+  padding: 1px 1px;
+  border-radius: 2px;
+}

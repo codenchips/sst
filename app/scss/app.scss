@@ -413,3 +413,10 @@ input#qty {
   //background-color: red;
 }
 
+.image-frame {
+  width: 31%;
+  display: inline-block;
+  border: 1px solid $primary-color;
+  padding: 1px 1px;
+  border-radius: 2px;
+}

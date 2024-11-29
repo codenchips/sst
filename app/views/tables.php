@@ -206,28 +206,24 @@ $types = get_types();
     </div>
 
 
-        <div class="uk-width-1-1">
+    <div class="uk-width-1-1">
         <ul class="uk-subnav uk-subnav-pill tablinks" uk-switcher="animation: uk-animation-fade">
             <li><a href="#">Notes</a></li>
             <li><a href="#">Images</a></li>
-
         </ul>
-        <div class="uk-switcher _uk-margin">
+        <div class="uk-switcher uk-margin">
             <div class="uk-width-1-1">
-                <div id="target-notes" class="notes-area"></div>
+                <div id="target-notes" class="uk-width-1-1 notes-area"></div>
             </div>
-            <div>
-                <div id="target-images" class="images-area"></div>
+            <div id="target-images" class="uk-width-1-1 images-area">
             </div>
         </div>
-        </div>
+    </div>
 
 
 </div>
 
 <div id="debug"></div>
-
-
 
 <!-- set qty modal -->
 <div id="set-qty" uk-modal>
@@ -254,9 +250,6 @@ $types = get_types();
         </form>
     </div>
 </div>
-
-
-
 
 <!-- add special modal -->
 <div id="add-special" uk-modal>
@@ -317,9 +310,20 @@ $types = get_types();
     </div>
 </div>
 
-
-
 <!-- Templates -->
+<script id="tmp-images" type="x-tmpl-mustache">
+<div class="uk-width-1-1" uk-lightbox="animation: slide">
+    <div style="text-align: justify;">
+    {{#images}}
+    <div class="image-frame">
+        <a href="/uploads/{{safe_filename}}">
+            <img src="/uploads/{{safe_filename}}" data-id="{{id}}"  data-room_id="{{room_id}}">
+        </a>
+    </div>
+    {{/images}}
+    </div>
+</div>
+</script>
 <script id="tmp-notes" type="x-tmpl-mustache">
     <textarea oninput='this.style.height = "";this.style.height = this.scrollHeight + 3 + "px"' class="note" data-id="{{id}}" data-room_id="{{room_id}}">{{note}}</textarea>
 </script>

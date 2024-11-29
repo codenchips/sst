@@ -878,6 +878,23 @@ function ajax_auto_update() {
     $pdo->prepare($sql)->execute();
 }
 
+function ajax_get_images() {
+    global $pdo;
+
+    $room_id = $_POST['room_id'];
+
+    $q = $pdo->query("SELECT 
+                              id, 
+                              room_id_fk as room_id,
+                              safe_filename
+                              FROM sst_images
+                              WHERE room_id_fk = $room_id  
+                              ORDER BY created_on DESC");
+    $res = $q->fetchAll(PDO::FETCH_ASSOC);
+    return(return_json($res));
+}
+
+
 function ajax_image_upload() {
     global $pdo;
     if (isset($_POST['room_id'])) {
