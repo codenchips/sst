@@ -66,16 +66,58 @@ $types = get_types();
         <div id="stable"></div>
     </div>
     <div class="uk-width-1-1 uk-align-center">
-        <button id="gen_datasheets" class="uk-button uk-button-primary uk-align-center" type="button">Generate Datasheets</button>
+<!--        <button id="gen_datasheets" class="uk-button uk-button-primary uk-align-center" type="button">Generate Datasheets</button>-->
+                <button  uk-toggle="target: #gen_schedules"  class="uk-button uk-button-primary uk-align-center" type="button">Generate Datasheets</button>
+
+
     </div>
 
 
 
 </div>
 
+<!-- Pre gen sheets / schedules -->
+<div id="gen_schedules" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical uk-modal-body">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <form id="form-submit-gen_schedules">
+            <div class="uk-text-center" uk-grid>
 
+                <div class="uk-width-1-1 uk-align-center">
+                    <fieldset class="uk-fieldset">
+                        <legend class="uk-legend">Schedule Type</legend>
+                            <div class="uk-margin uk-grid-large uk-child-width-auto uk-grid">
+                                <label>
+                                    <input class="uk-radio" type="radio" name="schedule_type" id="by_project" value="by_project" checked> By Project
+                                </label>
+                            </div>
+                            <div class="uk-margin uk-grid-large uk-child-width-auto uk-grid">
+                                <label>
+                                    <input class="uk-radio" type="radio" name="schedule_type" id="by_room" value="by_room"> By Room
+                                </label>
+                            </div>
+                            <div class="uk-margin uk-grid-large uk-child-width-auto uk-grid">
+                                <label>
+                                    <input class="uk-checkbox" type="checkbox" value="include_schedule" id="include_schedule" name="include_schedule" checked> Include Schedule
+                                </label>
+                            </div>
+                            <div class="uk-margin uk-grid-large uk-child-width-auto uk-grid">
+                                <label>
+                                    <input class="uk-checkbox" type="checkbox" value="include_datasheets" id="include_datasheets" name="include_datasheets" checked> Include Datashsets
+                                </label>
+                            </div>
+                    </fieldset>
+                </div>
 
-<!-- set qty modal -->
+                <div class="uk-width-1-1 uk-align-center">
+                    <button id="gen_schedules_confirm" type="buttom" class="uk-button uk-button-primary" type="button">Download Datasheets</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Generating Datasheets with progress -->
 <div id="folio-progress" uk-modal>
     <div class="uk-modal-dialog uk-margin-auto-vertical uk-modal-body">
         <button class="uk-modal-close-default" type="button" uk-close></button>

@@ -580,6 +580,51 @@ function ajax_remove_room() {
 }
 
 
+
+function ajax_get_schedule_per_room() {
+    global $pdo;
+    $project_id = $_POST['project_id'];
+    if (!$project_id) {
+        return (return_json(array('error' => 'No Project ID')));
+    }
+    $q = $pdo->query("SELECT
+			r.`slug` as room_slug,
+			r.`name` as room_name, 
+			f.`name` as floor_name, 
+			b.`name` as building_name, 
+			l.`name` as location_name, 
+			p.`name` as project_name,
+			d.ref, 			
+			d.product_name,
+			d.product_slug,					
+			d.sku,
+			d.custom,
+			d.owner_id,
+			p.id as project_id_fk,
+			p.slug as project_slug,
+			p.version as project_version,
+			count(sku) as qty
+			FROM sst_products d 			
+			LEFT JOIN sst_rooms r on r.id = d.room_id_fk
+			LEFT JOIN sst_floors f on f.id = r.floor_id_fk
+			LEFT JOIN sst_buildings b on b.id = f.building_id_fk
+			LEFT JOIN sst_locations l on l.id = b.location_id_fk			
+			LEFT JOIN sst_projects p on p.id = l.project_id_fk
+			WHERE p.id = $project_id 
+			GROUP BY d.ref,  d.sku");
+
+    $ret = array();
+    $res = $q->fetchAll(PDO::FETCH_OBJ);
+    foreach ($res as $i => $o) {
+        $ret[$o->room_slug][] = $o;
+    }
+    return (return_json($ret));
+}
+
+
+
+
+
 function ajax_get_products_in_project() {
     global $pdo;
     $project_id = $_POST['project_id'];

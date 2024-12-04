@@ -433,6 +433,7 @@ $(function() {
 
                 $('span.project_name').text(hd.project_name);
                 $('span.location_name').text(hd.location_name);
+                $('span.location_name').text(hd.location_name);
                 $('span.building_name').text(hd.building_name);
                 $('span.floor_name').text(hd.floor_name);
                 $('span.room_name').text(hd.room_name);
@@ -441,7 +442,6 @@ $(function() {
             }
         });
     }
-
 
     function showRoom(uid = false) {
         if (uid) {
@@ -523,6 +523,12 @@ $(function() {
                 // $('input#uid,input#m_room_id,input#add_product_room_id').val(uid);
                 // updatepTable();
             }
+        });
+
+        // Rename locations etc
+        $("span.name").off('click').on('click', function(e) {
+
+            UIkit.modal($('#edit-name')).show();
         });
 
 
@@ -1316,16 +1322,71 @@ $(function() {
     }
 
     function bindsTableFunctions() {
-        $('#gen_datasheets').off('click').on('click', function(e) {
+        $('#gen_datasheets,#gen_schedules_confirm').off('click').on('click', function(e) {
+            e.preventDefault();
+            if ($('#include_schedule').is(':checked') == false &&
+                $('#include_datasheets').is(':checked') == false) {
+                    alert('Nothing to generate, please select an option');
+                    return(false);
+            }
+
             // trigger the   download, which is intercepted and triggers
             // generateDataSheets()
             sTable.download("json", "data.json", {}, "visible");
 
         })
     }
-    function generateDataSheets(data) {
+
+    function getSchedulePerRoom(project_id = false) {
+        return new Promise((resolve, reject) => {
+            setTimeout(function () {
+                if (project_id == false) {
+                    project_id = $('input#m_project_id').val();
+                }
+                showSpin();
+                $.ajax("/api/get_schedule_per_room", {
+                    type: "post",
+                    data: { project_id: project_id },
+                    success: function (data) {
+                        hideSpin();
+                        try {
+                            const jsonData = $.parseJSON(data);
+                            resolve(jsonData); // Resolve the promise with the data
+                        } catch (e) {
+                            reject("Failed to parse JSON: " + e.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        hideSpin();
+                        reject("AJAX Error: " + error); // Reject the promise on AJAX error
+                    },
+                });
+            }, 100);
+        });
+    }
+
+    async function generateDataSheets(data) {
         UIkit.modal($('#folio-progress')).show();
-        jsonData = data; //JSON.stringify(data);
+        const schedule_type = $('input[name=schedule_type]:checked').val();
+
+        if (schedule_type == "by_project") {
+            jsonData = data; // the schedule table data for a full project schedule
+            callGenSheets(schedule_type);
+        } else {
+            try {
+                jsonData = await getSchedulePerRoom(); // Wait for the data
+                callGenSheets(schedule_type); // Call with the resolved data
+            } catch (error) {
+                console.error("Error fetching schedule per room:", error);
+                alert("Failed to fetch schedule data. Please try again.");
+            }
+        }
+    }
+
+    function callGenSheets(schedule_type) {
+        $('.uk-progress').val(10);
+        $('#download_datasheets').prop("disabled", true);
+        $('#progress-text').text("Gathering Data ...");
 
         $.ajax({
             url: "https://staging.tamlite.co.uk/ci_index.php/download_schedule",
@@ -1337,6 +1398,9 @@ $(function() {
                 info_project_id: $('#info_project_id').text(),
                 info_engineer: $('#info_engineer').text(),
                 info_date: $('#info_date').text(),
+                include_schedule: $('#include_schedule').is(':checked'),
+                include_datasheets: $('#include_datasheets').is(':checked'),
+                schedule_type: schedule_type,
                 skus: jsonData,
             },
             xhr: function () {
@@ -1347,20 +1411,22 @@ $(function() {
                     const lines = responseText.split('\n');
 
                     for (let i = lastProcessedIndex; i < lines.length; i++) {
-                        const line = lines[i].trim();;
+                        const line = lines[i].trim();
 
+                        //console.log(line);
                         if (!line) {
                             continue;
                         }
                         try {
                             const update = JSON.parse(line);
                             if (update.step && update.total) {
-                                const percentage = (update.step / (update.total - 1) ) * 100;
+                                const percentage = (update.step / (update.total - 1)) * 100;
                                 $('#progress-text').text(update.message);
                                 $('.uk-progress').val(percentage);
                             }
                             if (update.complete) {
                                 console.log('Processing complete:', update);
+                                $('.uk-progress').val(100);
                                 $('#progress-text').text(update.message);
                                 $('#download_datasheets').prop("disabled", false);
                             }
@@ -1372,7 +1438,8 @@ $(function() {
                 };
                 return xhr;
             },
-            success: function () {},
+            success: function () {
+            },
             error: function (xhr, status, error) {
                 if (status === "timeout") {
                     alert("The request timed out. Please try again later.");

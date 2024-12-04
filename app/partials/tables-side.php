@@ -205,13 +205,13 @@
                            oninput="this.setCustomValidity('')" />
                 </div>
 
-                <div class="uk-width-1-1 uk-text-left">
-                    <label>Add a Floorplan</label>
-                    <input disabled id="modal_form_floorplan"
-                           name="modal_form_floorplan"
-                           type="file"
-                           class="uk-input" />
-                </div>
+<!--                <div class="uk-width-1-1 uk-text-left">-->
+<!--                    <label>Add a Floorplan</label>-->
+<!--                    <input disabled id="modal_form_floorplan"-->
+<!--                           name="modal_form_floorplan"-->
+<!--                           type="file"-->
+<!--                           class="uk-input" />-->
+<!--                </div>-->
 
                 <div class="uk-width-1-1">
                     <input type="hidden" name="modal_form_uid" value="" />
