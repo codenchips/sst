@@ -405,6 +405,33 @@ $(function() {
         UIkit.modal($('#set-qty')).hide();
     });
 
+    $("#form-edit-name").off("submit").on("submit", function(e) {
+        e.preventDefault();
+
+        const form = document.querySelector("#form-edit-name");
+
+        // update the label on the page
+        const $form = $(form);
+        const label = $form.find('[name="label"]').val();
+        const newValue = $form.find('[name="val"]').val();
+        $('span.name.'+label).text(newValue);
+
+        // save it and update the sidebar
+        (async () => {
+            try {
+                const result = await sendData(form, "auto_update");
+                console.log("Result from backend:", result);
+                // Perform additional logic with `result`.
+                updateTableSideNav();
+            } catch (error) {
+                console.error("Error during sendData:", error);
+                // Handle the error.
+                alert('There was a network error, please try again.');
+            }
+        })();
+        UIkit.modal($('#edit-name')).hide();
+    });
+
 
     // add floor close. re-open the sidebar
     $("#add-floor,#add-room,#form-remove-room,#form-remove-floor").on('hidden', function(e) {
@@ -432,11 +459,10 @@ $(function() {
                 console.log(hd.floor_name);
 
                 $('span.project_name').text(hd.project_name);
-                $('span.location_name').text(hd.location_name);
-                $('span.location_name').text(hd.location_name);
-                $('span.building_name').text(hd.building_name);
-                $('span.floor_name').text(hd.floor_name);
-                $('span.room_name').text(hd.room_name);
+                $('span.location_name').text(hd.location_name).attr("data-id", hd.location_id);
+                $('span.building_name').text(hd.building_name).attr("data-id", hd.building_id);;
+                $('span.floor_name').text(hd.floor_name).attr("data-id", hd.floor_id);;
+                $('span.room_name').text(hd.room_name).attr("data-id", hd.room_id);;
 
                 $('.location-heading,.room-heading').show();
             }
@@ -527,8 +553,23 @@ $(function() {
 
         // Rename locations etc
         $("span.name").off('click').on('click', function(e) {
+            const tbl = $(this).data("tbl");
+            const val = $(this).text();
+            const id = $(this).data("id");
+            const label = $(this).data("label");
+            const col = "name";
+
+            $('#form-edit-name input[name=label]').val(label);
+            $('#form-edit-name input[name=id]').val(id);
+            $('#form-edit-name input[name=tbl]').val(tbl);
+            $('#form-edit-name input[name=col]').val(col);
+            $('#form-edit-name #modal_form_name').val(val);
+
 
             UIkit.modal($('#edit-name')).show();
+        });
+        UIkit.util.on('#edit-name', 'shown', function () {
+            $('#modal_form_name').focus();
         });
 
 
@@ -1305,6 +1346,7 @@ $(function() {
         const filename = $('#m_project_slug').val() + "-v" + $('#m_project_version').val();
 
         //window.location.replace("https://staging.tamlite.co.uk/pdfmerge/schedule.pdf");
+        UIkit.modal($('#folio-progress')).hide();
         window.open("https://staging.tamlite.co.uk/pdfmerge/"+filename+".pdf?t="+makeid(10), '_blank');
 
     });

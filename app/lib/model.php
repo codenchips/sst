@@ -588,30 +588,52 @@ function ajax_get_schedule_per_room() {
         return (return_json(array('error' => 'No Project ID')));
     }
     $q = $pdo->query("SELECT
-			r.`slug` as room_slug,
-			r.`name` as room_name, 
-			f.`name` as floor_name, 
-			b.`name` as building_name, 
-			l.`name` as location_name, 
-			p.`name` as project_name,
-			d.ref, 			
-			d.product_name,
-			d.product_slug,					
-			d.sku,
-			d.custom,
-			d.owner_id,
-			p.id as project_id_fk,
-			p.slug as project_slug,
-			p.version as project_version,
-			count(sku) as qty
-			FROM sst_products d 			
-			LEFT JOIN sst_rooms r on r.id = d.room_id_fk
-			LEFT JOIN sst_floors f on f.id = r.floor_id_fk
-			LEFT JOIN sst_buildings b on b.id = f.building_id_fk
-			LEFT JOIN sst_locations l on l.id = b.location_id_fk			
-			LEFT JOIN sst_projects p on p.id = l.project_id_fk
-			WHERE p.id = $project_id 
-			GROUP BY d.ref,  d.sku");
+                r.`slug` AS room_slug,
+                r.`name` AS room_name, 
+                f.`name` AS floor_name, 
+                b.`name` AS building_name, 
+                l.`name` AS location_name, 
+                p.`name` AS project_name,
+                d.ref, 			
+                d.product_name,
+                d.product_slug,					
+                d.sku,
+                d.custom,
+                d.owner_id,
+                p.id AS project_id_fk,
+                p.slug AS project_slug,
+                p.version AS project_version,
+                COUNT(d.sku) AS qty,
+                GROUP_CONCAT(
+                  DISTINCT i.safe_filename ORDER BY i.created_on DESC SEPARATOR '|'
+                ) AS image_filenames,
+                GROUP_CONCAT(
+                  DISTINCT CONCAT(
+                        n.note, 
+                        ' (updated: ', 
+                        DATE_FORMAT(
+                            IF(
+                                n.last_updated = '0000-00-00 00:00:00',
+                                n.created_on,
+                                n.last_updated
+                            ),
+                            '%d/%m/%Y %H:%i'
+                        ),
+                        ')'
+                    ) 
+                    ORDER BY n.created_on, n.last_updated ASC SEPARATOR '|'
+                ) AS room_notes
+            FROM sst_products d
+            LEFT JOIN sst_rooms r ON r.id = d.room_id_fk
+            LEFT JOIN sst_floors f ON f.id = r.floor_id_fk
+            LEFT JOIN sst_buildings b ON b.id = f.building_id_fk
+            LEFT JOIN sst_locations l ON l.id = b.location_id_fk
+            LEFT JOIN sst_projects p ON p.id = l.project_id_fk
+            LEFT JOIN sst_images i ON i.room_id_fk = r.id
+            LEFT JOIN sst_notes n ON n.room_id_fk = r.id
+            WHERE p.id = $project_id
+            GROUP BY d.ref, d.sku, r.id
+            ORDER BY r.slug, d.ref");
 
     $ret = array();
     $res = $q->fetchAll(PDO::FETCH_OBJ);
@@ -897,6 +919,18 @@ function ajax_save_note() {
 }
 
 
+function ajax_edit_name() {
+    global $pdo;
+
+    //$data['tbl'] = $_POST['modal_form_tbl'];
+    $data['room_id'] = $_POST['modal_form_room_id'];
+    $data['room_name'] = $_POST['modal_form_name'];
+
+    $sql = "UPDATE sst_rooms SET `name`=:room_name WHERE id=:room_id";
+
+    $pdo->prepare($sql)->execute($data);
+}
+
 
 function ajax_edit_ref() {
     global $pdo;
@@ -921,6 +955,7 @@ function ajax_auto_update() {
 
     $sql = "UPDATE $tbl SET $col = '$val' WHERE id= $id";
     $pdo->prepare($sql)->execute();
+    echo json_encode(['success' => true, 'message' => 'Update OK']);
 }
 
 function ajax_get_images() {

@@ -107,10 +107,11 @@ $types = get_types();
     <div style="display:none;"  class="uk-margin location-heading"  uk-grid>
         <div class="uk-width-1-2">
             <span class="uk-icon" uk-icon="icon: location;"></span>
-            <span class="name location_name"></span>
+            <span data-label="location_name" data-id="" data-tbl="sst_locations" class="name location_name"></span>
         </div>
         <div class="uk-width-1-2">
-            <span class="uk-icon" uk-icon="icon: home;"></span></span> <span class="name building_name"></span>
+            <span class="uk-icon" uk-icon="icon: home;"></span>
+            <span data-label="building_name" data-id="" data-tbl="sst_buildings" class="name building_name"></span>
         </div>
 
     </div>
@@ -187,10 +188,12 @@ $types = get_types();
 
 <div style="display:none;" class="room-heading" uk-grid>
     <div class="uk-width-1-2">
-        <span class="uk-icon" uk-icon="icon: table;"></span> <span class="name floor_name"></span>
+        <span class="uk-icon" uk-icon="icon: table;"></span>
+        <span data-label="floor_name" data-id="" data-tbl="sst_floors" class="name floor_name"></span>
     </div>
     <div class="uk-width-1-2">
-        <span class="uk-icon" uk-icon="icon: move;"></span> <span class="name room_name"></span>
+        <span class="uk-icon" uk-icon="icon: move;"></span>
+        <span data-label="room_name" data-id="" data-tbl="sst_rooms" class="name room_name"></span>
     </div>
 </div>
 
@@ -234,28 +237,29 @@ $types = get_types();
         <form id="form-edit-name">
             <div class="uk-text-center" uk-grid>
                 <div class="uk-width-1-1">
-                    <h3>Edit</h3>
+                    <h3>Edit Name</h3>
                 </div>
 
                 <div class="uk-width-1-1 uk-text-left">
-                    <label>Name The Room</label>
-                    <input id="modal_form_room"
-                           name="modal_form_room"
+                    <label>Name</label>
+                    <input id="modal_form_name"
+                           name="val"
                            class="uk-input free-type"
-                           placeholder="Room Name"
+                           placeholder="Name"
                            required
                            value=""
-                           oninvalid="this.setCustomValidity('You must enter a name for this floor')"
+                           oninvalid="this.setCustomValidity('You must enter a name')"
                            oninput="this.setCustomValidity('')" />
                 </div>
 
                 <div class="uk-width-1-1">
-                    <input type="hidden" name="modal_form_project_id" value="<?php echo $project_slug; ?>" />
-                    <input type="hidden" name="modal_form_project_name" value="" />
+                    <input type="hidden" name="id" value="" />
+                    <input type="hidden" name="tbl" value="" />
+                    <input type="hidden" name="col" value="" />
+                    <input type="hidden" name="label" value="" />
 
-                    <input type="hidden" name="modal_form_uid" value="" />
                     <div class="form-actions">
-                        <button type="submit" class="uk-button uk-button-primary">Add Room</button>
+                        <button type="submit" class="uk-button uk-button-primary">Update</button>
                         <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
 
                     </div>
