@@ -261,7 +261,6 @@ $types = get_types();
                     <div class="form-actions">
                         <button type="submit" class="uk-button uk-button-primary">Update</button>
                         <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
-
                     </div>
                 </div>
             </div>
