@@ -204,7 +204,7 @@ $types = get_types();
 
     <div class="uk-width-1-2">
 <!--        <button id="add-image" class="uk-width-1-1 uk-button uk-button-primary uk-align-right">Add Image</button>-->
-        <input id="add-image" name="add-image" type="file" accept="image/*;capture=camera">
+        <input id="add-image" name="add-image" type="file" size="32" accept="image/*;capture=camera">
         <label for="add-image">Add Image</label>
     </div>
 
