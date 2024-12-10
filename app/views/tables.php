@@ -98,9 +98,9 @@ $types = get_types();
 <div style="display:none;" id="table_mode_view" class="uk-width-1-1 uk-margin">
 
     <div uk-grid>
-        <div class="uk-width-1-1 uk-hidden@xl">
+        <div class="uk-width-1-1 ">
             <span title="Copy Room" alt="Copy Room" id="copy-room" class="uk-icon uk-align-right uk-margin-remove" uk-icon="icon: copy; ratio: 2;"></span>
-            <button class="uk-button uk-button-primary uk-align-right" type="button" uk-toggle="target: #offcanvas-sidebar">Manage Project</button>
+            <button class="uk-hidden@xl  uk-button uk-button-primary uk-align-right" type="button" uk-toggle="target: #offcanvas-sidebar">Manage Project</button>
 
         </div>
     </div>

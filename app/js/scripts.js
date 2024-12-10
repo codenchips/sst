@@ -451,7 +451,7 @@ $(function() {
                 alert('There was a network error, please try again.');
             }
         })();
-        UIkit.modal($('#edit-name')).hide();
+        UIkit.modal($('#copy-room-modal')).hide();
     });
 
 

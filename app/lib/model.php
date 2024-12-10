@@ -950,15 +950,56 @@ function ajax_edit_name() {
 
 function ajax_copy_room() {
     global $pdo;
-    
-    $data['new_room_name'] = $_POST['val'];
-    $data['copy_room_id'] = $_POST['modal_form_room_id'];
-    $data['to_floor_id'] = $_POST['modal_form_floor'];
 
-    vd($data,1);
+    $new_room_name = $_POST['val'];
+    $slug = slugify($new_room_name);
+    $user_id = user_id();
+    $copy_room_id = $_POST['modal_form_room_id'];
+    $to_floor_id = $_POST['modal_form_floor'];
 
-//    $sql = "UPDATE sst_rooms SET `name`=:room_name WHERE id=:room_id";
-//    $pdo->prepare($sql)->execute($data);
+    //vd($data,1);
+
+    // create the room
+    $new_room_id = false;
+    $sql = "INSERT INTO sst_rooms 
+            SET 
+            `name`='$new_room_name',
+            `floor_id_fk`='$to_floor_id',
+            `slug`='$slug',
+            `owner_id` = $user_id,
+            `version` = 1, 
+            `created_on` = CURRENT_TIMESTAMP";
+    $pdo->prepare($sql)->execute();
+    $new_room_id = $pdo->lastInsertId();
+    if ($new_room_id) {
+        // get the products from the old room
+        $products = $pdo->query("SELECT * FROm sst_products WHERE room_id_fk=$copy_room_id")->fetchAll(PDO::FETCH_OBJ);
+
+        foreach ($products as $p) {
+            $sql = "INSERT INTO sst_products 
+            SET
+            `room_id_fk` = $new_room_id, 
+            `brand`='$p->brand',
+            `type`='$p->type',
+            `range`='$p->range',
+            `product_slug` = '$p->product_slug',
+            `product_name` = '$p->product_name',
+            `sku` = '$p->sku',
+            `custom` = '$p->custom',
+            `ref` = '$p->ref',
+            `order` = '$p->order',
+            `owner_id` = $user_id,
+            `version` = $p->version,         
+            `created_on` = CURRENT_TIMESTAMP";
+            $pdo->prepare($sql)->execute();
+        }
+        $ret = json_encode(['success' => 'Room copied']);
+    } else {
+        $ret = json_encode(['error' => 'Room not added']);
+    }
+
+    //$ret = json_encode(['added' => $pdo->lastInsertId()]);
+    exit($ret);
 }
 
 
@@ -993,12 +1034,12 @@ function ajax_get_images() {
 
     $room_id = $_POST['room_id'];
 
-    $q = $pdo->query("SELECT 
-                              id, 
+    $q = $pdo->query("SELECT
+                              id,
                               room_id_fk as room_id,
                               safe_filename
                               FROM sst_images
-                              WHERE room_id_fk = $room_id  
+                              WHERE room_id_fk = $room_id
                               ORDER BY created_on DESC");
     $res = $q->fetchAll(PDO::FETCH_ASSOC);
     return(return_json($res));
