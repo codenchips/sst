@@ -1,4 +1,4 @@
-<h1>VPS2</h1>
 <?php
 echo 'VPS';
+var_dump(extension_loaded('imagick'));
 phpinfo();

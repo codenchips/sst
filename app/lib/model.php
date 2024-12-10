@@ -239,6 +239,21 @@ function ajax_get_skus_for_product() {
     return(return_json($res));
 }
 
+function ajax_get_floors_by_project() {
+    global $pdo;
+
+    $uid = $_POST['project_id'];
+
+    $q = $pdo->query("select f.id as floor_id, f.name as floor_name 
+            from sst_floors f 
+            left join sst_buildings b on b.id = f.building_id_fk
+            left join sst_locations l on l.id = b.location_id_fk
+            left join sst_projects p on p.id = l.project_id_fk
+            where p.id = $uid");
+    $floors = $q->fetchAll(PDO::FETCH_OBJ);
+    return(return_json($floors));
+}
+
 function ajax_add_product() {
     global $pdo;
 
@@ -540,6 +555,7 @@ function ajax_remove_building() {
     }
     exit($ret);
 }
+
 
 
 function ajax_remove_floor() {
@@ -932,6 +948,20 @@ function ajax_edit_name() {
 }
 
 
+function ajax_copy_room() {
+    global $pdo;
+    
+    $data['new_room_name'] = $_POST['val'];
+    $data['copy_room_id'] = $_POST['modal_form_room_id'];
+    $data['to_floor_id'] = $_POST['modal_form_floor'];
+
+    vd($data,1);
+
+//    $sql = "UPDATE sst_rooms SET `name`=:room_name WHERE id=:room_id";
+//    $pdo->prepare($sql)->execute($data);
+}
+
+
 function ajax_edit_ref() {
     global $pdo;
 
@@ -977,49 +1007,94 @@ function ajax_get_images() {
 
 function ajax_image_upload() {
     global $pdo;
-    if (isset($_POST['room_id'])) {
-        $room_id = intval($_POST['room_id']);
-    } else {
+
+    if (!isset($_POST['room_id'])) {
         echo json_encode(['success' => false, 'message' => 'No room id']);
         exit();
     }
 
+    $room_id = intval($_POST['room_id']);
+
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        // File properties
         $fileTmpPath = $_FILES['image']['tmp_name'];
         $fileName = $_FILES['image']['name'];
         $fileSize = $_FILES['image']['size'];
         $fileType = $_FILES['image']['type'];
         $uploadDir = 'uploads/';
-
         $safeFileName = uniqid() . '-' . basename($fileName);
         $uploadFilePath = $uploadDir . $safeFileName;
 
-        if (move_uploaded_file($fileTmpPath, $uploadFilePath)) {
+        try {
+            // Attempt to resize the image using Imagick
+            $resizedFilePath = resizeWithImagick($fileTmpPath, $uploadFilePath, 800, 600);
 
-            // file uploaded, add to the db
-            $data['room_id'] = $room_id;
-            $data['safeFileName'] = $safeFileName;
-            $data['fileName'] = $fileName;
-            $data['user_id'] = user_id();
+            // Save metadata to the database
+            $data = [
+                'room_id' => $room_id,
+                'safeFileName' => $safeFileName,
+                'fileName' => $fileName,
+                'user_id' => user_id()
+            ];
 
             $sql = "INSERT INTO sst_images (room_id_fk, filename, safe_filename, owner_id, version, created_on)
-              VALUES
-              (:room_id, :fileName, :safeFileName, :user_id, 1, CURRENT_TIMESTAMP)";
+                    VALUES (:room_id, :fileName, :safeFileName, :user_id, 1, CURRENT_TIMESTAMP)";
             $pdo->prepare($sql)->execute($data);
 
             echo json_encode([
                 'success' => true,
-                'message' => 'File uploaded successfully!',
-                'filePath' => $uploadFilePath
+                'message' => 'File uploaded and resized successfully!',
+                'filePath' => $resizedFilePath
             ]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'File upload failed.']);
+        } catch (Exception $e) {
+            // If Imagick is unavailable or an error occurs, handle it gracefully
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
     } else {
         echo json_encode(['success' => false, 'message' => 'No file uploaded or there was an error.']);
     }
 }
+
+
+/**
+ * Resize an image using Imagick.
+ *
+ * @param string $sourcePath Path to the original uploaded image.
+ * @param string $destinationPath Path to save the resized image.
+ * @param int $width Desired width of the resized image.
+ * @param int $height Desired height of the resized image.
+ * @return string Path to the resized image.
+ * @throws Exception If resizing fails or unsupported image type.
+ */
+function resizeWithImagick($sourcePath, $destinationPath, $width, $height) {
+    // Check if the Imagick extension is loaded
+    if (!extension_loaded('imagick')) {
+        throw new Exception('Imagick extension is not installed or enabled on this server.');
+    }
+
+    try {
+        $imagick = new Imagick($sourcePath);
+
+        // Resize the image while maintaining aspect ratio
+        $imagick->resizeImage($width, $height, Imagick::FILTER_LANCZOS, 1, true);
+
+        // Save the resized image to the destination path
+        if (!$imagick->writeImage($destinationPath)) {
+            throw new Exception('Failed to save the resized image.');
+        }
+
+        // Free memory
+        $imagick->clear();
+        $imagick->destroy();
+
+        return $destinationPath; // Return the path of the resized image
+    } catch (Exception $e) {
+        // Handle Imagick errors gracefully
+        throw new Exception('Error resizing image with Imagick: ' . $e->getMessage());
+    }
+}
+
+
+
 
 
 

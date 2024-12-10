@@ -99,7 +99,9 @@ $types = get_types();
 
     <div uk-grid>
         <div class="uk-width-1-1 uk-hidden@xl">
+            <span title="Copy Room" alt="Copy Room" id="copy-room" class="uk-icon uk-align-right uk-margin-remove" uk-icon="icon: copy; ratio: 2;"></span>
             <button class="uk-button uk-button-primary uk-align-right" type="button" uk-toggle="target: #offcanvas-sidebar">Manage Project</button>
+
         </div>
     </div>
 
@@ -107,11 +109,11 @@ $types = get_types();
     <div style="display:none;"  class="uk-margin location-heading"  uk-grid>
         <div class="uk-width-1-2">
             <span class="uk-icon" uk-icon="icon: location;"></span>
-            <span data-label="location_name" data-id="" data-tbl="sst_locations" class="name location_name"></span>
+            <span title="Rename" alt="Rename"  data-label="location_name" data-id="" data-tbl="sst_locations" class="name location_name"></span>
         </div>
         <div class="uk-width-1-2">
             <span class="uk-icon" uk-icon="icon: home;"></span>
-            <span data-label="building_name" data-id="" data-tbl="sst_buildings" class="name building_name"></span>
+            <span title="Rename" alt="Rename" data-label="building_name" data-id="" data-tbl="sst_buildings" class="name building_name"></span>
         </div>
 
     </div>
@@ -185,15 +187,14 @@ $types = get_types();
 
 </form>
 
-
 <div style="display:none;" class="room-heading" uk-grid>
     <div class="uk-width-1-2">
         <span class="uk-icon" uk-icon="icon: table;"></span>
-        <span data-label="floor_name" data-id="" data-tbl="sst_floors" class="name floor_name"></span>
+        <span title="Rename" alt="Rename" data-label="floor_name" data-id="" data-tbl="sst_floors" class="name floor_name"></span>
     </div>
     <div class="uk-width-1-2">
         <span class="uk-icon" uk-icon="icon: move;"></span>
-        <span data-label="room_name" data-id="" data-tbl="sst_rooms" class="name room_name"></span>
+        <span title="Rename" alt="Rename" data-label="room_name" data-id="" data-tbl="sst_rooms" class="name room_name"></span>
     </div>
 </div>
 
@@ -202,18 +203,20 @@ $types = get_types();
         <div id="ptable"></div>
     </div>
 
-    <div class="uk-width-1-2">
-<!--        <button id="add-image" class="uk-width-1-1 uk-button uk-button-primary uk-align-right">Add Image</button>-->
-        <input id="add-image" name="add-image" type="file" size="32" accept="image/*;capture=camera">
-        <label for="add-image">Add Image</label>
-    </div>
 
     <div class="uk-width-1-2">
         <button id="add-note" class="uk-width-1-1 uk-button uk-button-primary uk-align-right">Add Note</button>
     </div>
 
+    <div class="uk-width-1-2">
+        <!--        <button id="add-image" class="uk-width-1-1 uk-button uk-button-primary uk-align-right">Add Image</button>-->
+        <input id="add-image" name="add-image" type="file" size="32" accept="image/*;capture=camera">
+        <label for="add-image">Add Image</label>
+    </div>
+
+
     <div class="uk-width-1-1">
-        <ul class="uk-subnav uk-subnav-pill tablinks" uk-switcher="animation: uk-animation-fade">
+        <ul id="notes-images" class="uk-subnav uk-subnav-pill tablinks" uk-switcher="animation: uk-animation-fade">
             <li><a href="#">Notes</a></li>
             <li><a href="#">Images</a></li>
         </ul>
@@ -221,7 +224,7 @@ $types = get_types();
             <div class="uk-width-1-1">
                 <div id="target-notes" class="uk-width-1-1 notes-area"></div>
             </div>
-            <div id="target-images" class="uk-width-1-1 images-area">
+                <div id="target-images" class="uk-width-1-1 images-area">
             </div>
         </div>
     </div>
@@ -229,6 +232,52 @@ $types = get_types();
 
 <div id="debug"></div>
 
+
+<!-- Copy Room -->
+<div id="copy-room-modal" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical uk-modal-body">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <form id="form-copy-room">
+            <div class="uk-text-center" uk-grid>
+                <div class="uk-width-1-1">
+                    <h3>Copy Room</h3>
+                </div>
+
+                <div class="uk-width-1-1 uk-text-left">
+                    <label>New Room Name</label>
+                    <input id="modal_form_new_name"
+                           name="val"
+                           class="uk-input free-type"
+                           placeholder="Name"
+                           required
+                           value=""
+                           oninvalid="this.setCustomValidity('You must enter a name')"
+                           oninput="this.setCustomValidity('')" />
+                </div>
+                <div class="uk-width-1-1 uk-text-left">
+                    <div id="target-select-floor" class="uk-margin">
+                        <select required id="model_form_floor"
+                                name="modal_form_floor"
+                                class="uk-select model-select-floor"
+                                oninvalid="this.setCustomValidity('Please select a floor.')"
+                                oninput="this.setCustomValidity('')">
+                            <option value="">Select a floor</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="uk-width-1-1">
+                    <input type="hidden" name="modal_form_room_id" value="" />
+
+                    <div class="form-actions">
+                        <button disabled type="submit" class="copy-room-button uk-button uk-button-primary">Duplicate</button>
+                        <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 <!-- Edit name -->
 <div id="edit-name" uk-modal>
@@ -268,6 +317,25 @@ $types = get_types();
     </div>
 </div>
 
+<!-- File upload progress -->
+<div id="upload-progress" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical uk-modal-body">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+            <div class="uk-text-center" uk-grid>
+                <div class="uk-width-1-1">
+                    <h3>Processing</h3>
+                </div>
+                <div class="uk-width-1-1 uk-align-center">
+                    <progress id="js-progressbar" class="uk-progress" value="10" max="100"></progress>
+                    <p id="progress-text">Preparing upload ...</p>
+                </div>
+                <div class="uk-width-1-1 uk-align-center">
+                    <button type="button" disabled id="close-progress" class="uk-button uk-button-primary" type="button">Close</button>
+                </div>
+
+            </div>
+    </div>
+</div>
 
 <!-- set qty modal -->
 <div id="set-qty" uk-modal>
@@ -355,17 +423,33 @@ $types = get_types();
 </div>
 
 <!-- Templates -->
+<script id="tmp-select-floor" type="x-tmpl-mustache">
+<select required id="model_form_floor"
+        name="modal_form_floor"
+        class="uk-select model-select-floor"
+        oninvalid="this.setCustomValidity('Please select a floor.')"
+        oninput="this.setCustomValidity('')">
+    <option value="">Select a floor</option>
+{{#floors}}
+    <option value="{{floor_id}}">{{floor_name}}</option>
+{{/floors}}
+</select>
+</script>
+
+
 <script id="tmp-images" type="x-tmpl-mustache">
 <div class="uk-width-1-1" uk-lightbox="animation: slide">
-    <div style="text-align: justify;">
+<div class="uk-grid-small uk-child-width-1-2 uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l uk-flex-center uk-text-center " uk-grid>
     {{#images}}
-    <div class="image-frame">
+    <div>
+       <div class="uk-card uk-card-default uk-card-body uk-padding-remove">
         <a href="/uploads/{{safe_filename}}">
-            <img src="/uploads/{{safe_filename}}" data-id="{{id}}"  data-room_id="{{room_id}}">
+            <div class="imagebg" style="background-image: url(/uploads/{{safe_filename}});"></div>
         </a>
-    </div>
+        </div>
+      </div>
     {{/images}}
-    </div>
+</div>
 </div>
 </script>
 <script id="tmp-notes" type="x-tmpl-mustache">

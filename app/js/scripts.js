@@ -433,6 +433,29 @@ $(function() {
     });
 
 
+    $("#form-copy-room").off("submit").on("submit", function(e) {
+        e.preventDefault();
+
+        const form = document.querySelector("#form-copy-room");
+
+        // save it and update the sidebar
+        (async () => {
+            try {
+                const result = await sendData(form, "copy_room");
+                console.log("Result from backend:", result);
+                // Perform additional logic with `result`.
+                updateTableSideNav();
+            } catch (error) {
+                console.error("Error during sendData:", error);
+                // Handle the error.
+                alert('There was a network error, please try again.');
+            }
+        })();
+        UIkit.modal($('#edit-name')).hide();
+    });
+
+
+
     // add floor close. re-open the sidebar
     $("#add-floor,#add-room,#form-remove-room,#form-remove-floor").on('hidden', function(e) {
         setTimeout(function() {
@@ -463,11 +486,37 @@ $(function() {
                 $('span.building_name').text(hd.building_name).attr("data-id", hd.building_id);;
                 $('span.floor_name').text(hd.floor_name).attr("data-id", hd.floor_id);;
                 $('span.room_name').text(hd.room_name).attr("data-id", hd.room_id);;
+                $('#copy-room').attr("data-id", hd.room_id);
+                $('#copy-room').attr("data-name", hd.room_name);
 
                 $('.location-heading,.room-heading').show();
             }
         });
     }
+
+    $('#copy-room').off('click').on('click', function(e) {
+        $('#modal_form_new_name').val("Copy of "+$(this).data('name'));
+        $('input[name=modal_form_room_id]').val($(this).data('id'));
+        UIkit.modal($('#copy-room-modal')).show();
+    });
+    UIkit.util.on('#copy-room-modal', 'shown', function () {
+        $.ajax("/api/get_floors_by_project", {
+            type: "post",
+            data: {
+                project_id: $('#m_project_id').val()
+            },
+            success: function(data, status, xhr) {
+                var jsonData = $.parseJSON(data);
+                var template = $("#tmp-select-floor").html();
+                var rendered = Mustache.render(template, {
+                    floors: jsonData
+                });
+                $("#target-select-floor").html(rendered);
+                $('.copy-room-button').prop('disabled', false);
+                $('#modal_form_new_name').focus();
+            }
+        });
+    });
 
     function showRoom(uid = false) {
         if (uid) {
@@ -932,6 +981,8 @@ $(function() {
         var addImage = $('#add-image');
 
         addImage.on('change', function () {
+            UIkit.modal($('#upload-progress')).show();
+
             var file = addImage[0].files[0]; // Get the selected file
 
             if (file) {
@@ -939,25 +990,67 @@ $(function() {
                 formData.append('image', file);
                 formData.append('room_id', $('#m_room_id').val());
 
-                $.ajax({
-                    url: "/api/image_upload",
-                    type: 'POST',
-                    data: formData,
-                    processData: false, // Prevent jQuery from automatically transforming the data into a query string
-                    contentType: false, // Do not set content type (allows FormData to set it correctly)
-                    success: function (response) {
-                        console.log('File uploaded successfully:', response);
-                        updateImages();
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('File upload failed:', error);
+                // Create a new XMLHttpRequest to monitor progress
+                var xhr = new XMLHttpRequest();
+
+                xhr.open("POST", "/api/image_upload", true);
+
+                // Monitor progress events
+                xhr.upload.addEventListener("progress", function (e) {
+                    if (e.lengthComputable) {
+                        var percentage = (e.loaded / e.total) * 100; // Calculate percentage
+                        $('#progress-text').text(`Uploading: ${Math.round(percentage)}%`);
+                        $('.uk-progress').val(percentage); // Update progress bar
                     }
                 });
+
+                // Handle successful upload
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            console.log('File uploaded successfully:', response);
+                            $('#progress-text').text('Upload complete!');
+                            $('.uk-progress').val(100);
+                            $('#upload-progress #close-progress').prop("disabled", false);
+                            updateImages();
+                        } else {
+                            console.error('File upload failed:', response.message);
+                            $('#progress-text').text('Upload failed: ' + response.message);
+                            $('#upload-progress #close-progress').prop("disabled", false);
+                        }
+                    } else {
+                        console.error('File upload failed. Status:', xhr.status);
+                        $('#progress-text').text('Upload failed. Please try again.');
+                        $('#upload-progress #close-progress').prop("disabled", false);
+                    }
+                };
+
+                // Handle errors
+                xhr.onerror = function () {
+                    console.error('File upload failed due to a network error.');
+                    $('#progress-text').text('Network error occurred during upload.');
+                    $('#upload-progress #close-progress').prop("disabled", false);
+                };
+
+                xhr.timeout = 120000; // Set timeout to 2 minutes
+                xhr.ontimeout = function () {
+                    console.error('File upload timed out.');
+                    $('#progress-text').text('Upload timed out. Please try again.');
+                    $('#upload-progress #close-progress').prop("disabled", false);
+                };
+
+                xhr.send(formData); // Send the form data
             } else {
                 console.warn('No file selected.');
             }
         });
     }
+    $('#upload-progress #close-progress').off('click').on('click', function() {
+        UIkit.modal($('#upload-progress')).hide();
+    });
+
+
     function updateImages(room_id = false) {
         setTimeout(function() {
             if (room_id == false) {
@@ -978,6 +1071,7 @@ $(function() {
                                 images: jsonData
                             });
                             $("#target-images").html(rendered);
+                            UIkit.switcher('#notes-images').show(1);
                             //bindSelectProductType();
                         }
                     }
@@ -1070,6 +1164,7 @@ $(function() {
             room_id: $('#m_room_id').val()
         });
         $("#target-notes").prepend(rendered);
+        UIkit.switcher('#notes-images').show(0);
         bindNoteActions();
     });
     function bindNoteActions() {
