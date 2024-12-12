@@ -34,7 +34,7 @@ $project_id = get_uri_part(2);
                         </li>
                     <?php } ?>
                     <li>
-                        <a href="#">
+                        <a href="/account">
                             <span class="uk-icon" uk-icon="icon: user; ratio: 2"></span>
                             <small>Account</small>
                         </a>

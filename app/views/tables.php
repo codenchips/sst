@@ -86,7 +86,8 @@ $types = get_types();
             </div>
 
         <div class="uk-width-1-1 uk-margin">
-            <button class="uk-button uk-align-center uk-button-primary uk-hidden@xl " type="button" uk-toggle="target: #offcanvas-sidebar">Manage Project</button>
+            <span title="Copy Project" alt="Copy Project" id="copy-project" class="uk-icon uk-align-right uk-margin-remove" uk-icon="icon: copy; ratio: 2;"></span>
+            <button class="uk-button uk-align-right uk-button-primary uk-hidden@xl " type="button" uk-toggle="target: #offcanvas-sidebar">Manage Project</button>
         </div>
 
     </div>
@@ -231,6 +232,42 @@ $types = get_types();
 </div>
 
 <div id="debug"></div>
+
+
+<!-- Copy Project -->
+<div id="copy-project-modal" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical uk-modal-body">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <form id="form-copy-project">
+            <div class="uk-text-center" uk-grid>
+                <div class="uk-width-1-1">
+                    <h3>Copy Project</h3>
+                </div>
+
+                <div class="uk-width-1-1 uk-text-left">
+                    <label>New Project Name</label>
+                    <input id="modal_form_new_project_name"
+                           name="val"
+                           class="uk-input free-type"
+                           placeholder="Project Name"
+                           required
+                           value=""
+                           oninvalid="this.setCustomValidity('You must enter a name')"
+                           oninput="this.setCustomValidity('')" />
+                </div>
+
+                <div class="uk-width-1-1">
+                    <input type="hidden" id="copy_from_project_id" name="modal_form_project_id" value="" />
+
+                    <div class="form-actions">
+                        <button disabled type="submit" class="copy-project-button uk-button uk-button-primary">Duplicate Project</button>
+                        <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 
 <!-- Copy Room -->

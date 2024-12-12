@@ -182,6 +182,15 @@ function get_project($project_id) {
     return ((count($res)) ? $res[0] : false);
 }
 
+function get_user() {
+    global $pdo;
+    $user_id = user_id();
+
+    $q = $pdo->query("SELECT * FROM sst_users WHERE id = $user_id LIMIT 1");
+    $res = $q->fetchAll(PDO::FETCH_OBJ);
+    return ((count($res)) ? $res[0] : false);
+}
+
 function get_product_name_by_slug($slug) {
     global $pdo;
     $q = $pdo->query("SELECT
@@ -948,6 +957,80 @@ function ajax_edit_name() {
 }
 
 
+function ajax_copy_project() {
+    global $pdo;
+
+    $new_project_name = $_POST['val'];
+    $slug = slugify($new_project_name);
+    $user_id = user_id();
+    $original_project_id = $_POST['modal_form_project_id'];
+
+    // Create the project
+    $sql = "INSERT INTO sst_projects 
+            SET 
+            `name`='$new_project_name',            
+            `slug`='$slug',
+            `owner_id` = $user_id,
+            `version` = 1, 
+            `created_on` = CURRENT_TIMESTAMP";
+    $pdo->prepare($sql)->execute();
+    $new_project_id = $pdo->lastInsertId();
+
+    // Duplicate locations
+    $sql = "INSERT INTO sst_locations (project_id_fk, name, slug, owner_id, version, created_on, last_updated)
+            SELECT :new_project_id, name, slug, owner_id, version, NOW(), NOW()
+            FROM sst_locations
+            WHERE project_id_fk = :original_project_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['new_project_id' => $new_project_id, 'original_project_id' => $original_project_id]);
+
+    // Duplicate buildings
+    $sql = "INSERT INTO sst_buildings (location_id_fk, name, slug, owner_id, version, created_on, last_updated)
+            SELECT l_new.id, b.name, b.slug, b.owner_id, b.version, NOW(), NOW()
+            FROM sst_buildings b
+            JOIN sst_locations l_old ON b.location_id_fk = l_old.id
+            JOIN sst_locations l_new ON l_new.slug = l_old.slug AND l_new.project_id_fk = :new_project_id
+            WHERE l_old.project_id_fk = :original_project_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['new_project_id' => $new_project_id, 'original_project_id' => $original_project_id]);
+
+    // Duplicate floors
+    $sql = "INSERT INTO sst_floors (building_id_fk, name, slug, owner_id, version, created_on, last_updated)
+            SELECT b_new.id, f.name, f.slug, f.owner_id, f.version, NOW(), NOW()
+            FROM sst_floors f
+            JOIN sst_buildings b_old ON f.building_id_fk = b_old.id
+            JOIN sst_buildings b_new ON b_new.slug = b_old.slug AND b_new.location_id_fk IN (SELECT id FROM sst_locations WHERE project_id_fk = :new_project_id)
+            WHERE b_old.location_id_fk IN (SELECT id FROM sst_locations WHERE project_id_fk = :original_project_id)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['new_project_id' => $new_project_id, 'original_project_id' => $original_project_id]);
+
+    // Duplicate rooms
+    $sql = "INSERT INTO sst_rooms (floor_id_fk, name, slug, owner_id, version, created_on, last_updated)
+            SELECT f_new.id, r.name, r.slug, r.owner_id, r.version, NOW(), NOW()
+            FROM sst_rooms r
+            JOIN sst_floors f_old ON r.floor_id_fk = f_old.id
+            JOIN sst_floors f_new ON f_new.slug = f_old.slug AND f_new.building_id_fk IN (SELECT id FROM sst_buildings WHERE location_id_fk IN (SELECT id FROM sst_locations WHERE project_id_fk = :new_project_id))
+            WHERE f_old.building_id_fk IN (SELECT id FROM sst_buildings WHERE location_id_fk IN (SELECT id FROM sst_locations WHERE project_id_fk = :original_project_id))";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['new_project_id' => $new_project_id, 'original_project_id' => $original_project_id]);
+
+    // Duplicate products
+    $sql = "INSERT INTO sst_products (room_id_fk, brand, `type`, `range`, product_slug, product_name, sku, custom, ref, `order`, owner_id, version, created_on, last_updated)
+            SELECT r_new.id, p.brand, p.`type`, p.`range`, p.product_slug, p.product_name, p.sku, p.custom, p.ref, p.`order`, p.owner_id, p.version, NOW(), NOW()
+            FROM sst_products p
+            JOIN sst_rooms r_old ON p.room_id_fk = r_old.id
+            JOIN sst_rooms r_new ON r_new.slug = r_old.slug AND r_new.floor_id_fk IN (SELECT id FROM sst_floors WHERE building_id_fk IN (SELECT id FROM sst_buildings WHERE location_id_fk IN (SELECT id FROM sst_locations WHERE project_id_fk = :new_project_id)))
+            WHERE r_old.floor_id_fk IN (SELECT id FROM sst_floors WHERE building_id_fk IN (SELECT id FROM sst_buildings WHERE location_id_fk IN (SELECT id FROM sst_locations WHERE project_id_fk = :original_project_id)))";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['new_project_id' => $new_project_id, 'original_project_id' => $original_project_id]);
+
+
+    echo json_encode(['success' => true, 'message' => 'Update OK']);
+    exit();
+
+}
+
+
 function ajax_copy_room() {
     global $pdo;
 
@@ -956,8 +1039,6 @@ function ajax_copy_room() {
     $user_id = user_id();
     $copy_room_id = $_POST['modal_form_room_id'];
     $to_floor_id = $_POST['modal_form_floor'];
-
-    //vd($data,1);
 
     // create the room
     $new_room_id = false;
@@ -998,8 +1079,81 @@ function ajax_copy_room() {
         $ret = json_encode(['error' => 'Room not added']);
     }
 
-    //$ret = json_encode(['added' => $pdo->lastInsertId()]);
     exit($ret);
+}
+
+function ajax_delete_project() {
+    global $pdo;
+
+    $project_id = $_POST['project_id'];
+
+    // Step 1: Delete products
+    $sql = "DELETE p FROM sst_products p
+            JOIN sst_rooms r ON p.room_id_fk = r.id
+            JOIN sst_floors f ON r.floor_id_fk = f.id
+            JOIN sst_buildings b ON f.building_id_fk = b.id
+            JOIN sst_locations l ON b.location_id_fk = l.id
+            WHERE l.project_id_fk = :project_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['project_id' => $project_id]);
+
+    // Step 2: Delete notes
+    $sql = "DELETE n FROM sst_notes n
+            JOIN sst_rooms r ON n.room_id_fk = r.id
+            JOIN sst_floors f ON r.floor_id_fk = f.id
+            JOIN sst_buildings b ON f.building_id_fk = b.id
+            JOIN sst_locations l ON b.location_id_fk = l.id
+            WHERE l.project_id_fk = :project_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['project_id' => $project_id]);
+
+    // Step 3: Delete images
+    $sql = "DELETE i FROM sst_images i
+            JOIN sst_rooms r ON i.room_id_fk = r.id
+            JOIN sst_floors f ON r.floor_id_fk = f.id
+            JOIN sst_buildings b ON f.building_id_fk = b.id
+            JOIN sst_locations l ON b.location_id_fk = l.id
+            WHERE l.project_id_fk = :project_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['project_id' => $project_id]);
+
+    // Step 4: Delete rooms
+    $sql = "DELETE r FROM sst_rooms r
+            JOIN sst_floors f ON r.floor_id_fk = f.id
+            JOIN sst_buildings b ON f.building_id_fk = b.id
+            JOIN sst_locations l ON b.location_id_fk = l.id
+            WHERE l.project_id_fk = :project_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['project_id' => $project_id]);
+
+    // Step 5: Delete floors
+    $sql = "DELETE f FROM sst_floors f
+            JOIN sst_buildings b ON f.building_id_fk = b.id
+            JOIN sst_locations l ON b.location_id_fk = l.id
+            WHERE l.project_id_fk = :project_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['project_id' => $project_id]);
+
+    // Step 6: Delete buildings
+    $sql = "DELETE b FROM sst_buildings b
+            JOIN sst_locations l ON b.location_id_fk = l.id
+            WHERE l.project_id_fk = :project_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['project_id' => $project_id]);
+
+    // Step 7: Delete locations
+    $sql = "DELETE l FROM sst_locations l
+            WHERE l.project_id_fk = :project_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['project_id' => $project_id]);
+
+    // Step 8: Delete the project
+    $sql = "DELETE FROM sst_projects WHERE id = :project_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['project_id' => $project_id]);
+
+    echo json_encode(['success' => true, 'message' => 'Project Deleted']);
+    exit();
 }
 
 
@@ -1067,7 +1221,7 @@ function ajax_image_upload() {
 
         try {
             // Attempt to resize the image using Imagick
-            $resizedFilePath = resizeWithImagick($fileTmpPath, $uploadFilePath, 800, 600);
+            $resizedFilePath = resizeWithImagick($fileTmpPath, $uploadFilePath, 480, 360);
 
             // Save metadata to the database
             $data = [

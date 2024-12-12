@@ -16,6 +16,9 @@ function get_view() {
          case 'folio' :
             require('views/schedule.php');
             break;
+        case 'account' :
+            require('views/account.php');
+            break;
          case 'api' :
             require('lib/api.php');
             break;

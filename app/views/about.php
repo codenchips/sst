@@ -1,4 +1,4 @@
-<h2>About</h2>
+<h2>Account</h2>
 <?php
 
 

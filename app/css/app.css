@@ -329,6 +329,7 @@ input#qty {
   background-repeat: no-repeat;
 }
 
+#copy-project:hover,
 #copy-room:hover {
   cursor: pointer;
 }

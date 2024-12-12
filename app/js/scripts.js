@@ -59,7 +59,6 @@ $(function() {
             });
     });
 
-
     function setCookie(cname, cvalue, exdays) {
         const d = new Date();
         d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -454,6 +453,27 @@ $(function() {
         UIkit.modal($('#copy-room-modal')).hide();
     });
 
+    $("#form-copy-project").off("submit").on("submit", function(e) {
+        e.preventDefault();
+
+        const form = document.querySelector("#form-copy-project");
+
+        // save it and update the sidebar
+        (async () => {
+            try {
+                const result = await sendData(form, "copy_project");
+                console.log("Result from backend:", result);
+                // Perform additional logic with `result`.
+                updateTableSideNav();
+            } catch (error) {
+                console.error("Error during sendData:", error);
+                // Handle the error.
+                alert('There was a network error, please try again.');
+            }
+        })();
+        UIkit.modal($('#copy-project-modal')).hide();
+    });
+
 
 
     // add floor close. re-open the sidebar
@@ -463,11 +483,6 @@ $(function() {
         }, 200);
     });
 
-
-
-    function deleteProject(slug) {
-        alert ('DELETE: '+slug);
-    }
 
 
     function updateTableModeHeadings(uid) {
@@ -493,6 +508,17 @@ $(function() {
             }
         });
     }
+
+    $('#copy-project').off('click').on('click', function(e) {
+        $('#modal_form_new_project_name').val("Copy of "+$('#form_project_name').val());
+        $('#copy_from_project_id').val($("#m_project_id").val());
+        UIkit.modal($('#copy-project-modal')).show();
+    });
+    UIkit.util.on('#copy-project-modal', 'shown', function () {
+        $('.copy-project-button').prop('disabled', false);
+        $('#modal_form_new_project_name').focus();
+    });
+
 
     $('#copy-room').off('click').on('click', function(e) {
         $('#modal_form_new_name').val("Copy of "+$(this).data('name'));
@@ -1302,7 +1328,7 @@ $(function() {
                     visible: false
                 },
                 {
-                    visible: false,
+                    visible: true,
                     headerSort: false,
                     formatter: iconX,
                     width: 20,
@@ -1361,11 +1387,17 @@ $(function() {
 
     $('input.auto-update').off('blur').on('blur', function(e) {
        e.preventDefault();
-       id = $(this).data('id');
-       tbl = $(this).data('tbl');
-       col = $(this).data('col');
-       val = $(this).val();
+       const id = $(this).data('id');
+       const tbl = $(this).data('tbl');
+       const col = $(this).data('col');
+       const val = $(this).val();
+
         showSpin();
+        if ($(this).hasClass("set-cookie")) {
+            const cname = $(this).data('cookie');
+            const cvalue = $(this).val();
+            setCookie(cname, cvalue);
+        }
         $.ajax("/api/auto_update", {
             type: "post",
             data: {
@@ -1626,6 +1658,20 @@ $(function() {
                     width: 150
                 },
             ],
+        });
+    }
+
+
+    function deleteProject(id) {
+
+        showSpin();
+        $.ajax("/api/delete_project", {
+            type: "post",
+            data: { project_id: id },
+            success: function(data, status, xhr) {
+                updateDashTable();
+                hideSpin();
+            }
         });
     }
 

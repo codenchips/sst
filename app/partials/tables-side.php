@@ -276,7 +276,7 @@
                            placeholder="Location Name"
                            required
                            value=""
-                           oninvalid="this.setCustomValidity('You must enter a name for this ocation')"
+                           oninvalid="this.setCustomValidity('You must enter a name for this location')"
                            oninput="this.setCustomValidity('')" />
                 </div>
 
