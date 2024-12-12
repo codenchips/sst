@@ -18,7 +18,8 @@ function get_uri_part($part = 1) {
 }
 
 function slugify($str) {
-    $str = trim(strtolower(str_replace(' ', '-', $str)));
+    $str = trim($str);
+    $str = strtolower(str_replace(' ', '-', $str));
     return($str);
 }
 

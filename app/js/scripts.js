@@ -59,6 +59,21 @@ $(function() {
             });
     });
 
+    $('#logout').off('click').on('click', function(e) {
+       e.preventDefault();
+       deleteCookie('user_id');
+       deleteCookie('user_name');
+       window.open("/?t="+makeid(10), '_self');
+    });
+
+    function deleteCookie( name, path, domain ) {
+        if( getCookie( name ) ) {
+            document.cookie = name + "=" +
+                ((path) ? ";path="+path:"")+
+                ((domain)?";domain="+domain:"") +
+                ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
+        }
+    }
     function setCookie(cname, cvalue, exdays) {
         const d = new Date();
         d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -472,6 +487,8 @@ $(function() {
             }
         })();
         UIkit.modal($('#copy-project-modal')).hide();
+        window.open("/?t="+makeid(10), '_self');
+
     });
 
 
@@ -1470,12 +1487,14 @@ $(function() {
     $('#form-submit-folio-progress').off('submit').on('submit', function(e) {
         e.preventDefault();
         const form = document.querySelector("#form-submit-folio-progress");
-        const filename = $('#m_project_slug').val() + "-v" + $('#m_project_version').val();
+        const filename = $('#m_project_slug').val();
+        if ($('#m_project_version').val() > 1) {
+            filename = filename+"-v" + $('#m_project_version').val();
+        }
 
         //window.location.replace("https://staging.tamlite.co.uk/pdfmerge/schedule.pdf");
         UIkit.modal($('#folio-progress')).hide();
         window.open("https://staging.tamlite.co.uk/pdfmerge/"+filename+".pdf?t="+makeid(10), '_blank');
-
     });
 
     function makeid(length) {

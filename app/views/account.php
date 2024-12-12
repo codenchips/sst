@@ -77,8 +77,14 @@ $p = get_user();
                    oninvalid="this.setCustomValidity('You enter a password')"
                    oninput="this.setCustomValidity('')" />
         </div>
+    </div>
 
+    <div uk-grid>
 
+        <div class="uk-width-1-1 uk-text-right">
+            <button id="logout" class="uk-button uk-button-primary" type="button">Logout</button>
+        </div>
 
     </div>
+
 </div>

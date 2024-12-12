@@ -27,7 +27,7 @@ function project_select_options() {
 
 <div uk-grid>
 
-    <div class="uk-width-1-1 uk-text-center">
+    <div class="uk-width-1-1 uk-text-right">
         <button class="uk-button uk-button-primary" type="button" uk-toggle="target: #create-project">New Project</button>
     </div>
 
@@ -110,8 +110,8 @@ function project_select_options() {
 
             <div class="uk-width-1-1 uk-margin uk-text-right">
                 <input type="hidden" name="uid" id="uid" value="1" />
-                <button id="form-submit-createproject" type="submit" class="uk-button uk-button-primary">Create</button>
                 <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
+                <button id="form-submit-createproject" type="submit" class="uk-button uk-button-primary">Create</button>
             </div>
 
         </form>

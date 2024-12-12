@@ -18,9 +18,9 @@ function ajax_login() {
     global $pdo;
     $data = $_POST;
     $email = $data['modal_form_email'];
-    $password = $data['modal_form_password'];
+    $password = strtolower($data['modal_form_password']);
     $sql = "SELECT * FROM sst_users 
-            WHERE email = '$email' AND password = '$password'
+            WHERE email = '$email' AND lower(password) = '$password'
             AND active = 1 LIMIT 1";
     $q = $pdo->query($sql);
     $res = $q->fetch(PDO::FETCH_ASSOC);
@@ -28,6 +28,10 @@ function ajax_login() {
     if (isset($res['id'])) {
         $_COOKIE['user_id'] = $res['id'];
         $_COOKIE['user_name'] = $res['name'];
+
+        $sql = "UPDATE sst_users SET `last_login` = CURRENT_TIMESTAMP WHERE id = ".$res['id'];
+        $pdo->prepare($sql)->execute();
+
         return_json($res);
     } else {
         $res = array('id' => false, 'error' => "invalid login");
