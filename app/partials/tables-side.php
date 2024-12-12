@@ -55,7 +55,7 @@
                     <input type="hidden" name="modal_form_project_slug" value="<?php echo $project_slug; ?>" />
                     <input type="hidden" name="modal_form_uid" value="" />
 
-                    <button id="form-submit-room" type="submit" class="uk-button uk-button-primary">Remove</button>
+                    <button id="form-submit-room" type="submit" class="uk-button uk-button-danger">Remove</button>
                     <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
                 </div>
             </div>
@@ -82,7 +82,7 @@
                     <input type="hidden" name="modal_form_project_slug" value="<?php echo $project_slug; ?>" />
                     <input type="hidden" name="modal_form_uid" value="" />
 
-                    <button id="form-submit-room" type="submit" class="uk-button uk-button-primary">Remove</button>
+                    <button id="form-submit-room" type="submit" class="uk-button uk-button-danger">Remove</button>
                     <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
                 </div>
             </div>
@@ -90,7 +90,7 @@
     </div>
 </div>
 
-<!-- remove floor/ room modal -->
+<!-- remove floor modal -->
 <div id="remove-floor" uk-modal>
     <div class="uk-modal-dialog uk-margin-auto-vertical uk-modal-body">
         <button class="uk-modal-close-default" type="button" uk-close></button>
@@ -109,14 +109,14 @@
                     <input type="hidden" name="modal_form_project_slug" value="<?php echo $project_slug; ?>" />
                     <input type="hidden" name="modal_form_uid" value="" />
 
-                    <button type="submit" class="uk-button uk-button-primary">Remove</button>
+                    <button type="submit" class="uk-button uk-button-danger">Remove</button>
                     <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
-<!-- remove floor/ room modal -->
+<!-- remove room modal -->
 <div id="remove-room" uk-modal>
     <div class="uk-modal-dialog uk-margin-auto-vertical uk-modal-body">
         <button class="uk-modal-close-default" type="button" uk-close></button>
@@ -134,7 +134,7 @@
                 <div class="uk-width-1-1">
                     <input type="hidden" name="modal_form_project_slug" value="<?php echo $project_slug; ?>" />
                     <input type="hidden" name="modal_form_uid" value="" />
-                    <button type="submit" class="uk-button uk-button-primary">Remove</button>
+                    <button type="submit" class="uk-button uk-button-danger">Remove</button>
                     <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
                 </div>
             </div>
@@ -204,14 +204,6 @@
                            oninvalid="this.setCustomValidity('You must enter a name for this floor')"
                            oninput="this.setCustomValidity('')" />
                 </div>
-
-<!--                <div class="uk-width-1-1 uk-text-left">-->
-<!--                    <label>Add a Floorplan</label>-->
-<!--                    <input disabled id="modal_form_floorplan"-->
-<!--                           name="modal_form_floorplan"-->
-<!--                           type="file"-->
-<!--                           class="uk-input" />-->
-<!--                </div>-->
 
                 <div class="uk-width-1-1">
                     <input type="hidden" name="modal_form_uid" value="" />

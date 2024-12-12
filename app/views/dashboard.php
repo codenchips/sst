@@ -117,3 +117,30 @@ function project_select_options() {
         </form>
     </div>
 </div>
+
+<!-- remove floor modal -->
+<div id="remove-project" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical uk-modal-body">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <form id="form-remove-project">
+            <div class="uk-text-center" uk-grid>
+                <div class="uk-width-1-1">
+                    <h3>Delete Project</h3>
+                </div>
+
+                <div class="uk-width-1-1">
+                    <h4>This will delete this project.</h4>
+                    <p>This will delete all of the data associated with this project includint the rooms and luminaires in those rooms..</p>
+                </div>
+
+                <div class="uk-width-1-1">
+                    <input type="hidden" name="modal_form_project_id" value="" />
+                    <input type="hidden" name="modal_form_uid" value="" />
+
+                    <button type="submit" class="uk-button uk-button-danger">Delete</button>
+                    <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

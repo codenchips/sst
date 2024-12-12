@@ -1663,17 +1663,23 @@ $(function() {
 
 
     function deleteProject(id) {
-
+        $('input[name=modal_form_project_id]').val(id);
+        UIkit.modal($('#remove-project')).show();
+    }
+    $('#form-remove-project').off('submit').on('submit', function(e) {
+        e.preventDefault();
+        const project_id = $("input[name=modal_form_project_id]").val();
         showSpin();
         $.ajax("/api/delete_project", {
             type: "post",
-            data: { project_id: id },
+            data: { project_id: project_id },
             success: function(data, status, xhr) {
                 updateDashTable();
                 hideSpin();
             }
         });
-    }
+        UIkit.modal($('#remove-project')).hide();
+    });
 
     /*
     * END SCHEDULE
