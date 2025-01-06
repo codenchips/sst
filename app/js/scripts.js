@@ -563,6 +563,11 @@ $(function() {
 
     function showRoom(uid = false) {
         if (uid) {
+            // are we in tables mode?
+            // if not redirect with /id/id
+
+            setAreaURL(uid);
+
             $('input#uid,input#m_room_id,input#add_product_room_id').val(uid);
 
             updateTableModeHeadings(uid);
@@ -572,6 +577,25 @@ $(function() {
             UIkit.offcanvas($('#offcanvas-sidebar')).hide();
             $('#table_mode_nodata').slideUp(1000);
             $('#table_mode_view').slideDown(1000);
+        }
+    }
+
+    function setAreaURL(newPart, shouldRedirect = false) {
+        const pathParts = window.location.pathname.split('/');  // Split the path into parts
+        if (pathParts.length < 3) {
+            console.error('URL path does not have enough parts to replace the third part.');
+            return;
+        }
+        pathParts[3] = newPart;  // Replace the third part
+        const newPath = pathParts.slice(0, 4).join('/');  // Join the first 4 parts (including the new one)
+        const newUrl = `${window.location.origin}${newPath}`;  // Rebuild the full URL
+
+        if (shouldRedirect) {
+            // Perform a redirect to the new URL
+            window.location.href = newUrl;
+        } else {
+            // Just update the URL without reloading
+            history.pushState(null, '', newUrl);
         }
     }
 
@@ -739,7 +763,8 @@ $(function() {
     }
 
     function updateTableSideNav(currentProjectId) {
-        if ($('.tables-side').length) {
+        if ($('.tables-side').length || true) {
+            console.log('load tables-side');
             showSpin();
             if (!currentProjectId) currentProjectId = $('#m_project_id').val();
             $.ajax("/api/get_all_by_project", {
@@ -767,6 +792,7 @@ $(function() {
 
         // Level 0: Projects
         $.each(data, function (projectKey, projectData) {
+
             // Level 1: Locations within each project
             $.each(projectData, function (locationKey, locationData) {
                 if (locationKey === 'project_name' || locationKey === 'project_slug' || locationKey === 'project_id') return;
@@ -813,7 +839,8 @@ $(function() {
                         const $floorItem = $('<li class="floor-item"></li>');
                         $floorItem.append(`
                         <div class="floor-header">
-                            <span class="floor-name"><span uk-icon="icon: table;"></span> ${floorName}</span>
+                        <a href="/plan/${projectData.project_id}/${floorData.floor_id}" data-id="${floorData.floor_id}">
+                            <span class="floor-name"><span uk-icon="icon: table;"></span> ${floorName}</span></a>
                             <div class="action-icons floor">
                                 <i class="fa-solid fa-circle-minus" data-id="${floorData.floor_id}" data-action="remove"></i>
                             </div>
@@ -830,7 +857,7 @@ $(function() {
                             hasRooms = true; // Mark that we have at least one room
                             const roomName = roomData.room_name || "Add room";
                             const $roomItem = $('<li class="room-item view-room"></li>');
-                            $roomItem.append(`<span class="room-name"><a href="#" data-id="${roomData.room_id}"><span uk-icon="icon: move;"></span> ${roomName}</a></span>`);
+                            $roomItem.append(`<span class="room-name"><a href="/tables/${projectData.project_id}/${roomData.room_id}" data-id="${roomData.room_id}"><span uk-icon="icon: move;"></span> ${roomName}</a></span>`);
                             if (roomData.room_name) {
                                 $roomItem.append(`<i class="fa-solid fa-circle-minus action-icon" data-id="${roomData.room_id}" data-action="remove"></i>`);
                             }
@@ -1129,10 +1156,12 @@ $(function() {
 
     function setQty(id, qty, sku) {
         $('#form-submit-set-qty #set_qty_product_id').val(id);
+        $('#set_qty_qty').val(qty);
         $('#form-submit-set-qty #set_qty_sku').val(sku);
         UIkit.modal($('#set-qty')).show();
     }
     UIkit.util.on('#set-qty', 'shown', function () {
+
         $('#set_qty_qty').focus();
     });
 

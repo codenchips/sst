@@ -5,6 +5,7 @@ function get_view() {
 
     $path = get_uri_part();
 
+
     switch ($path) {
         case '' :
         case 'home' :
@@ -15,6 +16,9 @@ function get_view() {
             break;
          case 'folio' :
             require('views/schedule.php');
+            break;
+        case 'plan' :
+            require('views/plan.php');
             break;
         case 'account' :
             require('views/account.php');

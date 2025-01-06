@@ -166,6 +166,7 @@ function get_products() {
 }
 
 function get_project($project_id) {
+
     global $pdo;
     $q = $pdo->query("SELECT
     p.id, 
@@ -177,8 +178,7 @@ function get_project($project_id) {
     u.name as username, 
     u.email     
     FROM sst_projects p LEFT JOIN sst_users u on p.owner_id = u.id 
-    WHERE p.id = $project_id 
-    
+    WHERE p.id = $project_id     
     ORDER BY p.name ASC, p.version DESC
     LIMIT 1");
 

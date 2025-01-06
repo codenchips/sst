@@ -110,8 +110,9 @@ function project_select_options() {
 
             <div class="uk-width-1-1 uk-margin uk-text-right">
                 <input type="hidden" name="uid" id="uid" value="1" />
-                <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
+
                 <button id="form-submit-createproject" type="submit" class="uk-button uk-button-primary">Create</button>
+                <button class="uk-modal-close uk-button uk-button-default">Cancel</button>
             </div>
 
         </form>

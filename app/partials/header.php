@@ -1,5 +1,6 @@
 <?php
 $project_id = get_uri_part(2);
+$area_id = get_uri_part(3);
 ?>
 
 
@@ -50,6 +51,7 @@ $project_id = get_uri_part(2);
 <input type="hidden" id="m_project_slug" name="m_project_slug" value="" />
 <input type="hidden" id="m_project_version" name="m_project_version" value="" />
 <input type="hidden" id="m_user_id" name="m_user_id" value="<?php echo $uid; ?>" />
+<input type="hidden" id="m_area_id" name="m_area_id" value="<?php echo $area_id; ?>" />
 <input type="hidden" id="m_room_id" name="m_room_id" value="" />
 <input type="hidden" id="m_floor_id" name="m_floor_id" value="" />
 <input type="hidden" id="m_building_id" name="m_building_id" value="" />

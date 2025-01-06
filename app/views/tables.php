@@ -2,16 +2,16 @@
 
 $project_slug = get_uri_part(2);
 
-$p = get_project($project_slug);
-
+$p = get_project($project_slug);  // coming back as js / css (from extn of filename laoded
 $types = get_types();
+
 //$location = get_location_for_project($project_slug);
 //$buildings = get_buildings_for_location($project_slug, $location);
 
 //vd($p, 1);
 ?>
 
-<?php include ('./partials/tables-side.php'); ?>
+<?php require ('./partials/tables-side.php'); ?>
 
 
 <div style="display:none;" id="table_mode_nodata" class="uk-width-1-1">
