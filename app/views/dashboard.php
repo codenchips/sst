@@ -18,7 +18,6 @@ function project_select_options() {
 <div class="uk-width-1-1 uk-margin">
 
 
-
 <div uk-grid>
     <div class="uk-width-1-1">
         <div id="dashboard_projects"></div>

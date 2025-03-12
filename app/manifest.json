@@ -1,0 +1,17 @@
+{
+  "name": "Site Survey Tool",
+  "short_name": "SST",
+  "description": "Site Survey Tool for projects and plans",
+  "start_url": "/index.php",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#003366",
+  "icons": [
+    {
+      "src": "/images/tamlite-logo-pwa.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -2,6 +2,125 @@ $(function() {
     console.log("Loaded ..");
     //FastClick.attach(document.body);
 
+    initDB();
+
+    // Sync data if the app is online
+    if (navigator.onLine) {
+        console.log("Online, syncing data...");
+        syncDataToServer();
+    } else {
+        console.log("Offline, data will be saved locally.");
+    }
+
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js").then(() => {
+            console.log("Service Worker registered");
+        });
+    } else {
+        console.warn("NO Service Worker");
+    }
+
+
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        e.preventDefault();
+        // Stash the event so it can be triggered later.
+        deferredPrompt = e;
+
+        // Optionally, show your own "Add to Home Screen" button here.
+        // For example:
+        const installButton = document.getElementById('install-button');
+        if (installButton) {
+            installButton.style.display = 'block';  // Show the button
+            installButton.addEventListener('click', () => {
+                console.log('install button click');
+                if (deferredPrompt) {
+                    // Show the prompt
+                    deferredPrompt.prompt();
+
+                    // Wait for the user to respond to the prompt
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted the A2HS prompt');
+                            // Optionally, send analytics event
+                        } else {
+                            console.log('User dismissed the A2HS prompt');
+                        }
+                        deferredPrompt = null;  // Reset the deferredPrompt variable
+                    });
+
+                } else {
+                    console.log('Deferred prompt not available.');
+                }
+            });
+        }
+    });
+
+
+
+
+
+    function initDB() {
+        const request = indexedDB.open("sstDatabase", 1);
+        request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            db.createObjectStore("projects", { keyPath: "uid" });
+            db.createObjectStore("locations", { keyPath: "uid" });
+            db.createObjectStore("buildings", { keyPath: "uid" });
+            db.createObjectStore("rooms", { keyPath: "uid" });
+            console.log('created stores');
+        };
+        console.log('done initdb');
+    }
+    function saveProjectLocally(projectData) {
+        console.log("store data");
+        console.log(projectData);
+        const request = indexedDB.open("sstDatabase");
+        request.onsuccess = (e) => {
+            const db = e.target.result;
+            const transaction = db.transaction("projects", "readwrite");
+            const store = transaction.objectStore("projects");
+            store.put(projectData);  // Save the project
+            console.log('stored project');
+        };
+    }
+    function syncDataToServer() {
+        const request = indexedDB.open("sstDatabase");
+        request.onsuccess = (e) => {
+            const db = e.target.result;
+            const transaction = db.transaction("projects", "readonly");
+            const store = transaction.objectStore("projects");
+            const getAllRequest = store.getAll();
+
+            getAllRequest.onsuccess = async () => {
+                const projects = getAllRequest.result;
+                if (projects.length > 0) {
+                    for (const project of projects) {
+                        try {
+                            const response = await fetch("/api/add_project", {
+                                method: "POST",
+                                body: JSON.stringify(project),
+                                headers: { "Content-Type": "application/json" },
+                            });
+                            if (response.ok) {
+                                console.log(`Project ${project.project_id} synced.`);
+                            }
+                        } catch (error) {
+                            console.error("Sync failed:", error);
+                        }
+                    }
+                }
+            };
+        };
+    }
+
+// Trigger sync when online
+    window.addEventListener("online", syncDataToServer);
+
+
+
     UIkit.modal('#add-special', {
         stack : true,
     });
@@ -898,6 +1017,7 @@ $(function() {
             <li class="building-item"><p><a class="add-location" href="#" data-id="${project_id}" data-action="add">Add Location</a></p></li>
         </ul>`);
 
+
         return $menu;
     }
 
@@ -1069,7 +1189,7 @@ $(function() {
                 xhr.upload.addEventListener("progress", function (e) {
                     if (e.lengthComputable) {
                         var percentage = (e.loaded / e.total) * 100; // Calculate percentage
-                        $('#progress-text').text(`Uploading: ${Math.round(percentage)}%`);
+                        $('#progress-tex    t').text(`Uploading: ${Math.round(percentage)}%`);
                         $('.uk-progress').val(percentage); // Update progress bar
                     }
                 });
@@ -1389,27 +1509,26 @@ $(function() {
 
 
 
-    $("#form-create-project").off("submit").on("submit", function(e) {
+    $("#form-create-project").off("submit").on("submit", function (e) {
         e.preventDefault();
-        console.log('Add project submitted');
+        console.log("Add project submitted");
+
         const form = document.querySelector("#form-create-project");
-        //sendData(form, 'add_project');
+        const formData = new FormData(form);
+        const projectData = Object.fromEntries(formData);
 
-        (async () => {
-            try {
-                const result = await sendData(form, "add_project");
-                console.log("Result from backend:", result);
-                // Perform additional logic with `result`.
-                updateDashTable();
-            } catch (error) {
-                console.error("Error during sendData:", error);
-                // Handle the error.
-                alert('There was a network error, please try again.');
-            }
-        })();
+        if (!navigator.onLine) {
+            // Save locally if offline
+            saveProjectLocally(projectData);
+            alert("Saved locally. Will sync when online.");
+        } else {
+            // Send to server if online
+            sendData(form, "add_project");
+        }
 
-        UIkit.modal($('#create-project')).hide();
+        UIkit.modal($("#create-project")).hide();
     });
+
 
     $('#form_project_name').off('focus').on('focus', function(e) {
         $('#form_location').attr({'disabled':'disabled'});

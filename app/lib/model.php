@@ -4,6 +4,43 @@ function default_ands() {
     return (" AND status  = 1 AND hidden = 0 AND obsolete = 0 AND uk = 1 ");
 }
 
+function gen_uuid() {
+    $uuid = array(
+        'time_low'  => 0,
+        'time_mid'  => 0,
+        'time_hi'  => 0,
+        'clock_seq_hi' => 0,
+        'clock_seq_low' => 0,
+        'node'   => array()
+    );
+
+    $uuid['time_low'] = mt_rand(0, 0xffff) + (mt_rand(0, 0xffff) << 16);
+    $uuid['time_mid'] = mt_rand(0, 0xffff);
+    $uuid['time_hi'] = (4 << 12) | (mt_rand(0, 0x1000));
+    $uuid['clock_seq_hi'] = (1 << 7) | (mt_rand(0, 128));
+    $uuid['clock_seq_low'] = mt_rand(0, 255);
+
+    for ($i = 0; $i < 6; $i++) {
+        $uuid['node'][$i] = mt_rand(0, 255);
+    }
+
+    $uuid = sprintf('%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x',
+        $uuid['time_low'],
+        $uuid['time_mid'],
+        $uuid['time_hi'],
+        $uuid['clock_seq_hi'],
+        $uuid['clock_seq_low'],
+        $uuid['node'][0],
+        $uuid['node'][1],
+        $uuid['node'][2],
+        $uuid['node'][3],
+        $uuid['node'][4],
+        $uuid['node'][5]
+    );
+
+    return $uuid;
+}
+
 function return_json($res) {
     if (count($res)) {
         $json = json_encode($res);
@@ -13,6 +50,78 @@ function return_json($res) {
         return false;
     }
 }
+
+
+/*
+ * Receive all user data from the offline app
+ * Its posted using the fetch api
+ */
+function ajax_sync_user_data() {
+    error_reporting(E_ALL);
+    ini_set('display_errors', '1');
+
+
+    global $pdo;
+
+    // Get the raw POST data
+    $rawData = file_get_contents("php://input");
+
+    // Decode JSON into an associative array
+    $userData = json_decode($rawData, true);
+
+    // Check if JSON decoding was successful
+    if ($userData === null) {
+        // Handle JSON decode error
+        echo json_encode(["status" => "error", "message" => "Invalid JSON"]);
+        exit;
+    }
+
+    // Now you can access the data
+    $projects = $userData['projects'] ?? [];
+    $locations = $userData['locations'] ?? [];
+    $buildings = $userData['buildings'] ?? [];
+    $floors = $userData['floors'] ?? [];
+    $rooms = $userData['rooms'] ?? [];
+    $products = $userData['products'] ?? [];
+    $images = $userData['images'] ?? [];
+    $notes = $userData['notes'] ?? [];
+    $favourites = $userData['favourites'] ?? [];
+
+    $owner_id = intval($projects[0]['owner_id']);
+
+    // This is just going to go through every table and WIPE the user data and insert the posted data.
+
+    $q = $pdo->prepare("DELETE FROM sst_products WHERE owner_id = $owner_id")->execute();
+
+
+
+//    $pdo->query("DELETE * FROM sst_projects WHERE owner_id = $owner_id");
+//    $pdo->query("DELETE * FROM sst_locations WHERE owner_id = $owner_id");
+//    $pdo->query("DELETE * FROM sst_buildings WHERE owner_id = $owner_id");
+//    $pdo->query("DELETE * FROM sst_floors WHERE owner_id = $owner_id");
+//    $pdo->query("DELETE * FROM sst_rooms WHERE owner_id = $owner_id");
+//    $pdo->query("DELETE * FROM sst_notes WHERE owner_id = $owner_id");
+//    $pdo->query("DELETE * FROM sst_images WHERE owner_id = $owner_id");
+//    $pdo->query("DELETE * FROM sst_favourites WHERE owner_id = $owner_id");
+
+
+
+
+
+
+
+
+
+
+    $res = array("status" => "success",
+        "message" => "Data received",
+        "userData: ", $userData,
+        "rooms", $rooms,
+        "owner_id", $owner_id);
+
+    return_json($res);
+}
+
 
 function ajax_login() {
     global $pdo;
@@ -41,6 +150,53 @@ function ajax_login() {
 function user_id() {
     return($_COOKIE['user_id']);
 }
+
+
+function ajax_get_all_user_data() {
+    global $pdo;
+    $user_id = $_POST['user_id'];
+
+    // Queries for each table associated with the user's projects
+    $queries = [
+        "SELECT * FROM sst_projects WHERE owner_id = :user_id",
+        "SELECT * FROM sst_locations WHERE owner_id = :user_id",
+        "SELECT * FROM sst_buildings WHERE owner_id = :user_id",
+        "SELECT * FROM sst_floors WHERE owner_id = :user_id",
+        "SELECT * FROM sst_rooms WHERE owner_id = :user_id",
+        "SELECT * FROM sst_products WHERE owner_id = :user_id",
+        "SELECT * FROM sst_favourites WHERE owner_id = :user_id",
+        "SELECT * FROM sst_notes WHERE owner_id = :user_id",
+        "SELECT * FROM sst_images WHERE owner_id = :user_id",
+        "SELECT * FROM sst_users"
+    ];
+
+
+    $data = [];
+    foreach ($queries as $query) {
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $data[] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    header('Content-Type: application/json');
+    echo json_encode([
+        'projects'  => $data[0],
+        'locations' => $data[1],
+        'buildings' => $data[2],
+        'floors'    => $data[3],
+        'rooms'     => $data[4],
+        'products'  => $data[5],
+        'favourites'  => $data[6],
+        'notes'  => $data[7],
+        'images'  => $data[8],
+        'users'  => $data[9]
+    ]);
+    exit();
+}
+
+
+
 
 
 function ajax_get_all_by_project() {
@@ -205,6 +361,34 @@ function get_product_name_by_slug($slug) {
     return($q->fetchAll(PDO::FETCH_COLUMN, 0)[0]);
 }
 
+function ajax_get_all_products_neat() {
+//    error_reporting(E_ALL);
+//    ini_set('display_errors', '1');
+    global $pdo;
+
+    $q = $pdo->query("select 
+            t.type_slug_pk as type_slug,
+            t.type_name,
+            p.product_slug_pk as product_slug,
+            p.product_name as product_name,
+            v.product_code_pk as product_code,
+            p.site as site
+            from p__products_types t
+            left join p__products p on p.type_slug_fk = t.type_slug_pk
+            left join p__variants v on v.product_slug_fk = p.product_slug_pk
+            where 
+            p.`status` = 1 and 
+            p.obsolete = 0 and 
+            p.hidden = 0 and 
+            archived = 0
+            order by p.site asc, p.product_name ASC");
+    $res = $q->fetchAll(PDO::FETCH_OBJ);
+
+
+    exit(json_encode($res));
+}
+
+
 function ajax_get_types() {
     global $pdo;
 
@@ -277,6 +461,7 @@ function ajax_add_product() {
 
     $q  = "INSERT INTO sst_products 
             (
+            id,
             room_id_fk, 
             brand, 
             `type`, 
@@ -289,6 +474,7 @@ function ajax_add_product() {
             created_on)
             VALUES 
             (
+            gen_uuid(),
             :add_product_room_id, 
             :form_brand, 
             :form_type, 
@@ -317,6 +503,7 @@ function ajax_add_project() {
 
     $sql = "INSERT INTO sst_projects 
                   SET 
+                  id = gen_uuid(),
                   slug = '$project_slug', 
                   `name` = '$data->form_project_name',
                   owner_id = '$data->user_id',
@@ -327,7 +514,8 @@ function ajax_add_project() {
         $lastId  = $pdo->query("SELECT LAST_INSERT_ID()")->fetchColumn();
         $location_slug = slugify($data->form_location);
         $sql = "INSERT INTO sst_locations 
-                  SET                   
+                  SET
+                  id = gen_uuid(),                   
                   project_id_fk = $lastId,
                   slug = '$location_slug',
                   `name` = '$data->form_location',                                   
@@ -339,7 +527,8 @@ function ajax_add_project() {
             $lastId  = $pdo->query("SELECT LAST_INSERT_ID()")->fetchColumn();
             $building_slug = slugify($data->form_building);
             $sql = "INSERT INTO sst_buildings  
-                  SET                   
+                  SET  
+                  id = gen_uuid(),                 
                   location_id_fk = $lastId,
                   slug = '$building_slug',
                   `name` = '$data->form_building',                                   
@@ -352,7 +541,8 @@ function ajax_add_project() {
             $lastId  = $pdo->query("SELECT LAST_INSERT_ID()")->fetchColumn();
             $floor_slug = slugify($data->form_floor);
             $sql = "INSERT INTO sst_floors  
-                  SET                   
+                  SET      
+                  id = gen_uuid(),             
                   building_id_fk = $lastId,
                   slug = '$floor_slug',
                   `name` = '$data->form_floor',                                   
@@ -381,6 +571,7 @@ function ajax_add_special() {
 
     $q  = "INSERT INTO sst_products 
             (
+            id,
             room_id_fk, 
             brand, 
             `type`, 
@@ -393,6 +584,7 @@ function ajax_add_special() {
             created_on)
             VALUES 
             (
+            gen_uuid(),
             :add_product_room_id, 
             :form_custom_brand, 
             'special', 
@@ -420,8 +612,8 @@ function ajax_add_floor() {
     $data['user_id'] = user_id();
 
     $q  = "INSERT INTO sst_floors 
-            ( `building_id_fk`, `name`, `slug`, `owner_id`, `version`, `created_on`)
-            VALUES ( :uid, :floor, :floor_slug, :user_id, 1, CURRENT_TIMESTAMP)";
+            ( id, `building_id_fk`, `name`, `slug`, `owner_id`, `version`, `created_on`)
+            VALUES ( gen_uuid(), :uid, :floor, :floor_slug, :user_id, 1, CURRENT_TIMESTAMP)";
 
     $pdo->prepare($q)->execute($data);
     $ret = json_encode(['added' => $pdo->lastInsertId()]);
@@ -438,8 +630,8 @@ function ajax_add_room() {
     $data['user_id'] = user_id();
 
     $q  = "INSERT INTO sst_rooms 
-            ( `floor_id_fk`, `name`, `slug`, `owner_id`, `version`, `created_on`)
-            VALUES ( :uid, :room, :room_slug, :user_id, 1, CURRENT_TIMESTAMP)";
+            ( id, `floor_id_fk`, `name`, `slug`, `owner_id`, `version`, `created_on`)
+            VALUES ( gen_uuid(), :uid, :room, :room_slug, :user_id, 1, CURRENT_TIMESTAMP)";
 
     $pdo->prepare($q)->execute($data);
     $ret = json_encode(['added' => $pdo->lastInsertId()]);
@@ -456,8 +648,8 @@ function ajax_add_building() {
     $data['user_id'] = user_id();
 
     $q  = "INSERT INTO sst_buildings 
-            ( `location_id_fk`, `name`, `slug`, `owner_id`, `version`, `created_on`)
-            VALUES ( :uid, :building, :building_slug, :user_id, 1, CURRENT_TIMESTAMP)";
+            ( id, `location_id_fk`, `name`, `slug`, `owner_id`, `version`, `created_on`)
+            VALUES ( gen_uuid(), :uid, :building, :building_slug, :user_id, 1, CURRENT_TIMESTAMP)";
 
     $pdo->prepare($q)->execute($data);
     $ret = json_encode(['added' => $pdo->lastInsertId()]);
@@ -474,8 +666,8 @@ function ajax_add_location() {
     $data['user_id'] = user_id();
 
     $q  = "INSERT INTO sst_locations 
-            ( `project_id_fk`, `name`, `slug`, `owner_id`, `version`, `created_on`)
-            VALUES ( :uid, :location, :location_slug, :user_id, 1, CURRENT_TIMESTAMP)";
+            ( id, `project_id_fk`, `name`, `slug`, `owner_id`, `version`, `created_on`)
+            VALUES ( UUID, :uid, :location, :location_slug, :user_id, 1, CURRENT_TIMESTAMP)";
 
     $pdo->prepare($q)->execute($data);
     $ret = json_encode(['added' => $pdo->lastInsertId()]);
@@ -715,6 +907,7 @@ function ajax_get_products_in_project() {
     foreach ($res as $row) {
         $q  = "INSERT INTO sst_schedules 
             (
+            id,
             project_id_fk, 
             project_slug,
             project_version,
@@ -729,6 +922,7 @@ function ajax_get_products_in_project() {
             created_on)
             VALUES 
             (
+            gen_uuid(),
             :project_id_fk,
             :project_slug,
             :project_version,  
@@ -826,9 +1020,9 @@ function ajax_set_qty() {
         // and insert the qty
         for ($i = 0; $i < $qty; $i++) {
             $q = "INSERT INTO sst_products 
-            (room_id_fk, brand, `type`, `range`, product_slug, product_name, sku, custom, ref, `order`, owner_id, version, created_on)
+            (id, room_id_fk, brand, `type`, `range`, product_slug, product_name, sku, custom, ref, `order`, owner_id, version, created_on)
             VALUES 
-            (:room_id_fk, :brand, :type, :range, :product_slug, :product_name, :sku, :custom, :ref, :order, :owner_id, :version, CURRENT_TIMESTAMP)";
+            (gen_uuid(), :room_id_fk, :brand, :type, :range, :product_slug, :product_name, :sku, :custom, :ref, :order, :owner_id, :version, CURRENT_TIMESTAMP)";
 
             try {
                 $pdo->prepare($q)->execute($data);
@@ -850,9 +1044,9 @@ function ajax_increase_qty() {
     $data = $q->fetch(PDO::FETCH_ASSOC);
 
     $q  = "INSERT INTO sst_products 
-            (room_id_fk, brand, `type`, `range`, product_slug, product_name, sku, custom, ref, `order`, owner_id, version, created_on)
+            (id, room_id_fk, brand, `type`, `range`, product_slug, product_name, sku, custom, ref, `order`, owner_id, version, created_on)
             VALUES 
-            (:room_id_fk, :brand, :type, :range, :product_slug, :product_name, :sku, :custom, :ref, :order, :owner_id, :version, CURRENT_TIMESTAMP)";
+            (gen_uuid(), :room_id_fk, :brand, :type, :range, :product_slug, :product_name, :sku, :custom, :ref, :order, :owner_id, :version, CURRENT_TIMESTAMP)";
 
     try {
         $pdo->prepare($q)->execute($data);
@@ -924,9 +1118,9 @@ function ajax_save_note() {
 
     if ($data['note_id'] == 0) {
         unset($data['note_id']);
-        $q = "INSERT INTO sst_notes (room_id_fk, note, owner_id, version, created_on)
+        $q = "INSERT INTO sst_notes (id, room_id_fk, note, owner_id, version, created_on)
               VALUES
-              (:room_id, :note, :user_id, 1, CURRENT_TIMESTAMP)";
+              (gen_uuid(), :room_id, :note, :user_id, 1, CURRENT_TIMESTAMP)";
     } else {
         $q = "UPDATE sst_notes SET 
               room_id_fk = :room_id, 
@@ -972,6 +1166,7 @@ function ajax_copy_project() {
     // Create the project
     $sql = "INSERT INTO sst_projects 
             SET 
+            id = gen_uuid(),
             `name`='$new_project_name',            
             `slug`='$slug',
             `owner_id` = $user_id,
@@ -981,16 +1176,16 @@ function ajax_copy_project() {
     $new_project_id = $pdo->lastInsertId();
 
     // Duplicate locations
-    $sql = "INSERT INTO sst_locations (project_id_fk, name, slug, owner_id, version, created_on, last_updated)
-            SELECT :new_project_id, name, slug, owner_id, version, NOW(), NOW()
+    $sql = "INSERT INTO sst_locations (id, project_id_fk, name, slug, owner_id, version, created_on, last_updated)
+            SELECT gen_uuid(), :new_project_id, name, slug, owner_id, version, NOW(), NOW()
             FROM sst_locations
             WHERE project_id_fk = :original_project_id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['new_project_id' => $new_project_id, 'original_project_id' => $original_project_id]);
 
     // Duplicate buildings
-    $sql = "INSERT INTO sst_buildings (location_id_fk, name, slug, owner_id, version, created_on, last_updated)
-            SELECT l_new.id, b.name, b.slug, b.owner_id, b.version, NOW(), NOW()
+    $sql = "INSERT INTO sst_buildings (id, location_id_fk, name, slug, owner_id, version, created_on, last_updated)
+            SELECT UUI(), l_new.id, b.name, b.slug, b.owner_id, b.version, NOW(), NOW()
             FROM sst_buildings b
             JOIN sst_locations l_old ON b.location_id_fk = l_old.id
             JOIN sst_locations l_new ON l_new.slug = l_old.slug AND l_new.project_id_fk = :new_project_id
@@ -999,8 +1194,8 @@ function ajax_copy_project() {
     $stmt->execute(['new_project_id' => $new_project_id, 'original_project_id' => $original_project_id]);
 
     // Duplicate floors
-    $sql = "INSERT INTO sst_floors (building_id_fk, name, slug, owner_id, version, created_on, last_updated)
-            SELECT b_new.id, f.name, f.slug, f.owner_id, f.version, NOW(), NOW()
+    $sql = "INSERT INTO sst_floors (id, building_id_fk, name, slug, owner_id, version, created_on, last_updated)
+            SELECT gen_uuid(), b_new.id, f.name, f.slug, f.owner_id, f.version, NOW(), NOW()
             FROM sst_floors f
             JOIN sst_buildings b_old ON f.building_id_fk = b_old.id
             JOIN sst_buildings b_new ON b_new.slug = b_old.slug AND b_new.location_id_fk IN (SELECT id FROM sst_locations WHERE project_id_fk = :new_project_id)
@@ -1009,8 +1204,8 @@ function ajax_copy_project() {
     $stmt->execute(['new_project_id' => $new_project_id, 'original_project_id' => $original_project_id]);
 
     // Duplicate rooms
-    $sql = "INSERT INTO sst_rooms (floor_id_fk, name, slug, owner_id, version, created_on, last_updated)
-            SELECT f_new.id, r.name, r.slug, r.owner_id, r.version, NOW(), NOW()
+    $sql = "INSERT INTO sst_rooms (id, floor_id_fk, name, slug, owner_id, version, created_on, last_updated)
+            SELECT gen_uuid(), f_new.id, r.name, r.slug, r.owner_id, r.version, NOW(), NOW()
             FROM sst_rooms r
             JOIN sst_floors f_old ON r.floor_id_fk = f_old.id
             JOIN sst_floors f_new ON f_new.slug = f_old.slug AND f_new.building_id_fk IN (SELECT id FROM sst_buildings WHERE location_id_fk IN (SELECT id FROM sst_locations WHERE project_id_fk = :new_project_id))
@@ -1019,8 +1214,8 @@ function ajax_copy_project() {
     $stmt->execute(['new_project_id' => $new_project_id, 'original_project_id' => $original_project_id]);
 
     // Duplicate products
-    $sql = "INSERT INTO sst_products (room_id_fk, brand, `type`, `range`, product_slug, product_name, sku, custom, ref, `order`, owner_id, version, created_on, last_updated)
-            SELECT r_new.id, p.brand, p.`type`, p.`range`, p.product_slug, p.product_name, p.sku, p.custom, p.ref, p.`order`, p.owner_id, p.version, NOW(), NOW()
+    $sql = "INSERT INTO sst_products (id, room_id_fk, brand, `type`, `range`, product_slug, product_name, sku, custom, ref, `order`, owner_id, version, created_on, last_updated)
+            SELECT gen_uuid(), r_new.id, p.brand, p.`type`, p.`range`, p.product_slug, p.product_name, p.sku, p.custom, p.ref, p.`order`, p.owner_id, p.version, NOW(), NOW()
             FROM sst_products p
             JOIN sst_rooms r_old ON p.room_id_fk = r_old.id
             JOIN sst_rooms r_new ON r_new.slug = r_old.slug AND r_new.floor_id_fk IN (SELECT id FROM sst_floors WHERE building_id_fk IN (SELECT id FROM sst_buildings WHERE location_id_fk IN (SELECT id FROM sst_locations WHERE project_id_fk = :new_project_id)))
@@ -1048,6 +1243,7 @@ function ajax_copy_room() {
     $new_room_id = false;
     $sql = "INSERT INTO sst_rooms 
             SET 
+            id = gen_uuid(),
             `name`='$new_room_name',
             `floor_id_fk`='$to_floor_id',
             `slug`='$slug',
@@ -1063,6 +1259,7 @@ function ajax_copy_room() {
         foreach ($products as $p) {
             $sql = "INSERT INTO sst_products 
             SET
+            id = gen_uuid(),
             `room_id_fk` = $new_room_id, 
             `brand`='$p->brand',
             `type`='$p->type',
@@ -1211,8 +1408,15 @@ function ajax_image_upload() {
         echo json_encode(['success' => false, 'message' => 'No room id']);
         exit();
     }
-
     $room_id = intval($_POST['room_id']);
+
+    if (!isset($_POST['user_id'])) {
+        $user_id = user_id();
+    } else {
+        $user_id = intval($_POST['user_id']);
+    }
+
+
 
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $fileTmpPath = $_FILES['image']['tmp_name'];
@@ -1220,29 +1424,31 @@ function ajax_image_upload() {
         $fileSize = $_FILES['image']['size'];
         $fileType = $_FILES['image']['type'];
         $uploadDir = 'uploads/';
-        $safeFileName = uniqid() . '-' . basename($fileName);
+        $safeFileName = uniqid() . '-' . slugify(basename($fileName));
         $uploadFilePath = $uploadDir . $safeFileName;
+        //error_reporting(E_ALL);ini_set("display_errors", 1);
 
         try {
             // Attempt to resize the image using Imagick
             $resizedFilePath = resizeWithImagick($fileTmpPath, $uploadFilePath, 480, 360);
 
-            // Save metadata to the database
-            $data = [
-                'room_id' => $room_id,
-                'safeFileName' => $safeFileName,
-                'fileName' => $fileName,
-                'user_id' => user_id()
-            ];
+            $uuid = gen_uuid();
+            $room_id = $room_id;
+            $safeFileName = $safeFileName;
+            $fileName = $fileName;
+            $user_id = $user_id;
 
-            $sql = "INSERT INTO sst_images (room_id_fk, filename, safe_filename, owner_id, version, created_on)
-                    VALUES (:room_id, :fileName, :safeFileName, :user_id, 1, CURRENT_TIMESTAMP)";
-            $pdo->prepare($sql)->execute($data);
+            $sql = "INSERT INTO sst_images (id, room_id_fk, filename, safe_filename, owner_id, version, created_on)
+                    VALUES ('$uuid', '$room_id', '$fileName', '$safeFileName', '$user_id', 1, ".CURRENT_TIMESTAMP.")";
+            $pdo->prepare($sql)->execute();
 
             echo json_encode([
                 'success' => true,
                 'message' => 'File uploaded and resized successfully!',
-                'filePath' => $resizedFilePath
+                'filePath' => $resizedFilePath,
+                'uuid' => $uuid,
+                'fileName' => $fileName,
+                'safeFileName' => $safeFileName
             ]);
         } catch (Exception $e) {
             // If Imagick is unavailable or an error occurs, handle it gracefully

@@ -1,4 +1,7 @@
 <?php
+header("Access-Control-Allow-Origin: *");  // Allow all origins (for testing)
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
     require('config/database.php');
     require('lib/model.php');

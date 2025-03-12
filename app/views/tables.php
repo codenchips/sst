@@ -14,85 +14,85 @@ $types = get_types();
 <?php require ('./partials/tables-side.php'); ?>
 
 
-<div style="display:none;" id="table_mode_nodata" class="uk-width-1-1">
+    <div style="display:none;" id="table_mode_nodata" class="uk-width-1-1">
 
-    <div class="uk-width-1-1">
-        <div class="uk-width-1-1 uk-text-left">
-            <h3 class="uk-card-title">Welcome, <?php echo $_COOKIE['user_name']; ?></h3>
-        </div>
-
-
-            <div class="uk-width-1-1 uk-text-left uk-margin">
-                <label>Project Name</label>
-                <input id="form_project_name"
-                       name="form_project_name"
-                       class="uk-input free-type auto-update"
-                       data-id="<?php echo $p->id; ?>"
-                       data-tbl="sst_projects"
-                       data-col="name"
-                       placeholder="My Project"
-                       autocomplete="off"
-                       required
-                       value="<?php echo $p->name; ?>"
-                       oninvalid="this.setCustomValidity('You must name this project')"
-                       oninput="this.setCustomValidity('')" />
-            </div>
-            <div class="uk-width-1-1 uk-text-left  uk-margin">
-                <label>Project ID</label>
-                <input id="form_project_id"
-                       name="form_project_id"
-                       class="uk-input free-type auto-update"
-                       data-id="<?php echo $p->id; ?>"
-                       data-tbl="sst_projects"
-                       data-col="project_id"
-                       placeholder="123456"
-                       autocomplete="off"
-                       required
-                       value="<?php echo $p->project_id; ?>"
-                       oninvalid="this.setCustomValidity('You must have a project ID')"
-                       oninput="this.setCustomValidity('')" />
-            </div>
-            <div class="uk-width-1-1 uk-text-left uk-margin">
-                <label>Engineer</label>
-                <input id="form_project_engineer"
-                       name="form_project_engineer"
-                       class="uk-input free-type auto-update"
-                       data-id="<?php echo $p->id; ?>"
-                       data-tbl="sst_projects"
-                       data-col="engineer"
-                       placeholder=""
-                       autocomplete="off"
-                       required
-                       value="<?php echo ($p->engineer != "") ? $p->engineer : $p->username; ?>"
-                       oninvalid="this.setCustomValidity('Please specify the engineer name')"
-                       oninput="this.setCustomValidity('')" />
-            </div>
-            <div class="uk-width-1-1 uk-text-left uk-margin">
-                <label>Version</label>
-                <input id="form_project_version"
-                       name="form_project_version"
-                       class="uk-input free-type auto-update"
-                       data-id="<?php echo $p->id; ?>"
-                       data-tbl="sst_projects"
-                       data-col="version"
-                       placeholder=""
-                       readonly
-                       disabled
-                       autocomplete="off"
-                       required
-                       value="<?php echo $p->project_version; ?>"
-                       oninvalid="this.setCustomValidity('')"
-                       oninput="this.setCustomValidity('')" />
+        <div class="uk-width-1-1">
+            <div class="uk-width-1-1 uk-text-left">
+                <h3 class="uk-card-title">Welcome, <?php echo $_COOKIE['user_name']; ?></h3>
             </div>
 
-        <div class="uk-width-1-1 uk-margin">
-            <span title="Copy Project" alt="Copy Project" id="copy-project" class="uk-icon uk-align-right uk-margin-remove" uk-icon="icon: copy; ratio: 2;"></span>
-            <button class="uk-button uk-align-right uk-button-primary uk-hidden@xl " type="button" uk-toggle="target: #offcanvas-sidebar">Manage Project</button>
+
+                <div class="uk-width-1-1 uk-text-left uk-margin">
+                    <label>Project Name</label>
+                    <input id="form_project_name"
+                           name="form_project_name"
+                           class="uk-input free-type auto-update"
+                           data-id="<?php echo $p->id; ?>"
+                           data-tbl="sst_projects"
+                           data-col="name"
+                           placeholder="My Project"
+                           autocomplete="off"
+                           required
+                           value="<?php echo $p->name; ?>"
+                           oninvalid="this.setCustomValidity('You must name this project')"
+                           oninput="this.setCustomValidity('')" />
+                </div>
+                <div class="uk-width-1-1 uk-text-left  uk-margin">
+                    <label>Project ID</label>
+                    <input id="form_project_id"
+                           name="form_project_id"
+                           class="uk-input free-type auto-update"
+                           data-id="<?php echo $p->id; ?>"
+                           data-tbl="sst_projects"
+                           data-col="project_id"
+                           placeholder="123456"
+                           autocomplete="off"
+                           required
+                           value="<?php echo $p->project_id; ?>"
+                           oninvalid="this.setCustomValidity('You must have a project ID')"
+                           oninput="this.setCustomValidity('')" />
+                </div>
+                <div class="uk-width-1-1 uk-text-left uk-margin">
+                    <label>Engineer</label>
+                    <input id="form_project_engineer"
+                           name="form_project_engineer"
+                           class="uk-input free-type auto-update"
+                           data-id="<?php echo $p->id; ?>"
+                           data-tbl="sst_projects"
+                           data-col="engineer"
+                           placeholder=""
+                           autocomplete="off"
+                           required
+                           value="<?php echo ($p->engineer != "") ? $p->engineer : $p->username; ?>"
+                           oninvalid="this.setCustomValidity('Please specify the engineer name')"
+                           oninput="this.setCustomValidity('')" />
+                </div>
+                <div class="uk-width-1-1 uk-text-left uk-margin">
+                    <label>Version</label>
+                    <input id="form_project_version"
+                           name="form_project_version"
+                           class="uk-input free-type auto-update"
+                           data-id="<?php echo $p->id; ?>"
+                           data-tbl="sst_projects"
+                           data-col="version"
+                           placeholder=""
+                           readonly
+                           disabled
+                           autocomplete="off"
+                           required
+                           value="<?php echo $p->project_version; ?>"
+                           oninvalid="this.setCustomValidity('')"
+                           oninput="this.setCustomValidity('')" />
+                </div>
+
+            <div class="uk-width-1-1 uk-margin">
+                <span title="Copy Project" alt="Copy Project" id="copy-project" class="uk-icon uk-align-right uk-margin-remove" uk-icon="icon: copy; ratio: 2;"></span>
+                <button class="uk-button uk-align-right uk-button-primary uk-hidden@xl " type="button" uk-toggle="target: #offcanvas-sidebar">Manage Project</button>
+            </div>
+
         </div>
 
     </div>
-
-</div>
 
 
 
@@ -204,7 +204,7 @@ $types = get_types();
         <div id="ptable"></div>
     </div>
 
-
+    <div uk-grid>
     <div class="uk-width-1-2">
         <button id="add-note" class="uk-width-1-1 uk-button uk-button-primary uk-align-right">Add Note</button>
     </div>
