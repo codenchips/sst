@@ -107,14 +107,8 @@ function ajax_sync_user_data() {
 
 
 
-
-
-
-
-
-
     $res = array("status" => "success",
-        "message" => "Data received",
+        "message" => "Data pushed to server OK",
         "userData: ", $userData,
         "rooms", $rooms,
         "owner_id", $owner_id);

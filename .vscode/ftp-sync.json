@@ -20,9 +20,9 @@
         "\\node_modules"
     ],
     "generatedFiles": {
-        "extensionsToInclude": [
-            ""
-        ],
-        "path": ""
+        "uploadOnSave": true,
+        "extensionsToInclude": [],
+        "path": "/"                
+ 
     }
 }
