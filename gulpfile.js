@@ -7,22 +7,22 @@ const sync = require("browser-sync").create();
 const minify = require('gulp-minify');
 
 function compileSass(done) {
-    src('app/scss/app.scss')
+    src('scss/app.scss')
     .pipe(sass().on('error', sass.logError))
-    .pipe(dest('app/css'))
+    .pipe(dest('css'))
     done();
 }
 
 function minifyJS(done) {
-    src('app/js/scripts.js')
+    src('js/scripts.js')
     .pipe(  minify().on('error', sass.logError))
-    .pipe(dest('app/js'))
+    .pipe(dest('js'))
     done();
 }
 
 
 function watchStuff() {
-    watch('app/scss/app.scss', compileSass);
+    watch('scss/app.scss', compileSass);
     //watch('app/js/scripts.js', minifyJS);
 }
 
@@ -30,7 +30,7 @@ function browserSync(cb) {
     sync.init({
         injectChanges: true,
         server: {
-            baseDir: "app/"
+            baseDir: "/"
         }
     });
 

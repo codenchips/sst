@@ -1,0 +1,28 @@
+{
+    "remotePath": "/home/tamliteco/sst.tamlite.co.uk/",
+    "host": "95.154.235.26",
+    "username": "tamliteco",
+    "password": "",
+    "port": 22,
+    "secure": true,
+    "protocol": "sftp",
+    "uploadOnSave": true,
+    "passive": false,
+    "debug": false,
+    "privateKeyPath": "C:/Users/Dean/.ssh/id_rsa.ppk",
+    "passphrase": null,
+    "agent": null,
+    "allow": [],
+    "ignore": [
+        "\\.vscode",
+        "\\.git",
+        "\\.DS_Store",
+        "\\node_modules"
+    ],
+    "generatedFiles": {
+        "extensionsToInclude": [
+            ""
+        ],
+        "path": ""
+    }
+}
