@@ -107,14 +107,22 @@ function ajax_sync_user_data() {
         foreach ($$array_name as $row) {
             $row['id'] = $row['uuid'];
             $row['owner_id'] = $owner_id;
-            $q = "INSERT INTO $table  SET ";
+            $q = "INSERT INTO $table SET ";
             foreach ($row as $key => $value) {
                 if ($value && in_array($key, $columns)) {
                     $q .= "`$key` = '$value', ";
                 }
             }
             $q = rtrim($q, ', ');
-            $pdo->prepare($q)->execute($row);
+            try {
+                $pdo->prepare($q)->execute($row);
+            } catch (PDOException $e) {
+                $res = array("status" => "error",
+                "message" => $e->getMessage(),
+                "userData: ", $userData);
+        
+                return_json($res);
+            }
         }
     }
 
