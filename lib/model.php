@@ -59,8 +59,6 @@ function return_json($res) {
 function ajax_sync_user_data() {
     error_reporting(E_ALL);
     ini_set('display_errors', '1');
-
-
     global $pdo;
 
     // Get the raw POST data
@@ -90,22 +88,35 @@ function ajax_sync_user_data() {
     $owner_id = intval($projects[0]['owner_id']);
 
     // This is just going to go through every table and WIPE the user data and insert the posted data.
+    $tables = [
+        'sst_projects',
+        'sst_locations',
+        'sst_buildings',
+        'sst_floors',
+        'sst_rooms',
+        'sst_products',
+        'sst_images',
+        'sst_notes',
+        'sst_favourites'
+    ];
 
-    $q = $pdo->prepare("DELETE FROM sst_products WHERE owner_id = $owner_id")->execute();
-
-
-
-//    $pdo->query("DELETE * FROM sst_projects WHERE owner_id = $owner_id");
-//    $pdo->query("DELETE * FROM sst_locations WHERE owner_id = $owner_id");
-//    $pdo->query("DELETE * FROM sst_buildings WHERE owner_id = $owner_id");
-//    $pdo->query("DELETE * FROM sst_floors WHERE owner_id = $owner_id");
-//    $pdo->query("DELETE * FROM sst_rooms WHERE owner_id = $owner_id");
-//    $pdo->query("DELETE * FROM sst_notes WHERE owner_id = $owner_id");
-//    $pdo->query("DELETE * FROM sst_images WHERE owner_id = $owner_id");
-//    $pdo->query("DELETE * FROM sst_favourites WHERE owner_id = $owner_id");
-
-
-
+    foreach ($tables as $table) {
+        $array_name = substr($table, 4);        
+        $q = $pdo->prepare("DELETE FROM $table WHERE owner_id = $owner_id")->execute();
+        $columns = $pdo->query("SHOW COLUMNS FROM $table")->fetchAll(PDO::FETCH_COLUMN, 0);
+        foreach ($$array_name as $row) {
+            $row['id'] = $row['uuid'];
+            $row['owner_id'] = $owner_id;
+            $q = "INSERT INTO $table  SET ";
+            foreach ($row as $key => $value) {
+                if ($value && in_array($key, $columns)) {
+                    $q .= "`$key` = '$value', ";
+                }
+            }
+            $q = rtrim($q, ', ');
+            $pdo->prepare($q)->execute($row);
+        }
+    }
 
     $res = array("status" => "success",
         "message" => "Data pushed to server OK",
