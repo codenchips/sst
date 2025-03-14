@@ -47,8 +47,11 @@ function return_json($res) {
         echo($json);
         exit();
     } else {
-        return false;
+        $json = json_encode(array());
+        echo($json);
+        exit();
     }
+    
 }
 
 
@@ -57,8 +60,8 @@ function return_json($res) {
  * Its posted using the fetch api
  */
 function ajax_sync_user_data() {
-    error_reporting(E_ALL);
-    ini_set('display_errors', '1');
+    // error_reporting(E_ALL);
+    // ini_set('display_errors', '1');
     global $pdo;
 
     // Get the raw POST data
@@ -119,12 +122,15 @@ function ajax_sync_user_data() {
             } catch (PDOException $e) {
                 $res = array("status" => "error",
                 "message" => $e->getMessage(),
-                "userData: ", $userData);
-        
+                "userData: ", $userData);        
                 return_json($res);
             }
         }
     }
+
+    // finally, update the users table user record "pushed" column with the cuttent timestamp
+    $sql = "UPDATE sst_users SET `pushed` = CURRENT_TIMESTAMP WHERE id = $owner_id";
+    $pdo->prepare($sql)->execute();
 
     $res = array("status" => "success",
         "message" => "Data pushed to server OK",
@@ -164,36 +170,69 @@ function user_id() {
     return($_COOKIE['user_id']);
 }
 
+function ajax_get_last_pushed() {
+    global $pdo;
+    $user_id = (isset($_POST['user_id'])) ? $_POST['user_id'] : false;
+
+    if (!$user_id) {   
+        $rawData = file_get_contents("php://input");        
+
+        // Decode JSON into an associative array
+        $userData = json_decode($rawData, true);
+        // Check if JSON decoding was successful
+        if ($userData === null) {
+            // Handle JSON decode error
+            echo json_encode(["status" => "error", "message" => "Invalid JSON"]);
+            exit;    
+        }
+        $user_id = $userData['user_id'];
+        $user_id - intval($user_id);
+    }
+
+    $data = $pdo->query("SELECT * FROM sst_users where id = $user_id")->fetch(PDO::FETCH_ASSOC);
+    return_json($data);
+
+}
 
 function ajax_get_all_user_data() {
     global $pdo;
-    $user_id = $_POST['user_id'];
+    $user_id = (isset($_POST['user_id'])) ? $_POST['user_id'] : false;
 
+    if (!$user_id) {   
+        $rawData = file_get_contents("php://input");        
+
+        // Decode JSON into an associative array
+        $userData = json_decode($rawData, true);
+        // Check if JSON decoding was successful
+        if ($userData === null) {
+            // Handle JSON decode error
+            echo json_encode(["status" => "error", "message" => "Invalid JSON"]);
+            exit;    
+        }
+        $user_id = $userData['user_id'];
+        $user_id - intval($user_id);
+    }
+    
     // Queries for each table associated with the user's projects
     $queries = [
-        "SELECT * FROM sst_projects WHERE owner_id = :user_id",
-        "SELECT * FROM sst_locations WHERE owner_id = :user_id",
-        "SELECT * FROM sst_buildings WHERE owner_id = :user_id",
-        "SELECT * FROM sst_floors WHERE owner_id = :user_id",
-        "SELECT * FROM sst_rooms WHERE owner_id = :user_id",
-        "SELECT * FROM sst_products WHERE owner_id = :user_id",
-        "SELECT * FROM sst_favourites WHERE owner_id = :user_id",
-        "SELECT * FROM sst_notes WHERE owner_id = :user_id",
-        "SELECT * FROM sst_images WHERE owner_id = :user_id",
-        "SELECT * FROM sst_users"
+        "SELECT * FROM sst_projects WHERE owner_id = $user_id",
+        "SELECT * FROM sst_locations WHERE owner_id = $user_id",
+        "SELECT * FROM sst_buildings WHERE owner_id = $user_id",
+        "SELECT * FROM sst_floors WHERE owner_id = $user_id",
+        "SELECT * FROM sst_rooms WHERE owner_id = $user_id",
+        "SELECT * FROM sst_products WHERE owner_id = $user_id",
+        "SELECT * FROM sst_favourites WHERE owner_id = $user_id",
+        "SELECT * FROM sst_notes WHERE owner_id = $user_id",
+        "SELECT * FROM sst_images WHERE owner_id = $user_id",        
     ];
 
-
     $data = [];
-    foreach ($queries as $query) {
-        $stmt = $pdo->prepare($query);
-        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $data[] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($queries as $i => $query) {
+        $data[] = $pdo->query($query)->fetchAll(PDO::FETCH_ASSOC);
+
     }
 
-    header('Content-Type: application/json');
-    echo json_encode([
+    $res = array(
         'projects'  => $data[0],
         'locations' => $data[1],
         'buildings' => $data[2],
@@ -202,10 +241,9 @@ function ajax_get_all_user_data() {
         'products'  => $data[5],
         'favourites'  => $data[6],
         'notes'  => $data[7],
-        'images'  => $data[8],
-        'users'  => $data[9]
-    ]);
-    exit();
+        'images'  => $data[8]);
+
+    return_json($res);
 }
 
 
@@ -401,6 +439,16 @@ function ajax_get_all_products_neat() {
     exit(json_encode($res));
 }
 
+function ajax_get_all_users_neat() {
+    //    error_reporting(E_ALL);
+    //    ini_set('display_errors', '1');
+        global $pdo;
+    
+        $q = $pdo->query("select *, id as uuid from sst_users");
+        $res = $q->fetchAll(PDO::FETCH_OBJ);
+        
+        exit(json_encode($res));
+    }
 
 function ajax_get_types() {
     global $pdo;

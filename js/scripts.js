@@ -628,7 +628,13 @@ $(function() {
             data: { uid: uid },
             success: function(data, status, xhr) {
                 hideSpin();
-                const jsonData = $.parseJSON(data);
+                let jsonData;
+                try {
+                    jsonData = $.parseJSON(data);
+                } catch (error) {
+                    console.error("Failed to parse JSON:", error);
+                    return;
+                }
                 const hd = jsonData[0]
                 console.log(hd.floor_name);
 
@@ -1254,8 +1260,21 @@ $(function() {
                         room_id: room_id
                     },
                     success: function(data, status, xhr) {
-                        if (data.length > 0) {
-                            var jsonData = $.parseJSON(data);
+                        
+                        
+                        let jsonData;
+                        try {
+                            jsonData = $.parseJSON(data);
+                        } catch (error) {
+                            console.error("Failed to parse JSON:", error);
+                            return;
+                        }
+
+
+                        if (jsonData.length > 0) {
+                            console.log('images: ', jsonData);
+                            console.log('type of images: ', typeof jsonData);
+                            console.log('length of images: ', jsonData.length);                            
                             var template = $("#tmp-images").html();
                             var rendered = Mustache.render(template, {
                                 images: jsonData
