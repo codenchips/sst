@@ -141,6 +141,47 @@ function ajax_sync_user_data() {
     return_json($res);
 }
 
+function ajax_update_user_account() {
+    // error_reporting(E_ALL);
+    // ini_set('display_errors', '1');
+    global $pdo;
+
+    // Get the raw POST data
+    $rawData = file_get_contents("php://input");
+
+    // Decode JSON into an associative array
+    $userData = json_decode($rawData, true);
+
+    // Check if JSON decoding was successful
+    if ($userData === null) {
+        // Handle JSON decode error
+        echo json_encode(["status" => "error", "message" => "Invalid JSON"]);
+        exit;
+    }
+
+    // Now you can access the data
+    $user_id = $userData['id'];       
+    $user_name = $userData['name'];
+    $user_code = $userData['code'];
+    $user_email = $userData['email'];
+    $user_password = $userData['password'];
+
+    $sql = "UPDATE sst_users SET 
+            `name` = '$user_name', 
+            `code` = '$user_code', 
+            `email` = '$user_email', 
+            `password` = '$user_password' 
+            WHERE id = $user_id";
+    $pdo->prepare($sql)->execute();
+    $res = array("status" => "success",
+    "message" => "Data pushed to server OK",
+    "userData: ", $userData,    
+    "owner_id", $owner_id);
+
+
+    return_json($res);
+}
+
 
 function ajax_login() {
     global $pdo;
@@ -224,6 +265,7 @@ function ajax_get_all_user_data() {
         "SELECT * FROM sst_favourites WHERE owner_id = $user_id",
         "SELECT * FROM sst_notes WHERE owner_id = $user_id",
         "SELECT * FROM sst_images WHERE owner_id = $user_id",        
+        "SELECT * FROM sst_users WHERE id = $user_id LIMIT 1",        
     ];
 
     $data = [];
@@ -241,7 +283,8 @@ function ajax_get_all_user_data() {
         'products'  => $data[5],
         'favourites'  => $data[6],
         'notes'  => $data[7],
-        'images'  => $data[8]);
+        'images'  => $data[8],
+        'users'  => $data[9]);
 
     return_json($res);
 }
