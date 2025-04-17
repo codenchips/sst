@@ -54,6 +54,67 @@ function return_json($res) {
     
 }
 
+/* 
+*  Just some cheeky temporary functions to hanldle the xcite darts game
+*/
+function ajax_darts_save_score() {
+    global $pdo;
+
+    $score = $_POST['score'];    
+    $time = $_POST['time'];
+    $names = $_POST['name'];
+
+    // $names is a string like "firstname|lastname|branch"
+
+    $names = explode('|', $names);
+
+    $firstname = $names[0];
+    $lastname = $names[1];
+    $branch = $names[2];
+    $email = $names[3];
+
+
+    $sql = "INSERT INTO darts__scores SET 
+    score = $score, 
+    `firstname` = '$firstname', 
+    `lastname` = '$lastname', 
+    `branch` = '$branch', 
+    `time` = $time, 
+    `email` = '$email',
+    updated = now()";
+    var_dump($sql);
+
+    $pdo->prepare($sql)->execute();
+    echo json_encode(['success' => true, 'message' => 'Update OK']);
+}
+function ajax_darts_get_scores() {
+    global $pdo;
+
+    $score = $_POST['score'];
+
+    $sql = "SELECT * FROM darts__scores ORDER BY score DESC, `time` DESC  LIMIT 15";    
+    $q = $pdo->query($sql);
+    $res = $q->fetchAll(PDO::FETCH_ASSOC);    
+    echo json_encode(['success' => true, 'message' => 'Update OK', 'scores' => $res]);
+}
+
+function ajax_darts_check_email()  {
+    global $pdo;
+    $email = $_POST['email'];
+    $sql = "SELECT * FROM darts__scores WHERE email = '$email' LIMIT 1";    
+    $q = $pdo->query($sql);
+    $res = $q->fetch(PDO::FETCH_ASSOC);    
+    if ($res) {
+        echo json_encode(['success' => true, 'message' => 'Email already registered']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Email not registered']);
+    }   
+}
+
+
+
+
+
 
 /*
  * Receive all user data from the offline app
@@ -88,7 +149,7 @@ function ajax_sync_user_data() {
     $notes = $userData['notes'] ?? [];
     $favourites = $userData['favourites'] ?? [];
 
-    $owner_id = intval($projects[0]['owner_id']);
+    $owner_id = intval($projects[0]['owner_id']);    
 
     // This is just going to go through every table and WIPE the user data and insert the posted data.
     $tables = [
@@ -103,8 +164,20 @@ function ajax_sync_user_data() {
         'sst_favourites'
     ];
 
+    // error_reporting(E_ALL);
+    // ini_set('display_errors', '1');
+
+    $backup_uuid = gen_uuid();
+
     foreach ($tables as $table) {
         $array_name = substr($table, 4);        
+        $backup_table = $table . '_backup';
+                
+        $q = $pdo->prepare("INSERT INTO $backup_table
+                    SELECT *, NOW() as backup_timestamp, '$backup_uuid' as backup_uuid
+                    FROM $table
+                    WHERE owner_id = $owner_id")->execute();
+
         $q = $pdo->prepare("DELETE FROM $table WHERE owner_id = $owner_id")->execute();
         $columns = $pdo->query("SHOW COLUMNS FROM $table")->fetchAll(PDO::FETCH_COLUMN, 0);
         foreach ($$array_name as $row) {
