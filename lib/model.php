@@ -60,19 +60,25 @@ function return_json($res) {
 function ajax_darts_save_score() {
     global $pdo;
 
+
+    // check that this request came from xciteledlighting.co.uk
+    if (!stristr($_SERVER['HTTP_REFERER'], 'xciteledlighting.co.uk')) {
+        echo json_encode(['error' => false, 'message' => 'Invalid request']);
+        exit;
+    }
+
     $score = $_POST['score'];    
     $time = $_POST['time'];
     $names = $_POST['name'];
 
     // $names is a string like "firstname|lastname|branch"
-
     $names = explode('|', $names);
 
     $firstname = $names[0];
     $lastname = $names[1];
     $branch = $names[2];
     $email = $names[3];
-
+    $attending_str = $names[4];
 
     $sql = "INSERT INTO darts__scores SET 
     score = $score, 
@@ -81,18 +87,65 @@ function ajax_darts_save_score() {
     `branch` = '$branch', 
     `time` = $time, 
     `email` = '$email',
+    `attending` = '$attending_str',
     updated = now()";
-    var_dump($sql);
+    //var_dump($sql);
 
     $pdo->prepare($sql)->execute();
-    echo json_encode(['success' => true, 'message' => 'Update OK']);
+    echo json_encode(['success' => true, 'message' => 'Congratulations! Your score has been registered.']);
 }
+
+function ajax_darts_check_email_score()  {
+    global $pdo;
+
+    // check that this request came from xciteledlighting.co.uk
+    if (!stristr($_SERVER['HTTP_REFERER'], 'xciteledlighting.co.uk')) {
+        echo json_encode(['error' => false, 'message' => 'Invalid request']);
+        exit;
+    }  
+
+    $score = $_POST['score'];    
+    $time = $_POST['time'];
+    $email = $_POST['email'];
+
+    // see if this email has already been registered
+    $sql = "SELECT * FROM darts__scores WHERE email = '$email' LIMIT 1";
+    $q = $pdo->query($sql);
+    $res = $q->fetch(PDO::FETCH_ASSOC);
+    if ($res) {
+        if ($res['score'] > $score) {
+            echo json_encode(['success' => true, 'message' => "Great score, but you have done better!"]);
+            exit;
+        }
+        
+        if ($res['score'] == $score && $res['time'] < $time) {
+            echo json_encode(['success' => false, 'message' => "Great score, but a little slower than your best attempt."]);
+            exit;
+        }
+
+
+        $sql = "UPDATE darts__scores SET 
+            `time` = $time,
+            score = $score, 
+            updated = now() 
+            WHERE email = '$email'";
+        $pdo->prepare($sql)->execute();
+        echo json_encode(['success' => true, 'message' => 'Congratulations! You have a new best score!']);
+        exit;
+    } else {
+        echo json_encode(['newplayer' => true, 'message' => 'email not entered yet']);
+        exit;
+    }    
+
+}
+
+
 function ajax_darts_get_scores() {
     global $pdo;
 
     $score = $_POST['score'];
 
-    $sql = "SELECT * FROM darts__scores ORDER BY score DESC, `time` DESC  LIMIT 15";    
+    $sql = "SELECT * FROM darts__scores ORDER BY score DESC, `time` ASC  LIMIT 15";    
     $q = $pdo->query($sql);
     $res = $q->fetchAll(PDO::FETCH_ASSOC);    
     echo json_encode(['success' => true, 'message' => 'Update OK', 'scores' => $res]);
@@ -100,11 +153,12 @@ function ajax_darts_get_scores() {
 
 function ajax_darts_check_email()  {
     global $pdo;
+    $single_entry_only = false;
     $email = $_POST['email'];
     $sql = "SELECT * FROM darts__scores WHERE email = '$email' LIMIT 1";    
     $q = $pdo->query($sql);
     $res = $q->fetch(PDO::FETCH_ASSOC);    
-    if ($res) {
+    if ($res && $single_entry_only) {
         echo json_encode(['success' => true, 'message' => 'Email already registered']);
     } else {
         echo json_encode(['success' => false, 'message' => 'Email not registered']);
